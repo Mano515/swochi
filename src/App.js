@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
@@ -20,6 +20,10 @@ function App() {
   const [genres, setGenres] = useState([]);
   const [genreChoisi, setGenreChoisi] = useState("");
   const [historique, setHistorique] = useState([]); // { film, direction }
+  const [username, setUsername] = useState(null); // null = pas encore chargé
+  const [usernameInput, setUsernameInput] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const fetchIdRef = useRef(0);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -49,65 +53,53 @@ function App() {
         ...listesExistantes.dejavu,
       ].map(f => f.id);
 
+      setUsername(snap.exists() ? (snap.data().username || "") : "");
       setDejaSwiped(ids);
-      chargerFilms(1, ids, [], genreChoisi);
+      if (snap.exists() && snap.data().username) {
+        chargerFilms(1, ids, [], "");
+      }
     });
   }, [user]);
 
-  async function chargerFilms(numPage, swipes, filmsExistants, genre = genreChoisi, listesAVoir = listes.aVoir) {
-    setLoadingFilms(true);
+  async function fetchPage(numPage, genre) {
     const key = process.env.REACT_APP_TMDB_KEY;
     const genreParam = genre ? `&with_genres=${genre}` : "";
-    const totalSwipes = swipes.length;
-
-    try {
-      let resultats = [];
-
-      // Nouveau utilisateur : on commence par les films cultes (note élevée + très votés)
-      const estNouvel = totalSwipes < 20;
-      if (estNouvel && !genre) {
-        const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=vote_average.desc&vote_count.gte=3000&primary_release_date.gte=1990-01-01&page=${numPage}`;
-        const data = await fetch(url).then(r => r.json());
-        resultats = data.results ?? [];
-      }
-      // Utilisateur avec des films aimés : 1 page sur 3, on injecte des recommandations
-      else if (!genre && listesAVoir.length >= 5 && numPage > 1 && Math.random() < 0.35) {
-        const filmRef = listesAVoir[Math.floor(Math.random() * listesAVoir.length)];
-        const [discoverData, recoData] = await Promise.all([
-          fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&vote_count.gte=200&primary_release_date.gte=1990-01-01&page=${numPage}`).then(r => r.json()),
-          fetch(`https://api.themoviedb.org/3/movie/${filmRef.id}/recommendations?api_key=${key}&language=fr-FR`).then(r => r.json()),
-        ]);
-        // Mélange : 60% discover, 40% recommandations
-        const discover = discoverData.results ?? [];
-        const recos = (recoData.results ?? []).filter(f => f.vote_count >= 100);
-        resultats = melanger([...discover.slice(0, 12), ...recos.slice(0, 8)]);
-      }
-      // Cas standard : discover populaire
-      else {
-        const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&vote_count.gte=200&primary_release_date.gte=1990-01-01&page=${numPage}${genreParam}`;
-        const data = await fetch(url).then(r => r.json());
-        resultats = data.results ?? [];
-      }
-
-      const nouveaux = resultats.filter(f => !swipes.includes(f.id));
-      setFilms([...filmsExistants, ...nouveaux]);
-      setPage(numPage);
-    } catch {
-      // silencieux, l'utilisateur garde les films déjà chargés
-    } finally {
-      setLoadingFilms(false);
-    }
+    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&vote_count.gte=100&page=${numPage}${genreParam}`;
+    const data = await fetch(url).then(r => r.json());
+    return data.results ?? [];
   }
 
-  function melanger(arr) {
-    return [...arr].sort(() => Math.random() - 0.5);
+  async function chargerFilms(pageDebut, swipes, filmsExistants, genre) {
+    // Chaque appel reçoit un ID unique. Si un appel plus récent démarre,
+    // les résultats de celui-ci seront ignorés à l'arrivée.
+    fetchIdRef.current += 1;
+    const monId = fetchIdRef.current;
+
+    setLoadingFilms(true);
+    try {
+      // 3 pages en parallèle = ~60 films d'un coup
+      const numeros = [pageDebut, pageDebut + 1, pageDebut + 2];
+      const pages = await Promise.all(numeros.map(n => fetchPage(n, genre)));
+      const nouveaux = pages.flat().filter(f => !swipes.includes(f.id));
+
+      // On ignore ce résultat si un fetch plus récent a déjà pris le relais
+      if (monId !== fetchIdRef.current) return;
+
+      setFilms([...filmsExistants, ...nouveaux]);
+      setPage(pageDebut + 2);
+    } catch (e) {
+      console.error("Erreur chargement films:", e);
+    } finally {
+      // Ne touche au loading que si on est toujours le fetch en cours
+      if (monId === fetchIdRef.current) setLoadingFilms(false);
+    }
   }
 
   function handleGenreChange(nouveauGenre) {
     setGenreChoisi(nouveauGenre);
-    setFilms([]);
     setIndex(0);
     setPage(1);
+    setFilms([]);
     chargerFilms(1, dejaSwiped, [], nouveauGenre);
   }
 
@@ -115,8 +107,29 @@ function App() {
     if (!user) return;
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
+      username,
       listes: newListes
     });
+  }
+
+  async function handleChoisirUsername() {
+    setUsernameError("");
+    const pseudo = usernameInput.trim().toLowerCase().replace(/\s+/g, "_");
+    if (pseudo.length < 3) return setUsernameError("Minimum 3 caractères.");
+    if (!/^[a-z0-9_]+$/.test(pseudo)) return setUsernameError("Lettres, chiffres et _ uniquement.");
+
+    // Vérifie que le username n'est pas déjà pris
+    const { getDocs, collection, query, where } = await import("firebase/firestore");
+    const snap = await getDocs(query(collection(db, "users"), where("username", "==", pseudo)));
+    if (!snap.empty) return setUsernameError("Ce pseudo est déjà pris.");
+
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      username: pseudo,
+      listes: { aVoir: [], pasInteresse: [], dejavu: [] }
+    });
+    setUsername(pseudo);
+    chargerFilms(1, [], [], "");
   }
 
   function handleSwipe(direction) {
@@ -138,9 +151,9 @@ function App() {
     const newDejaSwiped = [...dejaSwiped, film.id];
     setDejaSwiped(newDejaSwiped);
 
-    // Charge la page suivante quand il reste 5 films
-    if (nextIndex >= films.length - 5 && !loadingFilms) {
-      chargerFilms(page + 1, newDejaSwiped, [...films], genreChoisi, newListes.aVoir);
+    // Recharge 3 pages dès qu'il reste 15 films — on ne doit jamais arriver à zéro
+    if (nextIndex >= films.length - 15 && !loadingFilms) {
+      chargerFilms(page + 1, newDejaSwiped, [...films], genreChoisi);
     }
   }
 
@@ -173,6 +186,43 @@ function App() {
   if (loading) return <div style={{ background: "#0f0f0f", minHeight: "100vh" }} />;
   if (!user) return <Login onLogin={() => {}} />;
 
+  // Écran de choix du pseudo pour les nouveaux comptes
+  if (username === "" || username === null) return (
+    <div style={{
+      minHeight: "100vh", background: "#0f0f0f",
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      fontFamily: "sans-serif", color: "white"
+    }}>
+      <h1 style={{ fontSize: "28px", letterSpacing: "2px", marginBottom: "8px" }}>🎬 SWOCHI</h1>
+      <div style={{
+        background: "#1a1a1a", borderRadius: "16px",
+        padding: "32px", width: "300px",
+        display: "flex", flexDirection: "column", gap: "16px", marginTop: "24px"
+      }}>
+        <h2 style={{ margin: 0, fontSize: "18px" }}>Choisis ton pseudo</h2>
+        <p style={{ margin: 0, color: "#888", fontSize: "13px" }}>
+          Tes amis l'utiliseront pour comparer vos listes de films.
+        </p>
+        <input
+          type="text"
+          placeholder="ex: cinemafan42"
+          value={usernameInput}
+          onChange={e => setUsernameInput(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && handleChoisirUsername()}
+          style={inputStyle}
+        />
+        {usernameError && <p style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>{usernameError}</p>}
+        <button onClick={handleChoisirUsername} style={{
+          background: "#22c55e", color: "white",
+          border: "none", borderRadius: "50px",
+          padding: "14px", fontSize: "16px",
+          fontWeight: "bold", cursor: "pointer"
+        }}>Confirmer</button>
+      </div>
+    </div>
+  );
+
   const filmActuel = films[index];
   const filmSuivant = films[index + 1];
 
@@ -193,7 +243,7 @@ function App() {
 
       <h1 style={{ marginBottom: "4px", fontSize: "28px", letterSpacing: "2px" }}>🎬 SWOCHI</h1>
       <p style={{ marginBottom: "16px", color: "#888", fontSize: "13px" }}>
-        Bonjour {user.displayName ? user.displayName.split(" ")[0] : user.email} 👋
+        Bonjour @{username} 👋
       </p>
 
       {/* Navigation */}
@@ -262,6 +312,12 @@ function App() {
     </div>
   );
 }
+
+const inputStyle = {
+  background: "#2a2a2a", border: "1px solid #333",
+  borderRadius: "8px", padding: "12px",
+  color: "white", fontSize: "15px", outline: "none"
+};
 
 function genreStyle(actif) {
   return {
