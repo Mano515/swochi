@@ -13,6 +13,8 @@ function App() {
   const [loadingFilms, setLoadingFilms] = useState(false);
   const [films, setFilms] = useState([]);
   const [index, setIndex] = useState(0);
+  const [page, setPage] = useState(1);
+  const [dejaSwiped, setDejaSwiped] = useState([]);
   const [listes, setListes] = useState({ aVoir: [], pasInteresse: [], dejavu: [] });
   const [onglet, setOnglet] = useState("swipe");
 
@@ -27,29 +29,33 @@ function App() {
   useEffect(() => {
     if (!user) return;
 
-    // D'abord on charge les listes depuis Firestore
+    // Charge les listes depuis Firestore, puis les films
     getDoc(doc(db, "users", user.uid)).then(snap => {
       const listesExistantes = snap.exists() ? snap.data().listes : { aVoir: [], pasInteresse: [], dejavu: [] };
       setListes(listesExistantes);
 
-      // Tous les IDs déjà swipés
-      const dejaSwiped = [
+      const ids = [
         ...listesExistantes.aVoir,
         ...listesExistantes.pasInteresse,
         ...listesExistantes.dejavu,
       ].map(f => f.id);
 
-      // Ensuite on charge les films et on filtre
-      setLoadingFilms(true);
-      fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_TMDB_KEY}&language=fr-FR`)
-        .then(res => res.json())
-        .then(data => {
-          const filmsNonVus = data.results.filter(f => !dejaSwiped.includes(f.id));
-          setFilms(filmsNonVus);
-          setLoadingFilms(false);
-        });
+      setDejaSwiped(ids);
+      chargerFilms(1, ids, []);
     });
   }, [user]);
+
+  function chargerFilms(numPage, swipes, filmsExistants) {
+    setLoadingFilms(true);
+    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_TMDB_KEY}&language=fr-FR&page=${numPage}`)
+      .then(res => res.json())
+      .then(data => {
+        const nouveaux = data.results.filter(f => !swipes.includes(f.id));
+        setFilms([...filmsExistants, ...nouveaux]);
+        setPage(numPage);
+        setLoadingFilms(false);
+      });
+  }
 
   async function saveListes(newListes) {
     if (!user) return;
@@ -67,7 +73,14 @@ function App() {
     if (direction === "up")    newListes.dejavu = [...listes.dejavu, film];
     setListes(newListes);
     saveListes(newListes);
-    setIndex(i => i + 1);
+
+    const nextIndex = index + 1;
+    setIndex(nextIndex);
+
+    // Charge la page suivante quand il reste 5 films
+    if (nextIndex >= films.length - 5 && !loadingFilms) {
+      chargerFilms(page + 1, dejaSwiped, films);
+    }
   }
 
   async function handleDeplacer(film, de, vers) {
