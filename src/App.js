@@ -305,7 +305,7 @@ function App() {
           </div>
         </>
       ) : onglet === "match" ? (
-        <Match listesUser={listes} />
+        <Match listesUser={listes} username={username} />
       ) : (
         <MesFilms listes={listes} onDeplacer={handleDeplacer} />
       )}
