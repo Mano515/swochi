@@ -6,6 +6,7 @@ import MovieCard from "./MovieCard";
 import Login from "./Login";
 import Match from "./Match";
 import MesFilms from "./MesFilms";
+import GenreScroll from "./GenreScroll";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -257,13 +258,7 @@ function App() {
 
       {onglet === "swipe" ? (
         <>
-          {/* Filtre par genre */}
-          <div style={{ display: "flex", gap: "6px", overflowX: "auto", marginBottom: "10px", width: "100%", maxWidth: "400px", paddingBottom: "4px" }}>
-            <button onClick={() => handleGenreChange("")} style={{ ...genreStyle(genreChoisi === ""), flexShrink: 0 }}>Tous</button>
-            {genres.map(g => (
-              <button key={g.id} onClick={() => handleGenreChange(String(g.id))} style={{ ...genreStyle(genreChoisi === String(g.id)), flexShrink: 0 }}>{g.name}</button>
-            ))}
-          </div>
+          <GenreScroll genres={genres} genreChoisi={genreChoisi} onGenreChange={handleGenreChange} />
 
           {/* Zone carte — hauteur adaptative */}
           <div style={{ position: "relative", width: "min(300px, 90vw)", height: "min(420px, 52vh)" }}>
@@ -313,21 +308,8 @@ function App() {
 const inputStyle = {
   background: "#2a2a2a", border: "1px solid #333",
   borderRadius: "8px", padding: "12px",
-  color: "white", fontSize: "15px", outline: "none"
+  color: "white", fontSize: "16px", outline: "none"
 };
-
-function genreStyle(actif) {
-  return {
-    background: actif ? "white" : "transparent",
-    color: actif ? "#0f0f0f" : "#666",
-    border: "1px solid " + (actif ? "white" : "#333"),
-    borderRadius: "20px",
-    padding: "5px 12px",
-    fontSize: "12px",
-    cursor: "pointer",
-    fontWeight: actif ? "bold" : "normal",
-  };
-}
 
 function btnStyle(color) {
   return {

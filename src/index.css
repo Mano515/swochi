@@ -2,21 +2,20 @@
   box-sizing: border-box;
 }
 
-html, body {
+html {
+  height: 100%;
+}
+
+body {
   margin: 0;
   padding: 0;
-  /* Empêche le scroll de la page pendant le swipe des cartes */
-  overflow: hidden;
-  overscroll-behavior: none;
   height: 100%;
+  overscroll-behavior: none;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Évite le rebond iOS */
-  position: fixed;
-  width: 100%;
 }
 
 #root {
@@ -26,7 +25,7 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Empêche le zoom iOS sur les inputs (font-size doit être >= 16px) */
+/* Empêche le zoom iOS sur les inputs */
 input, button, select, textarea {
   font-size: 16px;
 }
@@ -35,6 +34,16 @@ input, button, select, textarea {
 .no-select {
   -webkit-user-select: none;
   user-select: none;
+}
+
+/* Scrollbar invisible sur la barre de genres */
+.genres-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.genres-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 code {
