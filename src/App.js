@@ -304,12 +304,12 @@ function App() {
       ) : null}
 
       {onglet === "match" && (
-        <div style={{ padding: "16px", width: "100%", maxWidth: "420px" }}>
+        <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
           <Match listesUser={listes} username={username} />
         </div>
       )}
       {onglet === "mesfilms" && (
-        <div style={{ padding: "16px", width: "100%", maxWidth: "420px" }}>
+        <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
           <MesFilms listes={listes} onDeplacer={handleDeplacer} />
         </div>
       )}

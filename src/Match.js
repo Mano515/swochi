@@ -99,7 +99,8 @@ function Match({ listesUser, username }) {
 
       <div style={{
         background: "#1a1a1a", borderRadius: "16px",
-        padding: "24px", display: "flex", flexDirection: "column", gap: "16px"
+        padding: "24px", display: "flex", flexDirection: "column", gap: "16px",
+        width: "100%",
       }}>
         <h2 style={{ margin: 0, fontSize: "18px" }}>🤝 Match avec un ami</h2>
         <p style={{ margin: 0, color: "#888", fontSize: "13px" }}>
