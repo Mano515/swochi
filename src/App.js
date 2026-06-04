@@ -19,6 +19,7 @@ function App() {
   const [onglet, setOnglet] = useState("swipe");
   const [genres, setGenres] = useState([]);
   const [genreChoisi, setGenreChoisi] = useState("");
+  const [historique, setHistorique] = useState([]); // { film, direction }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -99,6 +100,9 @@ function App() {
     const nextIndex = index + 1;
     setIndex(nextIndex);
 
+    // Mémorise dans l'historique pour le bouton retour
+    setHistorique(h => [...h, { film, direction }]);
+
     // Mémorise ce film comme déjà swipé pour les prochaines pages
     const newDejaSwiped = [...dejaSwiped, film.id];
     setDejaSwiped(newDejaSwiped);
@@ -107,6 +111,24 @@ function App() {
     if (nextIndex >= films.length - 5 && !loadingFilms) {
       chargerFilms(page + 1, newDejaSwiped, [...films]);
     }
+  }
+
+  function handleRetour() {
+    if (historique.length === 0) return;
+    const derniere = historique[historique.length - 1];
+    const { film, direction } = derniere;
+
+    // Retire le film de la liste où il avait été mis
+    const newListes = { ...listes };
+    if (direction === "right") newListes.aVoir = listes.aVoir.filter(f => f.id !== film.id);
+    if (direction === "left")  newListes.pasInteresse = listes.pasInteresse.filter(f => f.id !== film.id);
+    if (direction === "up")    newListes.dejavu = listes.dejavu.filter(f => f.id !== film.id);
+    setListes(newListes);
+    saveListes(newListes);
+
+    setHistorique(h => h.slice(0, -1));
+    setDejaSwiped(d => d.filter(id => id !== film.id));
+    setIndex(i => i - 1);
   }
 
   async function handleDeplacer(film, de, vers) {
@@ -175,10 +197,23 @@ function App() {
           </div>
 
           {filmActuel && (
-            <div style={{ display: "flex", gap: "24px", marginTop: "36px" }}>
+            <div style={{ display: "flex", gap: "16px", marginTop: "36px", alignItems: "center" }}>
               <button onClick={() => handleSwipe("left")}  style={btnStyle("#ef4444")}>✕ Skip</button>
               <button onClick={() => handleSwipe("up")}    style={btnStyle("#3b82f6")}>👁 Déjà vu</button>
               <button onClick={() => handleSwipe("right")} style={btnStyle("#22c55e")}>♥ À voir</button>
+              <button
+                onClick={handleRetour}
+                disabled={historique.length === 0}
+                title="Annuler le dernier swipe"
+                style={{
+                  background: "transparent",
+                  border: "2px solid " + (historique.length > 0 ? "#f59e0b" : "#333"),
+                  color: historique.length > 0 ? "#f59e0b" : "#333",
+                  borderRadius: "50%", width: "44px", height: "44px",
+                  fontSize: "18px", cursor: historique.length > 0 ? "pointer" : "default",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >↩</button>
             </div>
           )}
 
