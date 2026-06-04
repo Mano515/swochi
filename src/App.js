@@ -21,10 +21,18 @@ function App() {
   const [genres, setGenres] = useState([]);
   const [genreChoisi, setGenreChoisi] = useState("");
   const [historique, setHistorique] = useState([]); // { film, direction }
-  const [username, setUsername] = useState(null); // null = pas encore chargé
+  const [username, setUsername] = useState(null);
   const [usernameInput, setUsernameInput] = useState("");
   const [usernameError, setUsernameError] = useState("");
+  const [toast, setToast] = useState(null); // { message, type: "error"|"success" }
   const fetchIdRef = useRef(0);
+  const toastTimer = useRef(null);
+
+  function afficherToast(message, type = "error") {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setToast({ message, type });
+    toastTimer.current = setTimeout(() => setToast(null), 4000);
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -44,7 +52,10 @@ function App() {
     if (!user) return;
 
     // Charge les listes depuis Firestore, puis les films
-    getDoc(doc(db, "users", user.uid)).then(snap => {
+    getDoc(doc(db, "users", user.uid)).catch(() => {
+      afficherToast("Impossible de charger vos données. Vérifiez votre connexion.");
+    }).then(snap => {
+      if (!snap) return;
       const listesExistantes = snap.exists() ? snap.data().listes : { aVoir: [], pasInteresse: [], dejavu: [] };
       setListes(listesExistantes);
 
@@ -90,6 +101,7 @@ function App() {
       setPage(pageDebut + 2);
     } catch (e) {
       console.error("Erreur chargement films:", e);
+      afficherToast("Impossible de charger les films. Vérifiez votre connexion.");
     } finally {
       // Ne touche au loading que si on est toujours le fetch en cours
       if (monId === fetchIdRef.current) setLoadingFilms(false);
@@ -106,11 +118,16 @@ function App() {
 
   async function saveListes(newListes) {
     if (!user) return;
-    await setDoc(doc(db, "users", user.uid), {
-      email: user.email,
-      username,
-      listes: newListes
-    });
+    try {
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        username,
+        listes: newListes
+      });
+    } catch (e) {
+      console.error("Erreur sauvegarde:", e);
+      afficherToast("Sauvegarde échouée — vérifiez votre connexion.");
+    }
   }
 
   async function handleChoisirUsername() {
@@ -322,6 +339,23 @@ function App() {
         </div>
       )}
       </div>{/* fin desktop-wrapper */}
+
+      {/* Toast de notification */}
+      {toast && (
+        <div onClick={() => setToast(null)} style={{
+          position: "fixed", bottom: "24px", left: "50%",
+          transform: "translateX(-50%)",
+          background: toast.type === "error" ? "#ef4444" : "#22c55e",
+          color: "white", borderRadius: "12px",
+          padding: "12px 20px", fontSize: "14px",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+          zIndex: 1000, cursor: "pointer",
+          maxWidth: "90vw", textAlign: "center",
+          animation: "apparaitre 0.2s ease-out",
+        }}>
+          {toast.message}
+        </div>
+      )}
     </div>
   );
 }
