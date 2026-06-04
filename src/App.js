@@ -59,7 +59,7 @@ function App() {
     const key = process.env.REACT_APP_TMDB_KEY;
     const genreParam = genre ? `&with_genres=${genre}` : "";
     // Unified discover endpoint — films récents, populaires, en langues occidentales
-    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&page=${numPage}&vote_count.gte=200&primary_release_date.gte=1990-01-01&with_original_language=en|fr|es|de|it${genreParam}`;
+    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&page=${numPage}&vote_count.gte=200&primary_release_date.gte=1990-01-01${genreParam}`;
     fetch(url)
       .then(res => res.json())
       .then(data => {
