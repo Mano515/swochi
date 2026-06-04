@@ -62,21 +62,22 @@ function App() {
     return data.results ?? [];
   }
 
-  async function chargerFilms(numPage, swipes, filmsExistants, genre) {
+  // Charge N pages en parallèle et les ajoute à la pile
+  async function chargerPagesEnParallele(pageDebut, nbPages, swipes, filmsExistants, genre) {
+    const numeros = Array.from({ length: nbPages }, (_, i) => pageDebut + i);
+    const resultatsParPage = await Promise.all(numeros.map(n => fetchPage(n, genre)));
+    const tous = resultatsParPage.flat();
+    const nouveaux = tous.filter(f => !swipes.includes(f.id));
+    return { nouveaux, dernierePage: pageDebut + nbPages - 1 };
+  }
+
+  async function chargerFilms(pageDebut, swipes, filmsExistants, genre) {
     setLoadingFilms(true);
     try {
-      let resultats = await fetchPage(numPage, genre);
-
-      // Si tous les films sont déjà swipés, on tente la page suivante
-      let tentative = numPage;
-      while (resultats.filter(f => !swipes.includes(f.id)).length === 0 && tentative < numPage + 3) {
-        tentative++;
-        resultats = await fetchPage(tentative, genre);
-      }
-
-      const nouveaux = resultats.filter(f => !swipes.includes(f.id));
+      // Charge 3 pages d'un coup pour avoir un bon stock dès le départ
+      const { nouveaux, dernierePage } = await chargerPagesEnParallele(pageDebut, 3, swipes, filmsExistants, genre);
       setFilms([...filmsExistants, ...nouveaux]);
-      setPage(tentative);
+      setPage(dernierePage);
     } catch (e) {
       console.error("Erreur chargement films:", e);
     } finally {
@@ -119,8 +120,8 @@ function App() {
     const newDejaSwiped = [...dejaSwiped, film.id];
     setDejaSwiped(newDejaSwiped);
 
-    // Charge la page suivante quand il reste 5 films
-    if (nextIndex >= films.length - 5 && !loadingFilms) {
+    // Recharge 3 pages dès qu'il reste 15 films — on ne doit jamais arriver à zéro
+    if (nextIndex >= films.length - 15 && !loadingFilms) {
       chargerFilms(page + 1, newDejaSwiped, [...films], genreChoisi);
     }
   }
