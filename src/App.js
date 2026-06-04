@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
@@ -20,6 +20,8 @@ function App() {
   const [genres, setGenres] = useState([]);
   const [genreChoisi, setGenreChoisi] = useState("");
   const [historique, setHistorique] = useState([]); // { film, direction }
+  const [estNouvelUtilisateur, setEstNouvelUtilisateur] = useState(false);
+  const fetchRef = useRef(0); // compteur pour ignorer les fetches périmés
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -49,53 +51,59 @@ function App() {
         ...listesExistantes.dejavu,
       ].map(f => f.id);
 
+      // Nouveau utilisateur = aucun swipe sauvegardé en base
+      const nouveauUtilisateur = ids.length === 0;
+      setEstNouvelUtilisateur(nouveauUtilisateur);
       setDejaSwiped(ids);
-      chargerFilms(1, ids, [], genreChoisi);
+      chargerFilms(1, ids, [], genreChoisi, listesExistantes.aVoir, nouveauUtilisateur);
     });
   }, [user]);
 
-  async function chargerFilms(numPage, swipes, filmsExistants, genre = genreChoisi, listesAVoir = listes.aVoir) {
+  async function chargerFilms(numPage, swipes, filmsExistants, genre = genreChoisi, listesAVoir = listes.aVoir, estNouvel = estNouvelUtilisateur) {
+    fetchRef.current += 1;
+    const monFetch = fetchRef.current;
     setLoadingFilms(true);
+
     const key = process.env.REACT_APP_TMDB_KEY;
     const genreParam = genre ? `&with_genres=${genre}` : "";
-    const totalSwipes = swipes.length;
 
     try {
       let resultats = [];
 
-      // Nouveau utilisateur : on commence par les films cultes (note élevée + très votés)
-      const estNouvel = totalSwipes < 20;
+      // Nouveau utilisateur (aucun swipe en base) + pas de filtre genre → films cultes
       if (estNouvel && !genre) {
         const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=vote_average.desc&vote_count.gte=3000&primary_release_date.gte=1990-01-01&page=${numPage}`;
         const data = await fetch(url).then(r => r.json());
         resultats = data.results ?? [];
       }
-      // Utilisateur avec des films aimés : 1 page sur 3, on injecte des recommandations
+      // Utilisateur avec des films aimés : 1 page sur 3, recommandations mélangées
       else if (!genre && listesAVoir.length >= 5 && numPage > 1 && Math.random() < 0.35) {
         const filmRef = listesAVoir[Math.floor(Math.random() * listesAVoir.length)];
         const [discoverData, recoData] = await Promise.all([
           fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&vote_count.gte=200&primary_release_date.gte=1990-01-01&page=${numPage}`).then(r => r.json()),
           fetch(`https://api.themoviedb.org/3/movie/${filmRef.id}/recommendations?api_key=${key}&language=fr-FR`).then(r => r.json()),
         ]);
-        // Mélange : 60% discover, 40% recommandations
         const discover = discoverData.results ?? [];
         const recos = (recoData.results ?? []).filter(f => f.vote_count >= 100);
         resultats = melanger([...discover.slice(0, 12), ...recos.slice(0, 8)]);
       }
-      // Cas standard : discover populaire
+      // Cas standard
       else {
         const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&vote_count.gte=200&primary_release_date.gte=1990-01-01&page=${numPage}${genreParam}`;
         const data = await fetch(url).then(r => r.json());
         resultats = data.results ?? [];
       }
 
+      // Si un fetch plus récent a démarré entretemps, on ignore ce résultat
+      if (monFetch !== fetchRef.current) return;
+
       const nouveaux = resultats.filter(f => !swipes.includes(f.id));
       setFilms([...filmsExistants, ...nouveaux]);
       setPage(numPage);
     } catch {
-      // silencieux, l'utilisateur garde les films déjà chargés
+      // silencieux
     } finally {
-      setLoadingFilms(false);
+      if (monFetch === fetchRef.current) setLoadingFilms(false);
     }
   }
 
