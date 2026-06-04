@@ -20,6 +20,9 @@ function App() {
   const [genres, setGenres] = useState([]);
   const [genreChoisi, setGenreChoisi] = useState("");
   const [historique, setHistorique] = useState([]); // { film, direction }
+  const [username, setUsername] = useState(null); // null = pas encore chargé
+  const [usernameInput, setUsernameInput] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const fetchIdRef = useRef(0);
 
   useEffect(() => {
@@ -50,8 +53,11 @@ function App() {
         ...listesExistantes.dejavu,
       ].map(f => f.id);
 
+      setUsername(snap.exists() ? (snap.data().username || "") : "");
       setDejaSwiped(ids);
-      chargerFilms(1, ids, [], "");
+      if (snap.exists() && snap.data().username) {
+        chargerFilms(1, ids, [], "");
+      }
     });
   }, [user]);
 
@@ -101,8 +107,29 @@ function App() {
     if (!user) return;
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
+      username,
       listes: newListes
     });
+  }
+
+  async function handleChoisirUsername() {
+    setUsernameError("");
+    const pseudo = usernameInput.trim().toLowerCase().replace(/\s+/g, "_");
+    if (pseudo.length < 3) return setUsernameError("Minimum 3 caractères.");
+    if (!/^[a-z0-9_]+$/.test(pseudo)) return setUsernameError("Lettres, chiffres et _ uniquement.");
+
+    // Vérifie que le username n'est pas déjà pris
+    const { getDocs, collection, query, where } = await import("firebase/firestore");
+    const snap = await getDocs(query(collection(db, "users"), where("username", "==", pseudo)));
+    if (!snap.empty) return setUsernameError("Ce pseudo est déjà pris.");
+
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      username: pseudo,
+      listes: { aVoir: [], pasInteresse: [], dejavu: [] }
+    });
+    setUsername(pseudo);
+    chargerFilms(1, [], [], "");
   }
 
   function handleSwipe(direction) {
@@ -159,6 +186,43 @@ function App() {
   if (loading) return <div style={{ background: "#0f0f0f", minHeight: "100vh" }} />;
   if (!user) return <Login onLogin={() => {}} />;
 
+  // Écran de choix du pseudo pour les nouveaux comptes
+  if (username === "" || username === null) return (
+    <div style={{
+      minHeight: "100vh", background: "#0f0f0f",
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      fontFamily: "sans-serif", color: "white"
+    }}>
+      <h1 style={{ fontSize: "28px", letterSpacing: "2px", marginBottom: "8px" }}>🎬 SWOCHI</h1>
+      <div style={{
+        background: "#1a1a1a", borderRadius: "16px",
+        padding: "32px", width: "300px",
+        display: "flex", flexDirection: "column", gap: "16px", marginTop: "24px"
+      }}>
+        <h2 style={{ margin: 0, fontSize: "18px" }}>Choisis ton pseudo</h2>
+        <p style={{ margin: 0, color: "#888", fontSize: "13px" }}>
+          Tes amis l'utiliseront pour comparer vos listes de films.
+        </p>
+        <input
+          type="text"
+          placeholder="ex: cinemafan42"
+          value={usernameInput}
+          onChange={e => setUsernameInput(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && handleChoisirUsername()}
+          style={inputStyle}
+        />
+        {usernameError && <p style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>{usernameError}</p>}
+        <button onClick={handleChoisirUsername} style={{
+          background: "#22c55e", color: "white",
+          border: "none", borderRadius: "50px",
+          padding: "14px", fontSize: "16px",
+          fontWeight: "bold", cursor: "pointer"
+        }}>Confirmer</button>
+      </div>
+    </div>
+  );
+
   const filmActuel = films[index];
   const filmSuivant = films[index + 1];
 
@@ -179,7 +243,7 @@ function App() {
 
       <h1 style={{ marginBottom: "4px", fontSize: "28px", letterSpacing: "2px" }}>🎬 SWOCHI</h1>
       <p style={{ marginBottom: "16px", color: "#888", fontSize: "13px" }}>
-        Bonjour {user.displayName ? user.displayName.split(" ")[0] : user.email} 👋
+        Bonjour @{username} 👋
       </p>
 
       {/* Navigation */}
@@ -248,6 +312,12 @@ function App() {
     </div>
   );
 }
+
+const inputStyle = {
+  background: "#2a2a2a", border: "1px solid #333",
+  borderRadius: "8px", padding: "12px",
+  color: "white", fontSize: "15px", outline: "none"
+};
 
 function genreStyle(actif) {
   return {
