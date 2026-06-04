@@ -73,7 +73,7 @@ function MovieCard({ film, onSwipe, isTop }) {
   if (!isTop) {
     return (
       <motion.div style={{
-        position: "absolute", width: "300px",
+        position: "absolute", inset: 0,
         borderRadius: "16px", overflow: "hidden",
         boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
         scale: 0.95, top: 10, zIndex: 0,
@@ -81,7 +81,7 @@ function MovieCard({ film, onSwipe, isTop }) {
         <img
           src={`https://image.tmdb.org/t/p/w500${film.poster_path}`}
           alt={film.title}
-          style={{ width: "100%", display: "block" }}
+          style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }}
         />
       </motion.div>
     );
@@ -91,7 +91,7 @@ function MovieCard({ film, onSwipe, isTop }) {
     <motion.div
       style={{
         x, y, rotate, opacity,
-        position: "absolute", width: "300px",
+        position: "absolute", inset: 0,
         borderRadius: "16px", overflow: "hidden",
         cursor: "grab",
         boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
@@ -105,7 +105,7 @@ function MovieCard({ film, onSwipe, isTop }) {
       <img
         src={`https://image.tmdb.org/t/p/w500${film.poster_path}`}
         alt={film.title}
-        style={{ width: "100%", display: "block", pointerEvents: "none" }}
+        style={{ width: "100%", height: "100%", display: "block", objectFit: "cover", pointerEvents: "none" }}
       />
 
       {/* Labels de swipe */}

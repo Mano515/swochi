@@ -229,46 +229,48 @@ function App() {
   const filmSuivant = films[index + 1];
 
   return (
-    <div className="no-select" style={{
-      minHeight: "100vh", background: "#0f0f0f",
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "safe center",
-      fontFamily: "sans-serif", color: "white",
-      padding: "12px 12px env(safe-area-inset-bottom, 12px)",
-    }}>
-      {/* Header compact */}
-      <div style={{ width: "100%", maxWidth: "400px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-        <div>
-          <span style={{ fontSize: "20px", fontWeight: "bold", letterSpacing: "2px" }}>🎬 SWOCHI</span>
-          <span style={{ marginLeft: "10px", color: "#888", fontSize: "12px" }}>@{username}</span>
+    <div className="no-select app-shell">
+
+      {/* ── Section haute (sticky mobile, normale desktop) ── */}
+      <div className="top-section">
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+          <div>
+            <span style={{ fontSize: "20px", fontWeight: "bold", letterSpacing: "2px" }}>🎬 SWOCHI</span>
+            <span style={{ marginLeft: "10px", color: "#888", fontSize: "12px" }}>@{username}</span>
+          </div>
+          <button onClick={() => signOut(auth)} style={{
+            background: "transparent", border: "1px solid #333",
+            color: "#666", borderRadius: "8px",
+            padding: "6px 12px", cursor: "pointer", fontSize: "12px"
+          }}>Déco</button>
         </div>
-        <button onClick={() => signOut(auth)} style={{
-          background: "transparent", border: "1px solid #333",
-          color: "#666", borderRadius: "8px",
-          padding: "6px 12px", cursor: "pointer", fontSize: "12px"
-        }}>Déco</button>
-      </div>
 
-      {/* Navigation */}
-      <div style={{ display: "flex", gap: "6px", marginBottom: "12px", width: "100%", maxWidth: "400px" }}>
-        <button onClick={() => setOnglet("swipe")} style={{ ...ongletStyle(onglet === "swipe"), flex: 1, padding: "10px 8px", fontSize: "13px" }}>🎬 Swipe</button>
-        <button onClick={() => setOnglet("match")} style={{ ...ongletStyle(onglet === "match"), flex: 1, padding: "10px 8px", fontSize: "13px" }}>🤝 Match</button>
-        <button onClick={() => setOnglet("mesfilms")} style={{ ...ongletStyle(onglet === "mesfilms"), flex: 1, padding: "10px 8px", fontSize: "13px" }}>🎞 Mes films</button>
-      </div>
+        {/* Onglets */}
+        <div style={{ display: "flex", gap: "6px", marginBottom: "10px" }}>
+          <button onClick={() => setOnglet("swipe")}    style={{ ...ongletStyle(onglet === "swipe"),    flex: 1, padding: "10px 6px", fontSize: "13px" }}>🎬 Swipe</button>
+          <button onClick={() => setOnglet("match")}    style={{ ...ongletStyle(onglet === "match"),    flex: 1, padding: "10px 6px", fontSize: "13px" }}>🤝 Match</button>
+          <button onClick={() => setOnglet("mesfilms")} style={{ ...ongletStyle(onglet === "mesfilms"), flex: 1, padding: "10px 6px", fontSize: "13px" }}>🎞 Mes films</button>
+        </div>
 
-      {onglet === "swipe" ? (
-        <>
+        {/* Genres — seulement sur l'onglet swipe */}
+        {onglet === "swipe" && (
           <GenreScroll genres={genres} genreChoisi={genreChoisi} onGenreChange={handleGenreChange} />
+        )}
+      </div>
 
-          {/* Zone carte — hauteur adaptative */}
-          <div style={{ position: "relative", width: "min(300px, 90vw)", height: "min(420px, 52vh)" }}>
+      {/* ── Contenu principal ── */}
+      {onglet === "swipe" ? (
+        <div className="swipe-section">
+          {/* Carte */}
+          <div className="card-container">
             {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
             {filmActuel  && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
             {!filmActuel && !loadingFilms && <p style={{ color: "#888", textAlign: "center", paddingTop: "40%" }}>Plus de films !</p>}
-            {!filmActuel && loadingFilms && <p style={{ color: "#555", textAlign: "center", paddingTop: "40%" }}>Chargement…</p>}
+            {!filmActuel &&  loadingFilms && <p style={{ color: "#555", textAlign: "center", paddingTop: "40%" }}>Chargement…</p>}
           </div>
 
-          {/* Boutons d'action */}
+          {/* Boutons */}
           {filmActuel && (
             <div style={{ display: "flex", gap: "12px", marginTop: "16px", alignItems: "center" }}>
               <button onClick={() => handleSwipe("left")}  style={btnStyle("#ef4444")}>✕ Skip</button>
@@ -290,16 +292,20 @@ function App() {
           )}
 
           {/* Stats */}
-          <div style={{ marginTop: "12px", display: "flex", gap: "20px", fontSize: "12px", color: "#555" }}>
+          <div style={{ marginTop: "10px", display: "flex", gap: "20px", fontSize: "12px", color: "#555" }}>
             <span>✅ {listes.aVoir.length}</span>
             <span>❌ {listes.pasInteresse.length}</span>
             <span>👁️ {listes.dejavu.length}</span>
           </div>
-        </>
+        </div>
       ) : onglet === "match" ? (
-        <Match listesUser={listes} username={username} />
+        <div style={{ padding: "16px", width: "100%", maxWidth: "420px" }}>
+          <Match listesUser={listes} username={username} />
+        </div>
       ) : (
-        <MesFilms listes={listes} onDeplacer={handleDeplacer} />
+        <div style={{ padding: "16px", width: "100%", maxWidth: "420px" }}>
+          <MesFilms listes={listes} onDeplacer={handleDeplacer} />
+        </div>
       )}
     </div>
   );

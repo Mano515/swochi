@@ -46,6 +46,63 @@ input, button, select, textarea {
   display: none;
 }
 
+/* ── Layout principal ── */
+.app-shell {
+  min-height: 100vh;
+  background: #0f0f0f;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: sans-serif;
+}
+
+/* Section haute : normale sur desktop, collée en haut sur mobile */
+.top-section {
+  width: 100%;
+  max-width: 420px;
+  padding: 12px 16px 0;
+}
+
+/* Zone centrale : carte + boutons */
+.swipe-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+  padding: 8px 12px 16px;
+}
+
+/* Hauteur de la carte : desktop = fixe, mobile = s'adapte */
+.card-container {
+  position: relative;
+  width: min(300px, 90vw);
+  height: min(420px, 90vw * 1.4);
+}
+
+@media (max-width: 768px) {
+  .top-section {
+    position: sticky;
+    top: 0;
+    background: #0f0f0f;
+    z-index: 10;
+    padding-top: 8px;
+  }
+
+  .swipe-section {
+    justify-content: flex-start;
+    padding-top: 12px;
+  }
+
+  /* Sur mobile la carte prend la hauteur dispo entre le header et les boutons */
+  .card-container {
+    width: min(300px, 90vw);
+    height: min(400px, 48vh);
+  }
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
