@@ -1,10 +1,40 @@
-body {
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
   margin: 0;
+  padding: 0;
+  /* Empêche le scroll de la page pendant le swipe des cartes */
+  overflow: hidden;
+  overscroll-behavior: none;
+  height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Évite le rebond iOS */
+  position: fixed;
+  width: 100%;
+}
+
+#root {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Empêche le zoom iOS sur les inputs (font-size doit être >= 16px) */
+input, button, select, textarea {
+  font-size: 16px;
+}
+
+/* Empêche la sélection de texte pendant le swipe */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 code {

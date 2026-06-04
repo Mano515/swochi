@@ -104,7 +104,7 @@ function Login({ onLogin }) {
 const inputStyle = {
   background: "#2a2a2a", border: "1px solid #333",
   borderRadius: "8px", padding: "12px",
-  color: "white", fontSize: "15px", outline: "none"
+  color: "white", fontSize: "16px", outline: "none"
 };
 
 export default Login;
