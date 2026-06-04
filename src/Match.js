@@ -33,7 +33,17 @@ function Match({ listesUser, username }) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [celebration, setCelebration] = useState(false);
+  const [filmTire, setFilmTire] = useState(null);
   const confettis = useConfettis(celebration);
+
+  function tirerAuSort() {
+    if (!matches || matches.length === 0) return;
+    const pool = filmTire
+      ? matches.filter(f => f.id !== filmTire.id)  // évite de retomber sur le même
+      : matches;
+    const source = pool.length > 0 ? pool : matches; // si un seul film, on le reprend
+    setFilmTire(source[Math.floor(Math.random() * source.length)]);
+  }
 
   async function findMatch() {
     setError("");
@@ -57,6 +67,7 @@ function Match({ listesUser, username }) {
 
       setNomAmi(ami.username);
       setMatches(filmsCommuns);
+      setFilmTire(null);
       if (filmsCommuns.length > 0) setCelebration(true);
     } catch (e) {
       setError("Erreur : " + e.message);
@@ -99,7 +110,8 @@ function Match({ listesUser, username }) {
 
       <div style={{
         background: "#1a1a1a", borderRadius: "16px",
-        padding: "24px", display: "flex", flexDirection: "column", gap: "16px"
+        padding: "24px", display: "flex", flexDirection: "column", gap: "16px",
+        width: "100%",
       }}>
         <h2 style={{ margin: 0, fontSize: "18px" }}>🤝 Match avec un ami</h2>
         <p style={{ margin: 0, color: "#888", fontSize: "13px" }}>
@@ -147,11 +159,43 @@ function Match({ listesUser, username }) {
                 }}>
                   🎉 {matches.length} film{matches.length > 1 ? "s" : ""} en commun avec @{nomAmi} !
                 </p>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {/* Tirage au sort */}
+                <button onClick={tirerAuSort} style={{
+                  background: "#f59e0b", color: "#0f0f0f",
+                  border: "none", borderRadius: "50px",
+                  padding: "12px", fontSize: "15px",
+                  fontWeight: "bold", cursor: "pointer", width: "100%",
+                }}>
+                  🎲 {filmTire ? "Retirer au sort" : "Choisir un film au sort"}
+                </button>
+
+                {filmTire && (
+                  <div style={{
+                    display: "flex", gap: "14px", alignItems: "center",
+                    background: "#1f1a0a", border: "1px solid #f59e0b33",
+                    borderRadius: "12px", padding: "12px",
+                    animation: "apparaitre 0.3s ease-out",
+                  }}>
+                    <img
+                      src={`https://image.tmdb.org/t/p/w92${filmTire.poster_path}`}
+                      alt={filmTire.title}
+                      style={{ borderRadius: "8px", width: "54px", flexShrink: 0 }}
+                    />
+                    <div>
+                      <p style={{ margin: "0 0 4px", fontSize: "11px", color: "#f59e0b", fontWeight: "bold" }}>CE SOIR ON REGARDE</p>
+                      <p style={{ margin: 0, fontSize: "15px", fontWeight: "bold" }}>{filmTire.title}</p>
+                    </div>
+                  </div>
+                )}
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   {matches.map(film => (
                     <div key={film.id} style={{
                       display: "flex", gap: "12px", alignItems: "center",
-                      background: "#222", borderRadius: "10px", padding: "8px",
+                      background: filmTire?.id === film.id ? "#1f1a0a" : "#222",
+                      border: filmTire?.id === film.id ? "1px solid #f59e0b55" : "1px solid transparent",
+                      borderRadius: "10px", padding: "8px",
+                      transition: "all 0.2s",
                     }}>
                       <img
                         src={`https://image.tmdb.org/t/p/w92${film.poster_path}`}

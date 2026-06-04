@@ -6,6 +6,7 @@ import MovieCard from "./MovieCard";
 import Login from "./Login";
 import Match from "./Match";
 import MesFilms from "./MesFilms";
+import GenreScroll from "./GenreScroll";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -228,52 +229,51 @@ function App() {
   const filmSuivant = films[index + 1];
 
   return (
-    <div className="no-select" style={{
-      minHeight: "100vh", background: "#0f0f0f",
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "safe center",
-      fontFamily: "sans-serif", color: "white",
-      padding: "12px 12px env(safe-area-inset-bottom, 12px)",
-    }}>
-      {/* Header compact */}
-      <div style={{ width: "100%", maxWidth: "400px", display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-        <div>
-          <span style={{ fontSize: "20px", fontWeight: "bold", letterSpacing: "2px" }}>🎬 SWOCHI</span>
-          <span style={{ marginLeft: "10px", color: "#888", fontSize: "12px" }}>@{username}</span>
-        </div>
-        <button onClick={() => signOut(auth)} style={{
-          background: "transparent", border: "1px solid #333",
-          color: "#666", borderRadius: "8px",
-          padding: "6px 12px", cursor: "pointer", fontSize: "12px"
-        }}>Déco</button>
-      </div>
+    <div className="no-select app-shell">
 
-      {/* Navigation */}
-      <div style={{ display: "flex", gap: "6px", marginBottom: "12px", width: "100%", maxWidth: "400px" }}>
-        <button onClick={() => setOnglet("swipe")} style={{ ...ongletStyle(onglet === "swipe"), flex: 1, padding: "10px 8px", fontSize: "13px" }}>🎬 Swipe</button>
-        <button onClick={() => setOnglet("match")} style={{ ...ongletStyle(onglet === "match"), flex: 1, padding: "10px 8px", fontSize: "13px" }}>🤝 Match</button>
-        <button onClick={() => setOnglet("mesfilms")} style={{ ...ongletStyle(onglet === "mesfilms"), flex: 1, padding: "10px 8px", fontSize: "13px" }}>🎞 Mes films</button>
-      </div>
-
-      {onglet === "swipe" ? (
-        <>
-          {/* Filtre par genre */}
-          <div style={{ display: "flex", gap: "6px", overflowX: "auto", marginBottom: "10px", width: "100%", maxWidth: "400px", paddingBottom: "4px" }}>
-            <button onClick={() => handleGenreChange("")} style={{ ...genreStyle(genreChoisi === ""), flexShrink: 0 }}>Tous</button>
-            {genres.map(g => (
-              <button key={g.id} onClick={() => handleGenreChange(String(g.id))} style={{ ...genreStyle(genreChoisi === String(g.id)), flexShrink: 0 }}>{g.name}</button>
-            ))}
+      <div className="desktop-wrapper">
+      {/* ── Section haute (sticky mobile, normale desktop) ── */}
+      <div className="top-section">
+        {/* Header */}
+        <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <span style={{ fontSize: "20px", fontWeight: "bold", letterSpacing: "2px" }}>🎬 SWOCHI</span>
+            <span style={{ marginLeft: "10px", color: "#888", fontSize: "12px" }}>@{username}</span>
           </div>
+          <button onClick={() => signOut(auth)} style={{
+            background: "transparent", border: "1px solid #333",
+            color: "#666", borderRadius: "8px",
+            padding: "6px 12px", cursor: "pointer", fontSize: "12px"
+          }}>Déco</button>
+        </div>
 
-          {/* Zone carte — hauteur adaptative */}
-          <div style={{ position: "relative", width: "min(300px, 90vw)", height: "min(420px, 52vh)" }}>
+        {/* Onglets */}
+        <div className="tabs-row" style={{ display: "flex", gap: "8px" }}>
+          <button onClick={() => setOnglet("swipe")}    style={{ ...ongletStyle(onglet === "swipe"),    flex: 1, padding: "10px 6px", fontSize: "13px" }}>🎬 Swipe</button>
+          <button onClick={() => setOnglet("match")}    style={{ ...ongletStyle(onglet === "match"),    flex: 1, padding: "10px 6px", fontSize: "13px" }}>🤝 Match</button>
+          <button onClick={() => setOnglet("mesfilms")} style={{ ...ongletStyle(onglet === "mesfilms"), flex: 1, padding: "10px 6px", fontSize: "13px" }}>🎞 Mes films</button>
+        </div>
+
+        {/* Genres — seulement sur l'onglet swipe */}
+        {onglet === "swipe" && (
+          <div className="genres-row">
+            <GenreScroll genres={genres} genreChoisi={genreChoisi} onGenreChange={handleGenreChange} />
+          </div>
+        )}
+      </div>
+
+      {/* ── Contenu principal ── */}
+      {onglet === "swipe" ? (
+        <div className="swipe-section">
+          {/* Carte */}
+          <div className="card-container">
             {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
             {filmActuel  && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
             {!filmActuel && !loadingFilms && <p style={{ color: "#888", textAlign: "center", paddingTop: "40%" }}>Plus de films !</p>}
-            {!filmActuel && loadingFilms && <p style={{ color: "#555", textAlign: "center", paddingTop: "40%" }}>Chargement…</p>}
+            {!filmActuel &&  loadingFilms && <p style={{ color: "#555", textAlign: "center", paddingTop: "40%" }}>Chargement…</p>}
           </div>
 
-          {/* Boutons d'action */}
+          {/* Boutons */}
           {filmActuel && (
             <div style={{ display: "flex", gap: "12px", marginTop: "16px", alignItems: "center" }}>
               <button onClick={() => handleSwipe("left")}  style={btnStyle("#ef4444")}>✕ Skip</button>
@@ -295,17 +295,25 @@ function App() {
           )}
 
           {/* Stats */}
-          <div style={{ marginTop: "12px", display: "flex", gap: "20px", fontSize: "12px", color: "#555" }}>
+          <div style={{ marginTop: "10px", display: "flex", gap: "20px", fontSize: "12px", color: "#555" }}>
             <span>✅ {listes.aVoir.length}</span>
             <span>❌ {listes.pasInteresse.length}</span>
             <span>👁️ {listes.dejavu.length}</span>
           </div>
-        </>
-      ) : onglet === "match" ? (
-        <Match listesUser={listes} username={username} />
-      ) : (
-        <MesFilms listes={listes} onDeplacer={handleDeplacer} />
+        </div>
+      ) : null}
+
+      {onglet === "match" && (
+        <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
+          <Match listesUser={listes} username={username} />
+        </div>
       )}
+      {onglet === "mesfilms" && (
+        <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
+          <MesFilms listes={listes} onDeplacer={handleDeplacer} />
+        </div>
+      )}
+      </div>{/* fin desktop-wrapper */}
     </div>
   );
 }
@@ -313,21 +321,8 @@ function App() {
 const inputStyle = {
   background: "#2a2a2a", border: "1px solid #333",
   borderRadius: "8px", padding: "12px",
-  color: "white", fontSize: "15px", outline: "none"
+  color: "white", fontSize: "16px", outline: "none"
 };
-
-function genreStyle(actif) {
-  return {
-    background: actif ? "white" : "transparent",
-    color: actif ? "#0f0f0f" : "#666",
-    border: "1px solid " + (actif ? "white" : "#333"),
-    borderRadius: "20px",
-    padding: "5px 12px",
-    fontSize: "12px",
-    cursor: "pointer",
-    fontWeight: actif ? "bold" : "normal",
-  };
-}
 
 function btnStyle(color) {
   return {

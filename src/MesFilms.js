@@ -15,7 +15,7 @@ function MesFilms({ listes, onDeplacer }) {
   );
 
   return (
-    <div style={{ width: "340px" }}>
+    <div style={{ width: "100%" }}>
       {/* Sous-onglets */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "20px", justifyContent: "center" }}>
         {ONGLETS.map(o => (
