@@ -103,7 +103,7 @@ function App() {
 
     // Charge la page suivante quand il reste 5 films
     if (nextIndex >= films.length - 5 && !loadingFilms) {
-      chargerFilms(page + 1, newDejaSwiped, films);
+      chargerFilms(page + 1, newDejaSwiped, [...films]);
     }
   }
 
@@ -151,16 +151,16 @@ function App() {
       {onglet === "swipe" ? (
         <>
           {/* Filtre par genre */}
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center", marginBottom: "20px", maxWidth: "340px" }}>
+          <div style={{ display: "flex", gap: "8px", overflowX: "auto", marginBottom: "20px", maxWidth: "340px", paddingBottom: "4px" }}>
             <button
               onClick={() => handleGenreChange("")}
-              style={genreStyle(genreChoisi === "")}
+              style={{ ...genreStyle(genreChoisi === ""), flexShrink: 0 }}
             >Tous</button>
             {genres.map(g => (
               <button
                 key={g.id}
                 onClick={() => handleGenreChange(String(g.id))}
-                style={genreStyle(genreChoisi === String(g.id))}
+                style={{ ...genreStyle(genreChoisi === String(g.id)), flexShrink: 0 }}
               >{g.name}</button>
             ))}
           </div>
@@ -169,7 +169,7 @@ function App() {
             {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
             {filmActuel  && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
             {!filmActuel && !loadingFilms && <p style={{ color: "#888", textAlign: "center", paddingTop: "200px" }}>Plus de films !</p>}
-            {loadingFilms && <p style={{ color: "#555", textAlign: "center", paddingTop: "200px" }}>Chargement des films…</p>}
+            {!filmActuel && loadingFilms && <p style={{ color: "#555", textAlign: "center", paddingTop: "200px" }}>Chargement des films…</p>}
           </div>
 
           {filmActuel && (
