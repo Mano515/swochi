@@ -77,9 +77,13 @@ function App() {
     const nextIndex = index + 1;
     setIndex(nextIndex);
 
+    // Mémorise ce film comme déjà swipé pour les prochaines pages
+    const newDejaSwiped = [...dejaSwiped, film.id];
+    setDejaSwiped(newDejaSwiped);
+
     // Charge la page suivante quand il reste 5 films
     if (nextIndex >= films.length - 5 && !loadingFilms) {
-      chargerFilms(page + 1, dejaSwiped, films);
+      chargerFilms(page + 1, newDejaSwiped, films);
     }
   }
 
