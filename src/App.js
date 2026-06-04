@@ -184,6 +184,14 @@ function App() {
     await saveListes(newListes);
   }
 
+  async function handleSupprimer(film, de) {
+    const newListes = { ...listes };
+    newListes[de] = listes[de].filter(f => f.id !== film.id);
+    setListes(newListes);
+    setDejaSwiped(d => d.filter(id => id !== film.id));
+    await saveListes(newListes);
+  }
+
   if (loading) return <div style={{ background: "#0f0f0f", minHeight: "100vh" }} />;
   if (!user) return <Login onLogin={() => {}} />;
 
@@ -310,7 +318,7 @@ function App() {
       )}
       {onglet === "mesfilms" && (
         <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-          <MesFilms listes={listes} onDeplacer={handleDeplacer} />
+          <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} />
         </div>
       )}
       </div>{/* fin desktop-wrapper */}
