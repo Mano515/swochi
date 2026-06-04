@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 
+function formatDuree(minutes) {
+  const h = Math.floor(minutes / 60);
+  const min = minutes % 60;
+  if (h === 0) return `${min}min`;
+  if (min === 0) return `${h}h`;
+  return `${h}h ${min}min`;
+}
+
 function MovieCard({ film, onSwipe, isTop }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -50,7 +58,7 @@ function MovieCard({ film, onSwipe, isTop }) {
       setDetails({
         synopsis:  detailData.overview || "Aucun synopsis disponible.",
         genres:    detailData.genres?.map(g => g.name).join(", ") || "—",
-        duree:     detailData.runtime ? `${detailData.runtime} min` : "—",
+        duree:     detailData.runtime ? formatDuree(detailData.runtime) : "—",
         note:      detailData.vote_average ? detailData.vote_average.toFixed(1) : "—",
         annee:     detailData.release_date?.slice(0, 4) || "—",
         realisateur: director?.name || "—",

@@ -10,6 +10,7 @@ import MesFilms from "./MesFilms";
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingFilms, setLoadingFilms] = useState(false);
   const [films, setFilms] = useState([]);
   const [index, setIndex] = useState(0);
   const [listes, setListes] = useState({ aVoir: [], pasInteresse: [], dejavu: [] });
@@ -39,11 +40,13 @@ function App() {
       ].map(f => f.id);
 
       // Ensuite on charge les films et on filtre
+      setLoadingFilms(true);
       fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_TMDB_KEY}&language=fr-FR`)
         .then(res => res.json())
         .then(data => {
           const filmsNonVus = data.results.filter(f => !dejaSwiped.includes(f.id));
           setFilms(filmsNonVus);
+          setLoadingFilms(false);
         });
     });
   }, [user]);
@@ -113,7 +116,8 @@ function App() {
           <div style={{ position: "relative", width: "300px", height: "460px" }}>
             {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
             {filmActuel  && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
-            {!filmActuel && <p style={{ color: "#888", textAlign: "center", paddingTop: "200px" }}>Plus de films !</p>}
+            {!filmActuel && !loadingFilms && <p style={{ color: "#888", textAlign: "center", paddingTop: "200px" }}>Plus de films !</p>}
+            {loadingFilms && <p style={{ color: "#555", textAlign: "center", paddingTop: "200px" }}>Chargement des films…</p>}
           </div>
 
           {filmActuel && (
