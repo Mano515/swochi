@@ -231,6 +231,7 @@ function App() {
   return (
     <div className="no-select app-shell">
 
+      <div className="desktop-wrapper">
       {/* ── Section haute (sticky mobile, normale desktop) ── */}
       <div className="top-section">
         {/* Header */}
@@ -300,15 +301,19 @@ function App() {
             <span>👁️ {listes.dejavu.length}</span>
           </div>
         </div>
-      ) : onglet === "match" ? (
+      )}
+
+      {onglet === "match" && (
         <div style={{ padding: "16px", width: "100%", maxWidth: "420px" }}>
           <Match listesUser={listes} username={username} />
         </div>
-      ) : (
+      )}
+      {onglet === "mesfilms" && (
         <div style={{ padding: "16px", width: "100%", maxWidth: "420px" }}>
           <MesFilms listes={listes} onDeplacer={handleDeplacer} />
         </div>
       )}
+      </div>{/* fin desktop-wrapper */}
     </div>
   );
 }

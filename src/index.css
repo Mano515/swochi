@@ -47,10 +47,20 @@ input, button, select, textarea { font-size: 16px; }
   font-family: sans-serif;
 }
 
+/* Enveloppe desktop : regroupe header + carte en un seul bloc centré */
+.desktop-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+}
+
 .top-section {
   width: 100%;
   max-width: 480px;
-  padding: 20px 20px 0;
+  padding: 0 20px;
 }
 
 .top-section .header-row {
@@ -70,7 +80,6 @@ input, button, select, textarea { font-size: 16px; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1;
   width: 100%;
   padding: 12px 16px 20px;
 }
@@ -84,6 +93,11 @@ input, button, select, textarea { font-size: 16px; }
 
 /* ── Mobile ── */
 @media (max-width: 768px) {
+  /* Sur mobile, le wrapper n'est plus nécessaire, on laisse le flow normal */
+  .desktop-wrapper {
+    display: contents;
+  }
+
   .top-section {
     position: sticky;
     top: 0;
@@ -98,6 +112,7 @@ input, button, select, textarea { font-size: 16px; }
 
   .swipe-section {
     justify-content: center;
+    flex: 1;
     padding: 0 12px 16px;
   }
 
