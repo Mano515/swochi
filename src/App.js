@@ -54,22 +54,53 @@ function App() {
     });
   }, [user]);
 
-  function chargerFilms(numPage, swipes, filmsExistants, genre = genreChoisi) {
+  async function chargerFilms(numPage, swipes, filmsExistants, genre = genreChoisi, listesAVoir = listes.aVoir) {
     setLoadingFilms(true);
     const key = process.env.REACT_APP_TMDB_KEY;
     const genreParam = genre ? `&with_genres=${genre}` : "";
-    // Unified discover endpoint — films récents, populaires, en langues occidentales
-    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&page=${numPage}&vote_count.gte=200&primary_release_date.gte=1990-01-01${genreParam}`;
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        const resultats = data.results ?? [];
-        const nouveaux = resultats.filter(f => !swipes.includes(f.id));
-        setFilms([...filmsExistants, ...nouveaux]);
-        setPage(numPage);
-        setLoadingFilms(false);
-      })
-      .catch(() => setLoadingFilms(false));
+    const totalSwipes = swipes.length;
+
+    try {
+      let resultats = [];
+
+      // Nouveau utilisateur : on commence par les films cultes (note élevée + très votés)
+      const estNouvel = totalSwipes < 20;
+      if (estNouvel && !genre) {
+        const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=vote_average.desc&vote_count.gte=3000&primary_release_date.gte=1990-01-01&page=${numPage}`;
+        const data = await fetch(url).then(r => r.json());
+        resultats = data.results ?? [];
+      }
+      // Utilisateur avec des films aimés : 1 page sur 3, on injecte des recommandations
+      else if (!genre && listesAVoir.length >= 5 && numPage > 1 && Math.random() < 0.35) {
+        const filmRef = listesAVoir[Math.floor(Math.random() * listesAVoir.length)];
+        const [discoverData, recoData] = await Promise.all([
+          fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&vote_count.gte=200&primary_release_date.gte=1990-01-01&page=${numPage}`).then(r => r.json()),
+          fetch(`https://api.themoviedb.org/3/movie/${filmRef.id}/recommendations?api_key=${key}&language=fr-FR`).then(r => r.json()),
+        ]);
+        // Mélange : 60% discover, 40% recommandations
+        const discover = discoverData.results ?? [];
+        const recos = (recoData.results ?? []).filter(f => f.vote_count >= 100);
+        resultats = melanger([...discover.slice(0, 12), ...recos.slice(0, 8)]);
+      }
+      // Cas standard : discover populaire
+      else {
+        const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&vote_count.gte=200&primary_release_date.gte=1990-01-01&page=${numPage}${genreParam}`;
+        const data = await fetch(url).then(r => r.json());
+        resultats = data.results ?? [];
+      }
+
+      const nouveaux = resultats.filter(f => !swipes.includes(f.id));
+      setFilms([...filmsExistants, ...nouveaux]);
+      setPage(numPage);
+    } catch {
+      // silencieux, l'utilisateur garde les films déjà chargés
+    } finally {
+      setLoadingFilms(false);
+    }
+  }
+
+  function melanger(arr) {
+    return [...arr].sort(() => Math.random() - 0.5);
   }
 
   function handleGenreChange(nouveauGenre) {
@@ -109,7 +140,7 @@ function App() {
 
     // Charge la page suivante quand il reste 5 films
     if (nextIndex >= films.length - 5 && !loadingFilms) {
-      chargerFilms(page + 1, newDejaSwiped, [...films]);
+      chargerFilms(page + 1, newDejaSwiped, [...films], genreChoisi, newListes.aVoir);
     }
   }
 
