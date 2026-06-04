@@ -2,9 +2,7 @@
   box-sizing: border-box;
 }
 
-html {
-  height: 100%;
-}
+html { height: 100%; }
 
 body {
   margin: 0;
@@ -12,8 +10,7 @@ body {
   height: 100%;
   overscroll-behavior: none;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -25,28 +22,21 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Empêche le zoom iOS sur les inputs */
-input, button, select, textarea {
-  font-size: 16px;
-}
+input, button, select, textarea { font-size: 16px; }
 
-/* Empêche la sélection de texte pendant le swipe */
 .no-select {
   -webkit-user-select: none;
   user-select: none;
 }
 
-/* Scrollbar invisible sur la barre de genres */
 .genres-scroll {
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.genres-scroll::-webkit-scrollbar {
-  display: none;
-}
+.genres-scroll::-webkit-scrollbar { display: none; }
 
-/* ── Layout principal ── */
+/* ── Layout ── */
 .app-shell {
   min-height: 100vh;
   background: #0f0f0f;
@@ -57,14 +47,24 @@ input, button, select, textarea {
   font-family: sans-serif;
 }
 
-/* Section haute : normale sur desktop, collée en haut sur mobile */
 .top-section {
   width: 100%;
-  max-width: 420px;
-  padding: 12px 16px 0;
+  max-width: 480px;
+  padding: 20px 20px 0;
 }
 
-/* Zone centrale : carte + boutons */
+.top-section .header-row {
+  margin-bottom: 16px;
+}
+
+.top-section .tabs-row {
+  margin-bottom: 14px;
+}
+
+.top-section .genres-row {
+  margin-bottom: 6px;
+}
+
 .swipe-section {
   display: flex;
   flex-direction: column;
@@ -72,38 +72,45 @@ input, button, select, textarea {
   justify-content: center;
   flex: 1;
   width: 100%;
-  padding: 8px 12px 16px;
+  padding: 12px 16px 20px;
 }
 
-/* Hauteur de la carte : desktop = fixe, mobile = s'adapte */
+/* Desktop : carte taille fixe */
 .card-container {
   position: relative;
-  width: min(300px, 90vw);
-  height: min(420px, 90vw * 1.4);
+  width: 300px;
+  height: 450px;
 }
 
+/* ── Mobile ── */
 @media (max-width: 768px) {
   .top-section {
     position: sticky;
     top: 0;
     background: #0f0f0f;
     z-index: 10;
-    padding-top: 8px;
+    padding: 12px 14px 0;
   }
+
+  .top-section .header-row  { margin-bottom: 12px; }
+  .top-section .tabs-row    { margin-bottom: 10px; }
+  .top-section .genres-row  { margin-bottom: 4px;  }
 
   .swipe-section {
-    justify-content: flex-start;
-    padding-top: 12px;
+    justify-content: center;
+    padding: 0 12px 16px;
   }
 
-  /* Sur mobile la carte prend la hauteur dispo entre le header et les boutons */
+  /* Carte presque pleine largeur, centrée dans l'espace restant */
   .card-container {
-    width: min(300px, 90vw);
-    height: min(400px, 48vh);
+    width: 95vw;
+    max-width: 400px;
+    /* Ratio affiche cinéma ~2:3 */
+    height: min(calc(95vw * 1.42), 56vh);
+    max-height: 520px;
   }
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

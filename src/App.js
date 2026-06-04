@@ -234,7 +234,7 @@ function App() {
       {/* ── Section haute (sticky mobile, normale desktop) ── */}
       <div className="top-section">
         {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+        <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
             <span style={{ fontSize: "20px", fontWeight: "bold", letterSpacing: "2px" }}>🎬 SWOCHI</span>
             <span style={{ marginLeft: "10px", color: "#888", fontSize: "12px" }}>@{username}</span>
@@ -247,7 +247,7 @@ function App() {
         </div>
 
         {/* Onglets */}
-        <div style={{ display: "flex", gap: "6px", marginBottom: "10px" }}>
+        <div className="tabs-row" style={{ display: "flex", gap: "8px" }}>
           <button onClick={() => setOnglet("swipe")}    style={{ ...ongletStyle(onglet === "swipe"),    flex: 1, padding: "10px 6px", fontSize: "13px" }}>🎬 Swipe</button>
           <button onClick={() => setOnglet("match")}    style={{ ...ongletStyle(onglet === "match"),    flex: 1, padding: "10px 6px", fontSize: "13px" }}>🤝 Match</button>
           <button onClick={() => setOnglet("mesfilms")} style={{ ...ongletStyle(onglet === "mesfilms"), flex: 1, padding: "10px 6px", fontSize: "13px" }}>🎞 Mes films</button>
@@ -255,7 +255,9 @@ function App() {
 
         {/* Genres — seulement sur l'onglet swipe */}
         {onglet === "swipe" && (
-          <GenreScroll genres={genres} genreChoisi={genreChoisi} onGenreChange={handleGenreChange} />
+          <div className="genres-row">
+            <GenreScroll genres={genres} genreChoisi={genreChoisi} onGenreChange={handleGenreChange} />
+          </div>
         )}
       </div>
 
