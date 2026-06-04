@@ -1,23 +1,35 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId} {
 
-      // Lecture : tout utilisateur connecté peut lire les profils
-      // (nécessaire pour la fonctionnalité Match — recherche par pseudo)
+    // ── Collection principale des utilisateurs ──
+    match /users/{userId} {
+      // Lecture : tout utilisateur connecté peut lire
+      // (nécessaire pour la fonctionnalité Match)
       allow read: if request.auth != null;
 
-      // Écriture : uniquement sur son propre document
+      // Écriture : uniquement sur son propre document, avec validation
       allow write: if request.auth != null
                    && request.auth.uid == userId
-                   // Le champ email doit correspondre à l'email Firebase Auth
                    && request.resource.data.email == request.auth.token.email
-                   // Le pseudo doit être présent, en minuscules, entre 3 et 30 caractères
                    && request.resource.data.username is string
                    && request.resource.data.username.size() >= 3
                    && request.resource.data.username.size() <= 30
-                   // Les listes doivent être présentes
                    && request.resource.data.listes is map;
+    }
+
+    // ── Collection de réservation des pseudos ──
+    match /usernames/{username} {
+      // Lecture : tout utilisateur connecté peut vérifier si un pseudo existe
+      allow read: if request.auth != null;
+
+      // Création uniquement : on ne peut créer que si le uid correspond
+      // et que le document n'existe pas encore (géré par la transaction)
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid;
+
+      // Modification et suppression interdites : un pseudo est définitif
+      allow update, delete: if false;
     }
   }
 }
