@@ -17,6 +17,8 @@ function App() {
   const [dejaSwiped, setDejaSwiped] = useState([]);
   const [listes, setListes] = useState({ aVoir: [], pasInteresse: [], dejavu: [] });
   const [onglet, setOnglet] = useState("swipe");
+  const [genres, setGenres] = useState([]);
+  const [genreChoisi, setGenreChoisi] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -24,6 +26,12 @@ function App() {
       setLoading(false);
     });
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.REACT_APP_TMDB_KEY}&language=fr-FR`)
+      .then(res => res.json())
+      .then(data => setGenres(data.genres || []));
   }, []);
 
   useEffect(() => {
@@ -41,13 +49,17 @@ function App() {
       ].map(f => f.id);
 
       setDejaSwiped(ids);
-      chargerFilms(1, ids, []);
+      chargerFilms(1, ids, [], genreChoisi);
     });
   }, [user]);
 
-  function chargerFilms(numPage, swipes, filmsExistants) {
+  function chargerFilms(numPage, swipes, filmsExistants, genre = genreChoisi) {
     setLoadingFilms(true);
-    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_TMDB_KEY}&language=fr-FR&page=${numPage}`)
+    const genreParam = genre ? `&with_genres=${genre}` : "";
+    const url = genre
+      ? `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_TMDB_KEY}&language=fr-FR&sort_by=popularity.desc&page=${numPage}${genreParam}`
+      : `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_TMDB_KEY}&language=fr-FR&page=${numPage}`;
+    fetch(url)
       .then(res => res.json())
       .then(data => {
         const nouveaux = data.results.filter(f => !swipes.includes(f.id));
@@ -55,6 +67,14 @@ function App() {
         setPage(numPage);
         setLoadingFilms(false);
       });
+  }
+
+  function handleGenreChange(nouveauGenre) {
+    setGenreChoisi(nouveauGenre);
+    setFilms([]);
+    setIndex(0);
+    setPage(1);
+    chargerFilms(1, dejaSwiped, [], nouveauGenre);
   }
 
   async function saveListes(newListes) {
@@ -118,7 +138,7 @@ function App() {
 
       <h1 style={{ marginBottom: "4px", fontSize: "28px", letterSpacing: "2px" }}>🎬 SWOCHI</h1>
       <p style={{ marginBottom: "16px", color: "#888", fontSize: "13px" }}>
-        Connecté : {user.email}
+        Bonjour {user.displayName ? user.displayName.split(" ")[0] : user.email} 👋
       </p>
 
       {/* Navigation */}
@@ -130,6 +150,21 @@ function App() {
 
       {onglet === "swipe" ? (
         <>
+          {/* Filtre par genre */}
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center", marginBottom: "20px", maxWidth: "340px" }}>
+            <button
+              onClick={() => handleGenreChange("")}
+              style={genreStyle(genreChoisi === "")}
+            >Tous</button>
+            {genres.map(g => (
+              <button
+                key={g.id}
+                onClick={() => handleGenreChange(String(g.id))}
+                style={genreStyle(genreChoisi === String(g.id))}
+              >{g.name}</button>
+            ))}
+          </div>
+
           <div style={{ position: "relative", width: "300px", height: "460px" }}>
             {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
             {filmActuel  && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
@@ -158,6 +193,19 @@ function App() {
       )}
     </div>
   );
+}
+
+function genreStyle(actif) {
+  return {
+    background: actif ? "white" : "transparent",
+    color: actif ? "#0f0f0f" : "#666",
+    border: "1px solid " + (actif ? "white" : "#333"),
+    borderRadius: "20px",
+    padding: "5px 12px",
+    fontSize: "12px",
+    cursor: "pointer",
+    fontWeight: actif ? "bold" : "normal",
+  };
 }
 
 function btnStyle(color) {
