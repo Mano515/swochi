@@ -20,8 +20,6 @@ function App() {
   const [genres, setGenres] = useState([]);
   const [genreChoisi, setGenreChoisi] = useState("");
   const [historique, setHistorique] = useState([]); // { film, direction }
-  const [estNouvelUtilisateur, setEstNouvelUtilisateur] = useState(false);
-  const abortRef = useRef(null); // pour annuler le fetch précédent
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -51,57 +49,36 @@ function App() {
         ...listesExistantes.dejavu,
       ].map(f => f.id);
 
-      // Nouveau utilisateur = aucun swipe sauvegardé en base
-      const nouveauUtilisateur = ids.length === 0;
-      setEstNouvelUtilisateur(nouveauUtilisateur);
       setDejaSwiped(ids);
-      chargerFilms(1, ids, [], "", nouveauUtilisateur, listesExistantes.aVoir);
+      chargerFilms(1, ids, [], "");
     });
   }, [user]);
 
-  async function chargerFilms(numPage, swipes, filmsExistants, genre, estNouvel, listesAVoir) {
-    // Annule le fetch précédent s'il tourne encore
-    if (abortRef.current) abortRef.current.abort();
-    const controller = new AbortController();
-    abortRef.current = controller;
-
-    setLoadingFilms(true);
+  async function fetchPage(numPage, genre) {
     const key = process.env.REACT_APP_TMDB_KEY;
-    const base = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&vote_count.gte=200&primary_release_date.gte=1990-01-01`;
+    const genreParam = genre ? `&with_genres=${genre}` : "";
+    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&vote_count.gte=100&page=${numPage}${genreParam}`;
+    const data = await fetch(url).then(r => r.json());
+    return data.results ?? [];
+  }
 
+  async function chargerFilms(numPage, swipes, filmsExistants, genre) {
+    setLoadingFilms(true);
     try {
-      let resultats = [];
+      let resultats = await fetchPage(numPage, genre);
 
-      // Nouveau utilisateur sans filtre genre → films cultes en premier
-      if (estNouvel && !genre) {
-        const url = `${base}&sort_by=vote_average.desc&vote_count.gte=3000&page=${numPage}`;
-        const data = await fetch(url, { signal: controller.signal }).then(r => r.json());
-        resultats = data.results ?? [];
-      }
-      // Utilisateur avec des likes, pas de filtre genre, page de continuation → mix recommandations
-      else if (!genre && listesAVoir.length >= 5 && numPage > 1 && Math.random() < 0.35) {
-        const filmRef = listesAVoir[Math.floor(Math.random() * listesAVoir.length)];
-        const [discoverData, recoData] = await Promise.all([
-          fetch(`${base}&sort_by=popularity.desc&page=${numPage}`, { signal: controller.signal }).then(r => r.json()),
-          fetch(`https://api.themoviedb.org/3/movie/${filmRef.id}/recommendations?api_key=${key}&language=fr-FR`, { signal: controller.signal }).then(r => r.json()),
-        ]);
-        const discover = discoverData.results ?? [];
-        const recos = (recoData.results ?? []).filter(f => f.vote_count >= 100);
-        resultats = [...discover.slice(0, 12), ...recos.slice(0, 8)].sort(() => Math.random() - 0.5);
-      }
-      // Cas standard (genre ou discover populaire)
-      else {
-        const genreParam = genre ? `&with_genres=${genre}` : "";
-        const url = `${base}&sort_by=popularity.desc&page=${numPage}${genreParam}`;
-        const data = await fetch(url, { signal: controller.signal }).then(r => r.json());
-        resultats = data.results ?? [];
+      // Si tous les films sont déjà swipés, on tente la page suivante
+      let tentative = numPage;
+      while (resultats.filter(f => !swipes.includes(f.id)).length === 0 && tentative < numPage + 3) {
+        tentative++;
+        resultats = await fetchPage(tentative, genre);
       }
 
       const nouveaux = resultats.filter(f => !swipes.includes(f.id));
       setFilms([...filmsExistants, ...nouveaux]);
-      setPage(numPage);
+      setPage(tentative);
     } catch (e) {
-      if (e.name === "AbortError") return; // fetch annulé, on ignore
+      console.error("Erreur chargement films:", e);
     } finally {
       setLoadingFilms(false);
     }
@@ -112,8 +89,7 @@ function App() {
     setFilms([]);
     setIndex(0);
     setPage(1);
-    // Tous les paramètres passés explicitement, aucune ambiguïté de closure
-    chargerFilms(1, dejaSwiped, [], nouveauGenre, estNouvelUtilisateur, listes.aVoir);
+    chargerFilms(1, dejaSwiped, [], nouveauGenre);
   }
 
   async function saveListes(newListes) {
@@ -145,7 +121,7 @@ function App() {
 
     // Charge la page suivante quand il reste 5 films
     if (nextIndex >= films.length - 5 && !loadingFilms) {
-      chargerFilms(page + 1, newDejaSwiped, [...films], genreChoisi, estNouvelUtilisateur, newListes.aVoir);
+      chargerFilms(page + 1, newDejaSwiped, [...films], genreChoisi);
     }
   }
 
