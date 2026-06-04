@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc, getDoc, runTransaction } from "firebase/firestore";
 import MovieCard from "./MovieCard";
 import Login from "./Login";
 import Match from "./Match";
@@ -134,20 +134,32 @@ function App() {
     setUsernameError("");
     const pseudo = usernameInput.trim().toLowerCase().replace(/\s+/g, "_");
     if (pseudo.length < 3) return setUsernameError("Minimum 3 caractères.");
+    if (pseudo.length > 30) return setUsernameError("Maximum 30 caractères.");
     if (!/^[a-z0-9_]+$/.test(pseudo)) return setUsernameError("Lettres, chiffres et _ uniquement.");
 
-    // Vérifie que le username n'est pas déjà pris
-    const { getDocs, collection, query, where } = await import("firebase/firestore");
-    const snap = await getDocs(query(collection(db, "users"), where("username", "==", pseudo)));
-    if (!snap.empty) return setUsernameError("Ce pseudo est déjà pris.");
+    try {
+      await runTransaction(db, async (transaction) => {
+        // Vérifie atomiquement que le pseudo n'est pas déjà pris
+        const usernameRef = doc(db, "usernames", pseudo);
+        const usernameSnap = await transaction.get(usernameRef);
+        if (usernameSnap.exists()) throw new Error("Ce pseudo est déjà pris.");
 
-    await setDoc(doc(db, "users", user.uid), {
-      email: user.email,
-      username: pseudo,
-      listes: { aVoir: [], pasInteresse: [], dejavu: [] }
-    });
-    setUsername(pseudo);
-    chargerFilms(1, [], [], "");
+        // Réserve le pseudo
+        transaction.set(usernameRef, { uid: user.uid });
+
+        // Crée le document utilisateur
+        transaction.set(doc(db, "users", user.uid), {
+          email: user.email,
+          username: pseudo,
+          listes: { aVoir: [], pasInteresse: [], dejavu: [] }
+        });
+      });
+
+      setUsername(pseudo);
+      chargerFilms(1, [], [], "");
+    } catch (e) {
+      setUsernameError(e.message || "Une erreur est survenue, réessayez.");
+    }
   }
 
   function handleSwipe(direction) {
