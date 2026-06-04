@@ -20,6 +20,7 @@ function App() {
   const [genres, setGenres] = useState([]);
   const [genreChoisi, setGenreChoisi] = useState("");
   const [historique, setHistorique] = useState([]); // { film, direction }
+  const fetchIdRef = useRef(0);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -62,34 +63,37 @@ function App() {
     return data.results ?? [];
   }
 
-  // Charge N pages en parallèle et les ajoute à la pile
-  async function chargerPagesEnParallele(pageDebut, nbPages, swipes, filmsExistants, genre) {
-    const numeros = Array.from({ length: nbPages }, (_, i) => pageDebut + i);
-    const resultatsParPage = await Promise.all(numeros.map(n => fetchPage(n, genre)));
-    const tous = resultatsParPage.flat();
-    const nouveaux = tous.filter(f => !swipes.includes(f.id));
-    return { nouveaux, dernierePage: pageDebut + nbPages - 1 };
-  }
-
   async function chargerFilms(pageDebut, swipes, filmsExistants, genre) {
+    // Chaque appel reçoit un ID unique. Si un appel plus récent démarre,
+    // les résultats de celui-ci seront ignorés à l'arrivée.
+    fetchIdRef.current += 1;
+    const monId = fetchIdRef.current;
+
     setLoadingFilms(true);
     try {
-      // Charge 3 pages d'un coup pour avoir un bon stock dès le départ
-      const { nouveaux, dernierePage } = await chargerPagesEnParallele(pageDebut, 3, swipes, filmsExistants, genre);
+      // 3 pages en parallèle = ~60 films d'un coup
+      const numeros = [pageDebut, pageDebut + 1, pageDebut + 2];
+      const pages = await Promise.all(numeros.map(n => fetchPage(n, genre)));
+      const nouveaux = pages.flat().filter(f => !swipes.includes(f.id));
+
+      // On ignore ce résultat si un fetch plus récent a déjà pris le relais
+      if (monId !== fetchIdRef.current) return;
+
       setFilms([...filmsExistants, ...nouveaux]);
-      setPage(dernierePage);
+      setPage(pageDebut + 2);
     } catch (e) {
       console.error("Erreur chargement films:", e);
     } finally {
-      setLoadingFilms(false);
+      // Ne touche au loading que si on est toujours le fetch en cours
+      if (monId === fetchIdRef.current) setLoadingFilms(false);
     }
   }
 
   function handleGenreChange(nouveauGenre) {
     setGenreChoisi(nouveauGenre);
-    setFilms([]);
     setIndex(0);
     setPage(1);
+    setFilms([]);
     chargerFilms(1, dejaSwiped, [], nouveauGenre);
   }
 
