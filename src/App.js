@@ -301,7 +301,7 @@ function App() {
             <span>👁️ {listes.dejavu.length}</span>
           </div>
         </div>
-      )}
+      ) : null}
 
       {onglet === "match" && (
         <div style={{ padding: "16px", width: "100%", maxWidth: "420px" }}>
