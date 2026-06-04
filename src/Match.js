@@ -77,7 +77,7 @@ function Match({ listesUser, username }) {
   }
 
   return (
-    <div style={{ position: "relative", width: "300px" }}>
+    <div style={{ position: "relative", width: "100%" }}>
 
       {/* Confettis */}
       {confettis.map(c => (
