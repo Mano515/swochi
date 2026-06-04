@@ -55,18 +55,20 @@ function App() {
 
   function chargerFilms(numPage, swipes, filmsExistants, genre = genreChoisi) {
     setLoadingFilms(true);
+    const key = process.env.REACT_APP_TMDB_KEY;
     const genreParam = genre ? `&with_genres=${genre}` : "";
-    const url = genre
-      ? `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_TMDB_KEY}&language=fr-FR&sort_by=popularity.desc&page=${numPage}${genreParam}`
-      : `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.REACT_APP_TMDB_KEY}&language=fr-FR&page=${numPage}`;
+    // Unified discover endpoint — films récents, populaires, en langues occidentales
+    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${key}&language=fr-FR&sort_by=popularity.desc&page=${numPage}&vote_count.gte=200&primary_release_date.gte=1990-01-01&with_original_language=en|fr|es|de|it${genreParam}`;
     fetch(url)
       .then(res => res.json())
       .then(data => {
-        const nouveaux = data.results.filter(f => !swipes.includes(f.id));
+        const resultats = data.results ?? [];
+        const nouveaux = resultats.filter(f => !swipes.includes(f.id));
         setFilms([...filmsExistants, ...nouveaux]);
         setPage(numPage);
         setLoadingFilms(false);
-      });
+      })
+      .catch(() => setLoadingFilms(false));
   }
 
   function handleGenreChange(nouveauGenre) {
