@@ -1,70 +1,131 @@
-# Getting Started with Create React App
+# 🎬 Swochi
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Swochi** est une application de swipe de films — pensée pour ne plus jamais passer 20 minutes à chercher quoi regarder avec ses amis.
 
-## Available Scripts
+> Swipez des films, construisez vos listes, trouvez ce que vous avez en commun.
 
-In the project directory, you can run:
+🔗 **[Essayer l'app](https://swochi.vercel.app)**
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Aperçu
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Swochi fonctionne comme un Tinder pour les films. Vous swipez les affiches une par une, vous les ajoutez à vos listes, et vous comparez ensuite avec vos amis pour trouver un film à regarder ensemble.
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Fonctionnalités
 
-### `npm run build`
+### 🎴 Swipe de films
+- Faites glisser l'affiche vers la **droite** pour mettre un film dans "À voir"
+- Vers la **gauche** pour le passer (Skip)
+- Vers le **haut** si vous l'avez déjà vu
+- Utilisez les boutons ✕ / 👁 / ♥ si vous préférez cliquer
+- Bouton ↩ pour annuler le dernier swipe
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 🔍 Détails du film
+- Appuyez sur la partie basse de l'affiche pour voir le synopsis, le genre, la durée, la note, le réalisateur et les acteurs principaux
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 🎭 Filtres par genre
+- Filtrez les films par genre (Action, Comédie, Horreur…) via la barre de catégories
+- Glissez la barre ou utilisez les flèches pour naviguer entre les genres
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 📂 Mes Films
+- Retrouvez tous vos films classés en trois listes : **À voir**, **Déjà vu**, **Skip**
+- Recherchez un film par titre dans vos listes
+- Déplacez un film d'une liste à une autre ou supprimez-le via le menu **···**
 
-### `npm run eject`
+### 🤝 Match
+- Entrez le pseudo d'un ami pour voir les films que vous avez tous les deux mis en "À voir"
+- Tirez un film au sort parmi vos matchs avec le bouton 🎲
+- Relancez le tirage pour en choisir un autre
+- Partagez votre pseudo à vos amis via le bouton **Partager**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 👤 Profil
+- Consultez vos statistiques : nombre de films swipés, à voir, déjà vus, skippés
+- Accessible depuis le menu burger en haut à droite
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Algorithme de recommandation
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Swochi adapte les films suggérés à votre profil :
 
-## Learn More
+- **Nouveau compte** — les premiers films proposés sont des incontournables (notes élevées, très votés)
+- **Utilisateur actif** — une partie des suggestions est basée sur les films que vous avez aimés (recommandations TMDB)
+- **Filtre genre actif** — les films du genre choisi, triés par popularité
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Les films déjà swipés ne réapparaissent jamais, même après un changement de catégorie.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## Stack technique
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+| Technologie | Usage |
+|---|---|
+| **React 18** | Interface utilisateur |
+| **Firebase Auth** | Connexion email et Google |
+| **Firestore** | Stockage des listes et profils |
+| **Firebase App Check** | Protection contre les abus |
+| **TMDB API** | Données films (affiches, synopsis, casting...) |
+| **Framer Motion** | Animations de swipe |
+| **Vercel** | Hébergement |
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Sécurité
 
-### Making a Progressive Web App
+- Chaque utilisateur ne peut modifier que ses propres données (règles Firestore)
+- Les pseudos sont réservés atomiquement — deux personnes ne peuvent pas choisir le même simultanément
+- Les requêtes Firebase sont protégées par reCAPTCHA v3 (invisible)
+- Les clés d'API ne sont jamais exposées dans le code source
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+---
 
-### Advanced Configuration
+## Lancer le projet en local
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Prérequis
+- Node.js 20+
+- Un projet Firebase (Auth + Firestore activés)
+- Une clé API TMDB (https://www.themoviedb.org/settings/api)
 
-### Deployment
+### Installation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```bash
+git clone https://github.com/Mano515/swochi.git
+cd swochi
+npm install --legacy-peer-deps
+```
 
-### `npm run build` fails to minify
+### Variables d'environnement
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Créez un fichier `.env` à la racine :
+
+```env
+REACT_APP_FIREBASE_API_KEY=...
+REACT_APP_FIREBASE_AUTH_DOMAIN=...
+REACT_APP_FIREBASE_PROJECT_ID=...
+REACT_APP_FIREBASE_STORAGE_BUCKET=...
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=...
+REACT_APP_FIREBASE_APP_ID=...
+REACT_APP_TMDB_KEY=...
+REACT_APP_RECAPTCHA_KEY=...
+```
+
+### Lancement
+
+```bash
+npm start
+```
+
+L'app est disponible sur http://localhost:3000
+
+---
+
+## Déploiement
+
+L'app est déployée automatiquement sur **Vercel** à chaque merge sur `main`.
+
+---
+
+*Projet personnel — construit avec Claude Code*
