@@ -1,12 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc, updateDoc, getDoc, runTransaction } from "firebase/firestore";
 import MovieCard from "./MovieCard";
 import Login from "./Login";
 import Match from "./Match";
 import MesFilms from "./MesFilms";
 import GenreScroll from "./GenreScroll";
+import MenuBurger from "./MenuBurger";
+import Profil from "./Profil";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -24,6 +26,7 @@ function App() {
   const [username, setUsername] = useState(null);
   const [usernameInput, setUsernameInput] = useState("");
   const [usernameError, setUsernameError] = useState("");
+  const [menuOuvert, setMenuOuvert] = useState(false);
   const [toast, setToast] = useState(null); // { message, type: "error"|"success" }
   const fetchIdRef = useRef(0);
   const toastTimer = useRef(null);
@@ -265,27 +268,29 @@ function App() {
   return (
     <div className="no-select app-shell">
 
-      <div className="desktop-wrapper">
-      {/* ── Section haute (sticky mobile, normale desktop) ── */}
-      <div className="top-section">
-        {/* Header */}
-        <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <span style={{ fontSize: "20px", fontWeight: "bold", letterSpacing: "2px" }}>🎬 SWOCHI</span>
-            <span style={{ marginLeft: "10px", color: "#888", fontSize: "12px" }}>@{username}</span>
-          </div>
-          <button onClick={() => signOut(auth)} style={{
-            background: "transparent", border: "1px solid #333",
-            color: "#666", borderRadius: "8px",
-            padding: "6px 12px", cursor: "pointer", fontSize: "12px"
-          }}>Déco</button>
-        </div>
+      <MenuBurger ouvert={menuOuvert} onFermer={() => setMenuOuvert(false)} onglet={onglet} onOnglet={setOnglet} />
 
-        {/* Onglets */}
-        <div className="tabs-row" style={{ display: "flex", gap: "8px" }}>
-          <button onClick={() => setOnglet("swipe")}    style={{ ...ongletStyle(onglet === "swipe"),    flex: 1, padding: "10px 6px", fontSize: "13px" }}>🎬 Swipe</button>
-          <button onClick={() => setOnglet("match")}    style={{ ...ongletStyle(onglet === "match"),    flex: 1, padding: "10px 6px", fontSize: "13px" }}>🤝 Match</button>
-          <button onClick={() => setOnglet("mesfilms")} style={{ ...ongletStyle(onglet === "mesfilms"), flex: 1, padding: "10px 6px", fontSize: "13px" }}>🎞 Mes films</button>
+      <div className="desktop-wrapper">
+      {/* ── Section haute ── */}
+      <div className="top-section">
+        {/* Header centré */}
+        <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+          <span style={{ fontSize: "26px", fontWeight: "bold", letterSpacing: "3px" }}>🎬 SWOCHI</span>
+          {/* Bouton burger top-right */}
+          <button
+            onClick={() => setMenuOuvert(true)}
+            style={{
+              position: "absolute", right: 0,
+              background: "transparent", border: "1px solid #2a2a2a",
+              color: "#aaa", borderRadius: "8px",
+              padding: "9px 12px", cursor: "pointer",
+              display: "flex", flexDirection: "column", gap: "5px",
+            }}
+          >
+            <span style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
+            <span style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
+            <span style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
+          </button>
         </div>
 
         {/* Genres — seulement sur l'onglet swipe */}
@@ -309,31 +314,29 @@ function App() {
 
           {/* Boutons */}
           {filmActuel && (
-            <div style={{ display: "flex", gap: "12px", marginTop: "16px", alignItems: "center" }}>
-              <button onClick={() => handleSwipe("left")}  style={btnStyle("#ef4444")}>✕ Skip</button>
-              <button onClick={() => handleSwipe("up")}    style={btnStyle("#3b82f6")}>👁 Déjà vu</button>
-              <button onClick={() => handleSwipe("right")} style={btnStyle("#22c55e")}>♥ À voir</button>
+            <div style={{ position: "relative", width: "100%", maxWidth: "340px", marginTop: "16px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+              {/* 3 boutons centrés */}
+              <div style={{ display: "flex", gap: "16px" }}>
+                <button onClick={() => handleSwipe("left")}  style={btnStyle("#ef4444")}>✕</button>
+                <button onClick={() => handleSwipe("up")}    style={btnStyle("#3b82f6")}>👁</button>
+                <button onClick={() => handleSwipe("right")} style={btnStyle("#22c55e")}>♥</button>
+              </div>
+              {/* Bouton retour ancré à droite */}
               <button
                 onClick={handleRetour}
                 disabled={historique.length === 0}
                 style={{
+                  position: "absolute", right: 0,
                   background: "transparent",
-                  border: "2px solid " + (historique.length > 0 ? "#f59e0b" : "#333"),
-                  color: historique.length > 0 ? "#f59e0b" : "#333",
-                  borderRadius: "50%", width: "44px", height: "44px",
-                  fontSize: "18px", cursor: historique.length > 0 ? "pointer" : "default",
-                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  border: "2px solid " + (historique.length > 0 ? "#f59e0b" : "#2a2a2a"),
+                  color: historique.length > 0 ? "#f59e0b" : "#2a2a2a",
+                  borderRadius: "50%", width: "36px", height: "36px",
+                  fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default",
+                  display: "flex", alignItems: "center", justifyContent: "center",
                 }}
               >↩</button>
             </div>
           )}
-
-          {/* Stats */}
-          <div style={{ marginTop: "10px", display: "flex", gap: "20px", fontSize: "12px", color: "#555" }}>
-            <span>✅ {listes.aVoir.length}</span>
-            <span>❌ {listes.pasInteresse.length}</span>
-            <span>👁️ {listes.dejavu.length}</span>
-          </div>
         </div>
       ) : null}
 
@@ -345,6 +348,11 @@ function App() {
       {onglet === "mesfilms" && (
         <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
           <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} />
+        </div>
+      )}
+      {onglet === "profil" && (
+        <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
+          <Profil username={username} user={user} listes={listes} />
         </div>
       )}
       </div>{/* fin desktop-wrapper */}

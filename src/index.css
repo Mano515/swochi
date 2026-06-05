@@ -65,6 +65,17 @@ input, button, select, textarea { font-size: 16px; }
   padding: 0 20px;
 }
 
+/* Sur desktop, la barre de genres prend toute la largeur du wrapper */
+@media (min-width: 769px) {
+  .top-section {
+    max-width: 100%;
+    padding: 0 40px;
+  }
+  .desktop-wrapper {
+    max-width: 600px;
+  }
+}
+
 .top-section .header-row {
   margin-bottom: 16px;
 }
