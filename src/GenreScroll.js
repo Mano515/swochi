@@ -62,7 +62,7 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
   );
 
   return (
-    <div style={{ position: "relative", width: "100%", maxWidth: "400px", marginBottom: "10px" }}>
+    <div style={{ position: "relative", width: "100%", marginBottom: "10px" }}>
       {fleche(-1, peutAllerGauche)}
 
       <div

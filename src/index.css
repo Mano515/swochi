@@ -75,11 +75,6 @@ input, button, select, textarea { font-size: 16px; }
   .desktop-wrapper {
     max-width: 640px;
   }
-  /* La swipe-section se cale sur la largeur de la carte */
-  .swipe-section {
-    width: auto;
-    padding: 16px 0 24px;
-  }
 }
 
 .top-section .header-row {
