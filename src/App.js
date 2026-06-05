@@ -275,7 +275,7 @@ function App() {
       <div className="top-section">
         {/* Header centré */}
         <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-          <span style={{ fontSize: "22px", fontWeight: "bold", letterSpacing: "3px" }}>🎬 SWOCHI</span>
+          <span style={{ fontSize: "26px", fontWeight: "bold", letterSpacing: "3px" }}>🎬 SWOCHI</span>
           {/* Bouton burger top-right */}
           <button
             onClick={() => setMenuOuvert(true)}
@@ -283,13 +283,13 @@ function App() {
               position: "absolute", right: 0,
               background: "transparent", border: "1px solid #2a2a2a",
               color: "#aaa", borderRadius: "8px",
-              padding: "7px 10px", cursor: "pointer",
-              display: "flex", flexDirection: "column", gap: "4px",
+              padding: "9px 12px", cursor: "pointer",
+              display: "flex", flexDirection: "column", gap: "5px",
             }}
           >
-            <span style={{ display: "block", width: "18px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
-            <span style={{ display: "block", width: "18px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
-            <span style={{ display: "block", width: "18px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
+            <span style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
+            <span style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
+            <span style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
           </button>
         </div>
 
@@ -314,31 +314,29 @@ function App() {
 
           {/* Boutons */}
           {filmActuel && (
-            <div style={{ display: "flex", gap: "12px", marginTop: "16px", alignItems: "center" }}>
-              <button onClick={() => handleSwipe("left")}  style={btnStyle("#ef4444")}>✕ Skip</button>
-              <button onClick={() => handleSwipe("up")}    style={btnStyle("#3b82f6")}>👁 Déjà vu</button>
-              <button onClick={() => handleSwipe("right")} style={btnStyle("#22c55e")}>♥ À voir</button>
+            <div style={{ position: "relative", width: "100%", maxWidth: "340px", marginTop: "16px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+              {/* 3 boutons centrés */}
+              <div style={{ display: "flex", gap: "16px" }}>
+                <button onClick={() => handleSwipe("left")}  style={btnStyle("#ef4444")}>✕</button>
+                <button onClick={() => handleSwipe("up")}    style={btnStyle("#3b82f6")}>👁</button>
+                <button onClick={() => handleSwipe("right")} style={btnStyle("#22c55e")}>♥</button>
+              </div>
+              {/* Bouton retour ancré à droite */}
               <button
                 onClick={handleRetour}
                 disabled={historique.length === 0}
                 style={{
+                  position: "absolute", right: 0,
                   background: "transparent",
-                  border: "2px solid " + (historique.length > 0 ? "#f59e0b" : "#333"),
-                  color: historique.length > 0 ? "#f59e0b" : "#333",
-                  borderRadius: "50%", width: "44px", height: "44px",
-                  fontSize: "18px", cursor: historique.length > 0 ? "pointer" : "default",
-                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  border: "2px solid " + (historique.length > 0 ? "#f59e0b" : "#2a2a2a"),
+                  color: historique.length > 0 ? "#f59e0b" : "#2a2a2a",
+                  borderRadius: "50%", width: "36px", height: "36px",
+                  fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default",
+                  display: "flex", alignItems: "center", justifyContent: "center",
                 }}
               >↩</button>
             </div>
           )}
-
-          {/* Stats compactes */}
-          <div style={{ marginTop: "10px", display: "flex", gap: "20px", fontSize: "12px", color: "#444" }}>
-            <span>✅ {listes.aVoir.length}</span>
-            <span>❌ {listes.pasInteresse.length}</span>
-            <span>👁️ {listes.dejavu.length}</span>
-          </div>
         </div>
       ) : null}
 
