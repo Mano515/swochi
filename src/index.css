@@ -65,14 +65,20 @@ input, button, select, textarea { font-size: 16px; }
   padding: 0 20px;
 }
 
-/* Sur desktop, la barre de genres prend toute la largeur du wrapper */
+/* ── Desktop ── */
 @media (min-width: 769px) {
+  /* La barre de genres prend toute la largeur */
   .top-section {
-    max-width: 100%;
-    padding: 0 40px;
+    max-width: 640px;
+    padding: 0 32px;
   }
   .desktop-wrapper {
-    max-width: 600px;
+    max-width: 640px;
+  }
+  /* La swipe-section se cale sur la largeur de la carte */
+  .swipe-section {
+    width: auto;
+    padding: 16px 0 24px;
   }
 }
 
@@ -116,7 +122,7 @@ input, button, select, textarea { font-size: 16px; }
     top: 0;
     background: #0f0f0f;
     z-index: 10;
-    padding: 12px 14px 0;
+    padding: 20px 14px 0;
   }
 
   .top-section .header-row  { margin-bottom: 16px; }

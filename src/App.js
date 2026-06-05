@@ -314,7 +314,7 @@ function App() {
 
           {/* Boutons */}
           {filmActuel && (
-            <div style={{ position: "relative", width: "100%", maxWidth: "340px", marginTop: "24px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <div style={{ position: "relative", width: "min(300px, 90vw)", marginTop: "24px", display: "flex", justifyContent: "center", alignItems: "center" }}>
               {/* 3 boutons centrés */}
               <div style={{ display: "flex", gap: "22px" }}>
                 <button onClick={() => handleSwipe("left")}  style={btnStyle("#ef4444")}>✕</button>
