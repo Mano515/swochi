@@ -385,10 +385,12 @@ const inputStyle = {
 
 function btnStyle(color) {
   return {
-    background: "transparent", border: `2px solid ${color}`,
-    color: color, borderRadius: "50px",
-    padding: "12px 24px", fontSize: "15px",
-    fontWeight: "bold", cursor: "pointer",
+    background: "transparent", border: `2.5px solid ${color}`,
+    color: color, borderRadius: "50%",
+    width: "58px", height: "58px",
+    fontSize: "22px", fontWeight: "bold",
+    cursor: "pointer", flexShrink: 0,
+    display: "flex", alignItems: "center", justifyContent: "center",
   };
 }
 
