@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, setDoc, getDoc, runTransaction } from "firebase/firestore";
+import { doc, setDoc, updateDoc, getDoc, runTransaction } from "firebase/firestore";
 import MovieCard from "./MovieCard";
 import Login from "./Login";
 import Match from "./Match";
@@ -119,11 +119,8 @@ function App() {
   async function saveListes(newListes) {
     if (!user) return;
     try {
-      await setDoc(doc(db, "users", user.uid), {
-        email: user.email,
-        username,
-        listes: newListes
-      });
+      // updateDoc n'envoie que le champ modifié, pas tout le document
+      await updateDoc(doc(db, "users", user.uid), { listes: newListes });
     } catch (e) {
       console.error("Erreur sauvegarde:", e);
       afficherToast("Sauvegarde échouée — vérifiez votre connexion.");
