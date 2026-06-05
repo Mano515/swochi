@@ -133,20 +133,20 @@ function MovieCard({ film, onSwipe, isTop }) {
         fontWeight: "bold", fontSize: "18px", border: "2px solid white"
       }}>DÉJÀ VU</motion.div>
 
-      {/* Bande basse cliquable */}
+      {/* Zone cliquable bas — indicateur d'infos centré */}
       <div
         onClick={openDetails}
         style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
-          background: "linear-gradient(transparent, rgba(0,0,0,0.85))",
-          color: "white", padding: "40px 16px 16px",
-          fontSize: "18px", fontWeight: "bold",
+          background: "linear-gradient(transparent, rgba(0,0,0,0.7))",
           cursor: "pointer",
-          display: "flex", alignItems: "flex-end", justifyContent: "space-between",
+          display: "flex", flexDirection: "column", alignItems: "center",
+          paddingBottom: "12px", paddingTop: "40px",
+          gap: "2px",
         }}
       >
-        <span>{film.title}</span>
-        <span style={{ fontSize: "13px", color: "#aaa", fontWeight: "normal" }}>ℹ️ Infos</span>
+        <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)", letterSpacing: "1px", fontWeight: "500" }}>Infos</span>
+        <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.35)", lineHeight: 1 }}>︿</span>
       </div>
 
       {/* Panneau de détails */}

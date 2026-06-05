@@ -314,9 +314,9 @@ function App() {
 
           {/* Boutons */}
           {filmActuel && (
-            <div style={{ position: "relative", width: "100%", maxWidth: "340px", marginTop: "16px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <div style={{ position: "relative", width: "100%", maxWidth: "340px", marginTop: "24px", display: "flex", justifyContent: "center", alignItems: "center" }}>
               {/* 3 boutons centrés */}
-              <div style={{ display: "flex", gap: "16px" }}>
+              <div style={{ display: "flex", gap: "22px" }}>
                 <button onClick={() => handleSwipe("left")}  style={btnStyle("#ef4444")}>✕</button>
                 <button onClick={() => handleSwipe("up")}    style={btnStyle("#3b82f6")}>👁</button>
                 <button onClick={() => handleSwipe("right")} style={btnStyle("#22c55e")}>♥</button>
@@ -385,10 +385,12 @@ const inputStyle = {
 
 function btnStyle(color) {
   return {
-    background: "transparent", border: `2px solid ${color}`,
-    color: color, borderRadius: "50px",
-    padding: "12px 24px", fontSize: "15px",
-    fontWeight: "bold", cursor: "pointer",
+    background: "transparent", border: `3px solid ${color}`,
+    color: color, borderRadius: "50%",
+    width: "58px", height: "58px",
+    fontSize: "22px", fontWeight: "bold",
+    cursor: "pointer", flexShrink: 0,
+    display: "flex", alignItems: "center", justifyContent: "center",
   };
 }
 
