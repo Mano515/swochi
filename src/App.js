@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, setDoc, updateDoc, getDoc, runTransaction } from "firebase/firestore";
+import { doc, updateDoc, getDoc, runTransaction } from "firebase/firestore";
 import MovieCard from "./MovieCard";
 import Login from "./Login";
 import Match from "./Match";
@@ -74,7 +74,7 @@ function App() {
         chargerFilms(1, ids, [], "");
       }
     });
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function fetchPage(numPage, genre) {
     const key = process.env.REACT_APP_TMDB_KEY;
@@ -394,17 +394,5 @@ function btnStyle(color) {
   };
 }
 
-function ongletStyle(actif) {
-  return {
-    background: actif ? "white" : "transparent",
-    color: actif ? "#0f0f0f" : "#888",
-    border: "1px solid #333",
-    borderRadius: "50px",
-    padding: "10px 24px",
-    fontSize: "14px",
-    fontWeight: "bold",
-    cursor: "pointer",
-  };
-}
 
 export default App;
