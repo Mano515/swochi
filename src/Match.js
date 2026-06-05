@@ -34,7 +34,27 @@ function Match({ listesUser, username }) {
   const [loading, setLoading] = useState(false);
   const [celebration, setCelebration] = useState(false);
   const [filmTire, setFilmTire] = useState(null);
+  const [copied, setCopied] = useState(false);
   const confettis = useConfettis(celebration);
+
+  async function partagerPseudo(username) {
+    const texte = `Rejoins-moi sur Swochi ! Mon pseudo : @${username}`;
+    // Web Share API — ouvre le menu de partage natif sur mobile
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Swochi", text: texte });
+        return;
+      } catch { /* annulé par l'utilisateur */ return; }
+    }
+    // Fallback desktop — copie dans le presse-papier
+    try {
+      await navigator.clipboard.writeText(texte);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  }
 
   function tirerAuSort() {
     if (!matches || matches.length === 0) return;
@@ -138,9 +158,25 @@ function Match({ listesUser, username }) {
         </button>
 
         {username && (
-          <p style={{ margin: 0, color: "#555", fontSize: "12px", textAlign: "center" }}>
-            Ton pseudo : <span style={{ color: "#888" }}>@{username}</span>
-          </p>
+          <div style={{
+            background: "#111", border: "1px solid #2a2a2a",
+            borderRadius: "12px", padding: "12px 16px",
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
+          }}>
+            <div>
+              <p style={{ margin: "0 0 2px", fontSize: "11px", color: "#555" }}>TON PSEUDO</p>
+              <p style={{ margin: 0, fontSize: "16px", fontWeight: "bold", color: "white" }}>@{username}</p>
+            </div>
+            <button onClick={() => partagerPseudo(username)} style={{
+              background: copied ? "#22c55e" : "#a855f7", color: "white",
+              border: "none", borderRadius: "20px",
+              padding: "8px 16px", fontSize: "13px",
+              fontWeight: "bold", cursor: "pointer", flexShrink: 0,
+              transition: "background 0.2s",
+            }}>
+              {copied ? "✓ Copié !" : "Partager"}
+            </button>
+          </div>
         )}
 
         {error && <p style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>{error}</p>}
