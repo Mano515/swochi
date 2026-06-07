@@ -10,6 +10,7 @@ import GenreScroll from "./GenreScroll";
 import MenuBurger from "./MenuBurger";
 import Profil from "./Profil";
 import Onboarding from "./Onboarding";
+import { useTheme } from "./ThemeContext";
 
 // ─── Écran verrouillé pour les invités ───────────────────────────────────────
 
@@ -18,19 +19,19 @@ function EcranVerrouille({ titre, emoji, onSeConnecter }) {
     <div style={{
       display: "flex", flexDirection: "column", alignItems: "center",
       justifyContent: "center", textAlign: "center",
-      padding: "48px 24px", gap: "16px",
+      padding: "56px 24px", gap: "16px",
     }}>
-      <span style={{ fontSize: "48px" }}>{emoji}</span>
-      <h2 style={{ margin: 0, fontSize: "18px" }}>{titre}</h2>
-      <p style={{ color: "#666", fontSize: "14px", margin: 0, maxWidth: "260px" }}>
+      <span style={{ fontSize: "52px" }}>{emoji}</span>
+      <h2 style={{ margin: 0, fontSize: "20px", color: "var(--text)" }}>{titre}</h2>
+      <p style={{ color: "var(--text-3)", fontSize: "14px", margin: 0, maxWidth: "260px", lineHeight: "1.6" }}>
         Crée un compte gratuitement pour débloquer cette fonctionnalité et sauvegarder tous tes swipes.
       </p>
       <button onClick={onSeConnecter} style={{
-        background: "#a855f7", color: "white",
+        background: "var(--purple)", color: "white",
         border: "none", borderRadius: "50px",
-        padding: "14px 28px", fontSize: "15px",
-        fontWeight: "bold", cursor: "pointer",
-        marginTop: "8px",
+        padding: "14px 32px", fontSize: "15px",
+        fontWeight: "600", cursor: "pointer",
+        marginTop: "8px", boxShadow: "0 4px 16px rgba(168,85,247,0.35)",
       }}>
         Se connecter / S'inscrire
       </button>
@@ -38,9 +39,19 @@ function EcranVerrouille({ titre, emoji, onSeConnecter }) {
   );
 }
 
+// ─── Tabs bottom nav ─────────────────────────────────────────────────────────
+
+const NAV_TABS = [
+  { key: "swipe",    emoji: "🎬", label: "Swipe" },
+  { key: "match",    emoji: "🤝", label: "Match" },
+  { key: "mesfilms", emoji: "🎞",  label: "Films" },
+  { key: "profil",   emoji: "👤", label: "Profil" },
+];
+
 // ─── App ─────────────────────────────────────────────────────────────────────
 
 function App() {
+  const { theme, toggleTheme } = useTheme();
   const [user, setUser]               = useState(null);
   const [loading, setLoading]         = useState(true);
   const [isGuest, setIsGuest]         = useState(false);
@@ -272,7 +283,7 @@ function App() {
   // ── Rendu ──────────────────────────────────────────────────────────────────
 
   if (loading) return (
-    <div role="status" aria-label="Chargement" style={{ background: "#0f0f0f", minHeight: "100vh" }} />
+    <div role="status" aria-label="Chargement" style={{ background: "var(--bg)", minHeight: "100vh" }} />
   );
 
   if (!user && !isGuest) return (
@@ -282,23 +293,25 @@ function App() {
   // Écran de choix du pseudo (nouveaux comptes)
   if (user && (username === "" || username === null)) return (
     <div style={{
-      minHeight: "100vh", background: "#0f0f0f",
+      minHeight: "100vh", background: "var(--bg)",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
-      fontFamily: "sans-serif", color: "white", padding: "20px",
+      color: "var(--text)", padding: "20px",
     }}>
-      <h1 style={{ fontSize: "28px", letterSpacing: "2px", marginBottom: "8px" }}>🎬 SWOCHI</h1>
+      <h1 style={{ fontSize: "28px", letterSpacing: "2px", marginBottom: "6px", color: "var(--text)" }}>🎬 SWOCHI</h1>
+      <p style={{ color: "var(--text-3)", marginBottom: "32px", fontSize: "14px" }}>Dernière étape ✨</p>
       <div style={{
-        background: "#1a1a1a", borderRadius: "16px",
+        background: "var(--surface)", borderRadius: "20px",
         padding: "32px", width: "100%", maxWidth: "300px",
-        display: "flex", flexDirection: "column", gap: "16px", marginTop: "24px"
+        display: "flex", flexDirection: "column", gap: "16px",
+        boxShadow: "var(--shadow-md)", border: "1px solid var(--border)",
       }}>
-        <h2 style={{ margin: 0, fontSize: "18px" }}>Choisis ton pseudo</h2>
-        <p style={{ margin: 0, color: "#666", fontSize: "13px", lineHeight: "1.5" }}>
+        <h2 style={{ margin: 0, fontSize: "19px", color: "var(--text)" }}>Choisis ton pseudo</h2>
+        <p style={{ margin: 0, color: "var(--text-3)", fontSize: "13px", lineHeight: "1.6" }}>
           Tes amis l'utiliseront pour t'ajouter et comparer vos listes de films.
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <label htmlFor="username-input" style={{ fontSize: "13px", color: "#888" }}>Ton pseudo</label>
+          <label htmlFor="username-input" style={{ fontSize: "13px", color: "var(--text-3)" }}>Ton pseudo</label>
           <input
             id="username-input"
             type="text"
@@ -311,15 +324,16 @@ function App() {
           />
         </div>
         {usernameError && (
-          <p id="username-error" role="alert" style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>
+          <p id="username-error" role="alert" style={{ color: "var(--red)", fontSize: "13px", margin: 0 }}>
             {usernameError}
           </p>
         )}
         <button onClick={handleChoisirUsername} style={{
-          background: "#22c55e", color: "white",
+          background: "var(--green)", color: "white",
           border: "none", borderRadius: "50px",
           padding: "14px", fontSize: "16px",
-          fontWeight: "bold", cursor: "pointer",
+          fontWeight: "700", cursor: "pointer",
+          boxShadow: "0 4px 14px rgba(34,197,94,0.35)",
         }}>Confirmer</button>
       </div>
     </div>
@@ -338,32 +352,35 @@ function App() {
       {showGuestPrompt && (
         <div style={{
           position: "fixed", inset: 0,
-          background: "rgba(0,0,0,0.85)",
+          background: "rgba(0,0,0,0.8)",
           zIndex: 500,
           display: "flex", alignItems: "center", justifyContent: "center",
           padding: "24px",
         }}>
           <div style={{
-            background: "#1a1a1a", borderRadius: "20px",
-            padding: "32px 24px", maxWidth: "320px", width: "100%",
+            background: "var(--surface)", borderRadius: "24px",
+            padding: "36px 28px", maxWidth: "320px", width: "100%",
             textAlign: "center", display: "flex", flexDirection: "column", gap: "16px",
+            boxShadow: "var(--shadow-lg)", border: "1px solid var(--border)",
+            animation: "slideUp 0.25s ease-out",
           }}>
-            <span style={{ fontSize: "40px" }}>🎬</span>
-            <h2 style={{ margin: 0, fontSize: "20px", color: "white" }}>Tu kiffes Swochi ?</h2>
-            <p style={{ color: "#888", fontSize: "14px", margin: 0, lineHeight: "1.6" }}>
+            <span style={{ fontSize: "44px" }}>🎬</span>
+            <h2 style={{ margin: 0, fontSize: "20px", color: "var(--text)" }}>Tu kiffes Swochi ?</h2>
+            <p style={{ color: "var(--text-3)", fontSize: "14px", margin: 0, lineHeight: "1.6" }}>
               Crée un compte gratuit pour sauvegarder tes swipes, faire des listes et comparer avec tes amis.
             </p>
             <button onClick={basculerModeConnexion} style={{
-              background: "#a855f7", color: "white",
+              background: "var(--purple)", color: "white",
               border: "none", borderRadius: "50px",
               padding: "14px", fontSize: "15px",
-              fontWeight: "bold", cursor: "pointer",
+              fontWeight: "700", cursor: "pointer",
+              boxShadow: "0 4px 16px rgba(168,85,247,0.35)",
             }}>
               Créer un compte
             </button>
             <button onClick={() => setShowGuestPrompt(false)} style={{
               background: "none", border: "none",
-              color: "#555", fontSize: "13px", cursor: "pointer",
+              color: "var(--text-3)", fontSize: "13px", cursor: "pointer",
             }}>
               Continuer sans compte
             </button>
@@ -384,41 +401,63 @@ function App() {
         {/* ── Header ── */}
         <header className="top-section">
           <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-            <span aria-label="Swochi" style={{ fontSize: "26px", fontWeight: "bold", letterSpacing: "3px" }}>🎬 SWOCHI</span>
-            <button
-              onClick={() => setMenuOuvert(true)}
-              aria-label="Ouvrir le menu"
-              aria-expanded={menuOuvert}
-              aria-haspopup="dialog"
-              style={{
-                position: "absolute", right: 0,
-                background: "transparent", border: "1px solid #2a2a2a",
-                color: "#aaa", borderRadius: "8px",
-                padding: "9px 12px", cursor: "pointer",
-                display: "flex", flexDirection: "column", gap: "5px",
-              }}
-            >
-              <span aria-hidden="true" style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
-              <span aria-hidden="true" style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
-              <span aria-hidden="true" style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
-            </button>
+            <span aria-label="Swochi" style={{ fontSize: "24px", fontWeight: "700", letterSpacing: "3px", color: "var(--text)" }}>
+              🎬 SWOCHI
+            </span>
+
+            {/* Actions header : thème + burger */}
+            <div style={{ position: "absolute", right: 0, display: "flex", gap: "8px", alignItems: "center" }}>
+              {/* Toggle thème */}
+              <button
+                onClick={toggleTheme}
+                aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
+                title={theme === "dark" ? "Mode clair" : "Mode sombre"}
+                style={{
+                  background: "var(--surface-2)", border: "1px solid var(--border)",
+                  borderRadius: "8px", padding: "8px 10px",
+                  cursor: "pointer", fontSize: "16px", lineHeight: 1,
+                  transition: "background 0.2s",
+                }}
+              >
+                {theme === "dark" ? "☀️" : "🌙"}
+              </button>
+
+              {/* Burger menu */}
+              <button
+                onClick={() => setMenuOuvert(true)}
+                aria-label="Ouvrir le menu"
+                aria-expanded={menuOuvert}
+                aria-haspopup="dialog"
+                style={{
+                  background: "var(--surface-2)", border: "1px solid var(--border)",
+                  color: "var(--text-2)", borderRadius: "8px",
+                  padding: "9px 11px", cursor: "pointer",
+                  display: "flex", flexDirection: "column", gap: "5px",
+                  transition: "background 0.2s",
+                }}
+              >
+                <span aria-hidden="true" style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+                <span aria-hidden="true" style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+                <span aria-hidden="true" style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+              </button>
+            </div>
           </div>
 
           {/* Bandeau invité */}
           {isGuest && (
             <div style={{
-              background: "#a855f710", borderBottom: "1px solid #a855f720",
-              padding: "8px 16px",
+              background: "var(--purple-dim)", borderRadius: "10px",
+              marginBottom: "10px", padding: "8px 14px",
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
             }}>
-              <p style={{ margin: 0, fontSize: "12px", color: "#a855f7" }}>
+              <p style={{ margin: 0, fontSize: "12px", color: "var(--purple)", fontWeight: "500" }}>
                 Mode invité · swipes non sauvegardés
               </p>
               <button onClick={basculerModeConnexion} style={{
-                background: "none", border: "1px solid #a855f7",
-                color: "#a855f7", borderRadius: "20px",
+                background: "none", border: "1px solid var(--purple)",
+                color: "var(--purple)", borderRadius: "20px",
                 padding: "4px 12px", fontSize: "12px",
-                fontWeight: "bold", cursor: "pointer", flexShrink: 0,
+                fontWeight: "600", cursor: "pointer", flexShrink: 0,
               }}>
                 Se connecter
               </button>
@@ -440,22 +479,22 @@ function App() {
                 {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
                 {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
                 {!filmActuel && !loadingFilms && (
-                  <p style={{ color: "#888", textAlign: "center", paddingTop: "40%" }}>Plus de films !</p>
+                  <p style={{ color: "var(--text-3)", textAlign: "center", paddingTop: "40%" }}>Plus de films !</p>
                 )}
                 {!filmActuel && loadingFilms && (
-                  <p role="status" style={{ color: "#555", textAlign: "center", paddingTop: "40%" }}>Chargement…</p>
+                  <p role="status" style={{ color: "var(--text-4)", textAlign: "center", paddingTop: "40%" }}>Chargement…</p>
                 )}
               </div>
 
               {filmActuel && (
                 <div style={{
-                  position: "relative", width: "100%", maxWidth: "340px",
-                  marginTop: "24px", display: "flex", justifyContent: "center", alignItems: "center",
+                  position: "relative", width: "100%", maxWidth: "320px",
+                  marginTop: "22px", display: "flex", justifyContent: "center", alignItems: "center",
                 }}>
-                  <div style={{ display: "flex", gap: "22px" }}>
-                    <button onClick={() => handleSwipe("left")}  aria-label="Passer ce film" style={btnStyle("#ef4444")}>✕</button>
-                    <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu"        style={btnStyle("#3b82f6")}>👁</button>
-                    <button onClick={() => handleSwipe("right")} aria-label="À voir"         style={btnStyle("#22c55e")}>♥</button>
+                  <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                    <button onClick={() => handleSwipe("left")}  aria-label="Passer ce film" style={btnStyle("var(--red)")}>✕</button>
+                    <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu"        style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
+                    <button onClick={() => handleSwipe("right")} aria-label="À voir"         style={btnStyle("var(--green)")}>♥</button>
                   </div>
                   <button
                     onClick={handleRetour}
@@ -464,8 +503,8 @@ function App() {
                     style={{
                       position: "absolute", right: 0,
                       background: "transparent",
-                      border: "2px solid " + (historique.length > 0 ? "#f59e0b" : "#2a2a2a"),
-                      color: historique.length > 0 ? "#f59e0b" : "#2a2a2a",
+                      border: "2px solid " + (historique.length > 0 ? "var(--amber)" : "var(--text-5)"),
+                      color: historique.length > 0 ? "var(--amber)" : "var(--text-5)",
                       borderRadius: "50%", width: "36px", height: "36px",
                       fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default",
                       display: "flex", alignItems: "center", justifyContent: "center",
@@ -503,6 +542,21 @@ function App() {
         </main>
       </div>
 
+      {/* ── Bottom Nav (mobile) ── */}
+      <nav className="bottom-nav" aria-label="Navigation principale">
+        {NAV_TABS.map(tab => (
+          <button
+            key={tab.key}
+            className={`bottom-nav-btn ${onglet === tab.key ? "active" : ""}`}
+            onClick={() => setOnglet(tab.key)}
+            aria-current={onglet === tab.key ? "page" : undefined}
+          >
+            <span className="nav-icon">{tab.emoji}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </nav>
+
       {/* Toast */}
       {toast && (
         <div
@@ -510,14 +564,14 @@ function App() {
           aria-live="assertive"
           onClick={() => setToast(null)}
           style={{
-            position: "fixed", bottom: "24px", left: "50%",
+            position: "fixed", bottom: "90px", left: "50%",
             transform: "translateX(-50%)",
-            background: toast.type === "error" ? "#ef4444" : "#22c55e",
-            color: "white", borderRadius: "12px",
-            padding: "12px 20px", fontSize: "14px",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+            background: toast.type === "error" ? "var(--red)" : "var(--green)",
+            color: "white", borderRadius: "14px",
+            padding: "12px 22px", fontSize: "14px", fontWeight: "500",
+            boxShadow: "var(--shadow-lg)",
             zIndex: 1000, cursor: "pointer",
-            maxWidth: "90vw", textAlign: "center",
+            maxWidth: "88vw", textAlign: "center",
             animation: "apparaitre 0.2s ease-out",
           }}
         >
@@ -529,19 +583,21 @@ function App() {
 }
 
 const inputStyle = {
-  background: "#2a2a2a", border: "1px solid #333",
-  borderRadius: "8px", padding: "12px",
-  color: "white", fontSize: "16px", outline: "none",
+  background: "var(--input-bg)", border: "1px solid var(--input-border)",
+  borderRadius: "10px", padding: "13px 14px",
+  color: "var(--text)", fontSize: "16px", outline: "none",
+  transition: "border-color 0.2s",
 };
 
 function btnStyle(color) {
   return {
-    background: "transparent", border: `3px solid ${color}`,
+    background: "transparent", border: `2.5px solid ${color}`,
     color: color, borderRadius: "50%",
     width: "58px", height: "58px",
     fontSize: "22px", fontWeight: "bold",
     cursor: "pointer", flexShrink: 0,
     display: "flex", alignItems: "center", justifyContent: "center",
+    transition: "transform 0.1s, background 0.15s",
   };
 }
 

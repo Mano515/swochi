@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { auth } from "./firebase";
 import { signOut } from "firebase/auth";
+import { useTheme } from "./ThemeContext";
 
 const ONGLETS_COMPLET = [
   { key: "swipe",    label: "🎬 Swipe" },
@@ -19,6 +20,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
   const drawerRef    = useRef(null);
   const fermerBtnRef = useRef(null);
   const ONGLETS      = isGuest ? ONGLETS_INVITE : ONGLETS_COMPLET;
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     if (!ouvert) return;
@@ -50,9 +52,10 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
           aria-hidden="true"
           style={{
             position: "fixed", inset: 0,
-            background: "rgba(0,0,0,0.6)",
+            background: "rgba(0,0,0,0.55)",
             zIndex: 100,
             animation: "fonduIn 0.2s ease",
+            backdropFilter: "blur(2px)",
           }}
         />
       )}
@@ -65,31 +68,31 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
         aria-hidden={!ouvert}
         style={{
           position: "fixed", top: 0, right: 0,
-          width: "min(280px, 80vw)", height: "100%",
-          background: "#141414",
-          borderLeft: "1px solid #222",
+          width: "min(280px, 82vw)", height: "100%",
+          background: "var(--drawer)",
+          borderLeft: "1px solid var(--border)",
           zIndex: 101,
           display: "flex", flexDirection: "column",
           transform: ouvert ? "translateX(0)" : "translateX(100%)",
-          transition: "transform 0.25s cubic-bezier(0.4,0,0.2,1)",
-          boxShadow: ouvert ? "-8px 0 32px rgba(0,0,0,0.5)" : "none",
+          transition: "transform 0.28s cubic-bezier(0.4,0,0.2,1)",
+          boxShadow: ouvert ? "var(--shadow-lg)" : "none",
         }}
       >
         {/* En-tête */}
         <div style={{
-          padding: "20px 20px 16px",
-          borderBottom: "1px solid #1f1f1f",
+          padding: "18px 18px 14px",
+          borderBottom: "1px solid var(--divider)",
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
-          <span style={{ color: "#555", fontSize: "13px" }}>Menu</span>
+          <span style={{ color: "var(--text-3)", fontSize: "13px", fontWeight: "500" }}>Réglages</span>
           <button
             ref={fermerBtnRef}
             onClick={onFermer}
             aria-label="Fermer le menu"
             style={{
-              background: "transparent", border: "none",
-              color: "#666", fontSize: "22px", cursor: "pointer",
-              lineHeight: 1, padding: "4px",
+              background: "var(--surface-2)", border: "1px solid var(--border)",
+              color: "var(--text-3)", fontSize: "18px", cursor: "pointer",
+              lineHeight: 1, padding: "6px 9px", borderRadius: "8px",
             }}
           >✕</button>
         </div>
@@ -98,19 +101,19 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
         {isGuest && (
           <div style={{
             margin: "12px 12px 0",
-            background: "#a855f710", border: "1px solid #a855f730",
-            borderRadius: "10px", padding: "10px 14px",
+            background: "var(--purple-dim)", border: "1px solid rgba(168,85,247,0.2)",
+            borderRadius: "12px", padding: "12px 14px",
           }}>
-            <p style={{ margin: "0 0 6px", fontSize: "13px", color: "#a855f7", fontWeight: "bold" }}>
+            <p style={{ margin: "0 0 4px", fontSize: "13px", color: "var(--purple)", fontWeight: "600" }}>
               Mode invité
             </p>
-            <p style={{ margin: 0, fontSize: "12px", color: "#666" }}>
+            <p style={{ margin: 0, fontSize: "12px", color: "var(--text-3)", lineHeight: "1.5" }}>
               Crée un compte pour sauvegarder tes swipes et rejoindre tes amis.
             </p>
           </div>
         )}
 
-        {/* Navigation */}
+        {/* Navigation (desktop seulement — sur mobile la bottom nav prend le relais) */}
         <nav aria-label="Navigation principale" style={{ flex: 1, padding: "12px" }}>
           {ONGLETS.map(o => (
             <button
@@ -119,14 +122,14 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
               aria-current={onglet === o.key ? "page" : undefined}
               style={{
                 width: "100%", textAlign: "left",
-                background: onglet === o.key ? "#1f1f1f" : "transparent",
-                color: onglet === o.key ? "white" : "#888",
+                background: onglet === o.key ? "var(--surface-2)" : "transparent",
+                color: onglet === o.key ? "var(--text)" : "var(--text-3)",
                 border: "none", borderRadius: "10px",
-                padding: "14px 16px", fontSize: "15px",
-                fontWeight: onglet === o.key ? "bold" : "normal",
-                cursor: "pointer", marginBottom: "4px",
+                padding: "13px 16px", fontSize: "15px",
+                fontWeight: onglet === o.key ? "600" : "normal",
+                cursor: "pointer", marginBottom: "3px",
                 display: "flex", alignItems: "center", gap: "4px",
-                borderLeft: onglet === o.key ? "3px solid #a855f7" : "3px solid transparent",
+                borderLeft: onglet === o.key ? "3px solid var(--purple)" : "3px solid transparent",
               }}
             >
               {o.label}
@@ -137,27 +140,46 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
           {isGuest && ONGLETS_COMPLET.filter(o => o.key !== "swipe").map(o => (
             <div key={o.key} style={{
               display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "14px 16px", borderRadius: "10px", marginBottom: "4px",
-              opacity: 0.4,
+              padding: "13px 16px", borderRadius: "10px", marginBottom: "3px",
+              opacity: 0.35,
             }}>
-              <span style={{ fontSize: "15px", color: "#555" }}>{o.label}</span>
-              <span style={{ fontSize: "11px", color: "#555", background: "#222", borderRadius: "6px", padding: "2px 6px" }}>
+              <span style={{ fontSize: "15px", color: "var(--text-3)" }}>{o.label}</span>
+              <span style={{ fontSize: "11px", color: "var(--text-3)", background: "var(--surface-2)", borderRadius: "6px", padding: "2px 6px" }}>
                 🔒
               </span>
             </div>
           ))}
+
+          {/* Toggle thème */}
+          <div style={{ borderTop: "1px solid var(--divider)", marginTop: "8px", paddingTop: "8px" }}>
+            <button
+              onClick={toggleTheme}
+              style={{
+                width: "100%", textAlign: "left",
+                background: "transparent", border: "none",
+                color: "var(--text-3)", borderRadius: "10px",
+                padding: "13px 16px", fontSize: "15px",
+                cursor: "pointer", marginBottom: "3px",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                borderLeft: "3px solid transparent",
+              }}
+            >
+              <span>{theme === "dark" ? "☀️  Mode clair" : "🌙  Mode sombre"}</span>
+            </button>
+          </div>
         </nav>
 
         {/* Pied de page */}
-        <div style={{ padding: "16px", borderTop: "1px solid #1f1f1f" }}>
+        <div style={{ padding: "14px", borderTop: "1px solid var(--divider)" }}>
           {isGuest ? (
             <button
               onClick={onSeConnecter}
               style={{
-                width: "100%", background: "#a855f7",
+                width: "100%", background: "var(--purple)",
                 border: "none", color: "white",
-                borderRadius: "10px", padding: "13px",
-                fontSize: "14px", fontWeight: "bold", cursor: "pointer",
+                borderRadius: "12px", padding: "13px",
+                fontSize: "14px", fontWeight: "600", cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(168,85,247,0.3)",
               }}
             >
               Se connecter / S'inscrire
@@ -167,8 +189,8 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
               onClick={() => signOut(auth)}
               style={{
                 width: "100%", background: "transparent",
-                border: "1px solid #333", color: "#666",
-                borderRadius: "10px", padding: "12px",
+                border: "1px solid var(--border-2)", color: "var(--text-3)",
+                borderRadius: "12px", padding: "12px",
                 fontSize: "14px", cursor: "pointer",
               }}
             >
