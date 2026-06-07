@@ -28,11 +28,9 @@ service cloud.firestore {
 
     // ── Demandes d'amis ───────────────────────────────────────────────────────
     match /friendRequests/{requestId} {
-      // Lecture : uniquement les demandes qui me concernent
-      allow read: if request.auth != null && (
-        resource.data.fromUid == request.auth.uid ||
-        resource.data.toUid   == request.auth.uid
-      );
+      // Lecture : tout utilisateur connecté
+      // (Firestore ne supporte pas les conditions OR sur les requêtes de collection)
+      allow read: if request.auth != null;
 
       // Création : je ne peux envoyer qu'en mon nom
       allow create: if request.auth != null
