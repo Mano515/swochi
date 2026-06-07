@@ -11,12 +11,14 @@ import MenuBurger from "./MenuBurger";
 import Profil from "./Profil";
 import Onboarding from "./Onboarding";
 import ErrorBoundary from "./ErrorBoundary";
+import SplashScreen from "./SplashScreen";
 
 // ─── App ─────────────────────────────────────────────────────────────────────
 
 function App() {
   const [user, setUser]               = useState(null);
   const [loading, setLoading]         = useState(true);
+  const [loadingUserData, setLoadingUserData] = useState(false);
   const [isGuest, setIsGuest]         = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [loadingFilms, setLoadingFilms] = useState(false);
@@ -65,13 +67,13 @@ function App() {
   useEffect(() => {
     if (!user) return;
     setIsGuest(false);
-    // Quand on se connecte, on efface les données invité du localStorage
+    setLoadingUserData(true);
     localStorage.removeItem("swochi_guest_listes");
     localStorage.removeItem("swochi_guest_swiped");
     getDoc(doc(db, "users", user.uid)).catch(() => {
       afficherToast("Impossible de charger vos données. Vérifiez votre connexion.");
     }).then(snap => {
-      if (!snap) return;
+      if (!snap) { setLoadingUserData(false); return; }
       const listesExistantes = (snap.exists() && snap.data().listes)
         ? snap.data().listes
         : { aVoir: [], pasInteresse: [], dejavu: [] };
@@ -87,6 +89,7 @@ function App() {
         chargerFilms(1, ids, [], "");
         if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
       }
+      setLoadingUserData(false);
     });
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -262,7 +265,9 @@ function App() {
   }
 
   // ── Rendu ──────────────────────────────────────────────────────────────────
-  if (!loading && !user && !isGuest) return (
+  if (loading || loadingUserData) return <SplashScreen />;
+
+  if (!user && !isGuest) return (
     <Login onLogin={() => {}} onGuest={() => setIsGuest(true)} />
   );
 
