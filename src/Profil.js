@@ -1,4 +1,5 @@
-function Profil({ username, user, listes, isGuest, onSeConnecter }) {
+function Profil({ username, user, listes: listesBrut, isGuest, onSeConnecter }) {
+  const listes = listesBrut || { aVoir: [], pasInteresse: [], dejavu: [] };
   const totalSwipes = listes.aVoir.length + listes.pasInteresse.length + listes.dejavu.length;
   const initiale = username ? username[0].toUpperCase() : "?";
 

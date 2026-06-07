@@ -72,7 +72,7 @@ function App() {
       afficherToast("Impossible de charger vos données. Vérifiez votre connexion.");
     }).then(snap => {
       if (!snap) return;
-      const listesExistantes = snap.exists()
+      const listesExistantes = (snap.exists() && snap.data().listes)
         ? snap.data().listes
         : { aVoir: [], pasInteresse: [], dejavu: [] };
       setListes(listesExistantes);
