@@ -209,9 +209,9 @@ function MovieCard({ film, onSwipe, isTop }) {
   const y = useMotionValue(0);
   const rotate        = useTransform(x, [-200, 200], [-25, 25]);
   const opacity       = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
-  const labelOpacityLeft  = useTransform(x, [-100, -30, 0], [1, 0, 0]);
-  const labelOpacityRight = useTransform(x, [0, 30, 100],  [0, 0, 1]);
-  const labelOpacityUp    = useTransform(y, [-100, -30, 0], [1, 0, 0]);
+  const labelOpacityLeft  = useTransform(x, [-60, -20, 0], [1, 0, 0]);
+  const labelOpacityRight = useTransform(x, [0, 20, 60],  [0, 0, 1]);
+  const labelOpacityUp    = useTransform(y, [-60, -20, 0], [1, 0, 0]);
 
   const [showDetails, setShowDetails]       = useState(false);
   const [details, setDetails]               = useState(null);
@@ -227,9 +227,11 @@ function MovieCard({ film, onSwipe, isTop }) {
 
   function handleDragEnd(_, info) {
     if (showDetails) return;
-    if (info.offset.x > 120)       flyOut("right");
-    else if (info.offset.x < -120) flyOut("left");
-    else if (info.offset.y < -120) flyOut("up");
+    const vx = Math.abs(info.velocity.x);
+    const vy = info.velocity.y;
+    if      (info.offset.x > 60  || (vx > 400 && info.offset.x > 20))  flyOut("right");
+    else if (info.offset.x < -60 || (vx > 400 && info.offset.x < -20)) flyOut("left");
+    else if (info.offset.y < -60 || (vy < -400 && info.offset.y < -20)) flyOut("up");
   }
 
   function flyOut(direction) {
