@@ -51,9 +51,9 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
       style={{
         display: visible ? "flex" : "none",
         alignItems: "center", justifyContent: "center",
-        background: "linear-gradient(" + (direction === -1 ? "to right" : "to left") + ", #0f0f0f 60%, transparent)",
-        border: "none", color: "#aaa", cursor: "pointer",
-        padding: "0 10px", fontSize: "18px",
+        background: "linear-gradient(" + (direction === -1 ? "to right" : "to left") + ", var(--bg) 55%, transparent)",
+        border: "none", color: "var(--text-2)", cursor: "pointer",
+        padding: "0 10px", fontSize: "20px",
         position: "absolute", top: 0, bottom: 0,
         [direction === -1 ? "left" : "right"]: 0,
         zIndex: 2,
@@ -109,15 +109,16 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
 
 function genreStyle(actif) {
   return {
-    background: actif ? "white" : "transparent",
-    color: actif ? "#0f0f0f" : "#666",
-    border: "1px solid " + (actif ? "white" : "#333"),
+    background: actif ? "var(--text)" : "transparent",
+    color: actif ? "var(--bg)" : "var(--text-3)",
+    border: "1px solid " + (actif ? "var(--text)" : "var(--border-2)"),
     borderRadius: "20px",
-    padding: "5px 12px",
+    padding: "6px 14px",
     fontSize: "13px",
     cursor: "pointer",
-    fontWeight: actif ? "bold" : "normal",
+    fontWeight: actif ? "700" : "normal",
     whiteSpace: "nowrap",
+    transition: "all 0.15s",
   };
 }
 

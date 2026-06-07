@@ -34,25 +34,31 @@ function Login({ onLogin, onGuest }) {
 
   return (
     <div style={{
-      minHeight: "100vh", background: "#0f0f0f",
+      minHeight: "100vh", background: "var(--bg)",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
-      fontFamily: "sans-serif", color: "white",
-      padding: "20px",
+      color: "var(--text)", padding: "24px",
     }}>
-      <h1 style={{ fontSize: "32px", letterSpacing: "2px", marginBottom: "8px" }}>🎬 SWOCHI</h1>
-      <p style={{ color: "#888", marginBottom: "40px" }}>Découvre ton prochain film</p>
+      {/* Logo */}
+      <div style={{ textAlign: "center", marginBottom: "36px" }}>
+        <h1 style={{ fontSize: "34px", letterSpacing: "3px", margin: "0 0 8px", color: "var(--text)" }}>
+          🎬 SWOCHI
+        </h1>
+        <p style={{ color: "var(--text-3)", margin: 0, fontSize: "14px" }}>Découvre ton prochain film</p>
+      </div>
 
+      {/* Carte formulaire */}
       <div style={{
-        background: "#1a1a1a", borderRadius: "16px",
-        padding: "32px", width: "100%", maxWidth: "320px",
-        display: "flex", flexDirection: "column", gap: "14px",
+        background: "var(--surface)", borderRadius: "22px",
+        padding: "32px 28px", width: "100%", maxWidth: "340px",
+        display: "flex", flexDirection: "column", gap: "16px",
+        boxShadow: "var(--shadow-md)", border: "1px solid var(--border)",
       }}>
-        <h2 style={{ margin: 0, fontSize: "20px" }}>
+        <h2 style={{ margin: "0 0 4px", fontSize: "20px", fontWeight: "700", color: "var(--text)" }}>
           {isRegister ? "Créer un compte" : "Se connecter"}
         </h2>
 
-        {/* Champ email */}
+        {/* Email */}
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           <label htmlFor="login-email" style={labelStyle}>Adresse e-mail</label>
           <input
@@ -67,7 +73,7 @@ function Login({ onLogin, onGuest }) {
           />
         </div>
 
-        {/* Champ mot de passe */}
+        {/* Mot de passe */}
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           <label htmlFor="login-password" style={labelStyle}>Mot de passe</label>
           <input
@@ -89,26 +95,28 @@ function Login({ onLogin, onGuest }) {
         <button onClick={handleSubmit} style={{
           background: "#22c55e", color: "white",
           border: "none", borderRadius: "50px",
-          padding: "14px", fontSize: "16px",
-          fontWeight: "bold", cursor: "pointer",
+          padding: "15px", fontSize: "16px",
+          fontWeight: "700", cursor: "pointer",
+          boxShadow: "0 4px 14px rgba(34,197,94,0.3)",
+          marginTop: "2px",
         }}>
           {isRegister ? "Créer le compte" : "Se connecter"}
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div style={{ flex: 1, height: "1px", background: "#2a2a2a" }} />
-          <span style={{ color: "#444", fontSize: "12px" }}>ou</span>
-          <div style={{ flex: 1, height: "1px", background: "#2a2a2a" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{ flex: 1, height: "1px", background: "var(--divider)" }} />
+          <span style={{ color: "var(--text-4)", fontSize: "12px" }}>ou</span>
+          <div style={{ flex: 1, height: "1px", background: "var(--divider)" }} />
         </div>
 
         <button onClick={handleGoogle} style={{
-          background: "white", color: "#111",
-          border: "none", borderRadius: "50px",
-          padding: "14px", fontSize: "15px",
-          fontWeight: "bold", cursor: "pointer",
+          background: "var(--surface-2)", color: "var(--text)",
+          border: "1px solid var(--border)", borderRadius: "50px",
+          padding: "13px", fontSize: "15px",
+          fontWeight: "600", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
         }}>
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" aria-hidden="true" width="20" />
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" aria-hidden="true" width="18" />
           Continuer avec Google
         </button>
 
@@ -116,7 +124,7 @@ function Login({ onLogin, onGuest }) {
           onClick={() => setIsRegister(r => !r)}
           style={{
             background: "none", border: "none",
-            color: "#666", fontSize: "13px",
+            color: "var(--text-3)", fontSize: "13px",
             textAlign: "center", cursor: "pointer",
             padding: "4px 0", textDecoration: "underline",
           }}
@@ -126,15 +134,15 @@ function Login({ onLogin, onGuest }) {
       </div>
 
       {/* Mode invité */}
-      <div style={{ marginTop: "24px", textAlign: "center" }}>
-        <p style={{ color: "#444", fontSize: "13px", marginBottom: "10px" }}>
+      <div style={{ marginTop: "28px", textAlign: "center" }}>
+        <p style={{ color: "var(--text-4)", fontSize: "13px", marginBottom: "12px" }}>
           Pas prêt à créer un compte ?
         </p>
         <button onClick={onGuest} style={{
           background: "transparent",
-          border: "1px solid #2a2a2a",
-          color: "#666", borderRadius: "50px",
-          padding: "10px 24px", fontSize: "14px",
+          border: "1px solid var(--border-2)",
+          color: "var(--text-3)", borderRadius: "50px",
+          padding: "11px 26px", fontSize: "14px",
           cursor: "pointer",
         }}>
           Continuer sans compte →
@@ -144,12 +152,12 @@ function Login({ onLogin, onGuest }) {
   );
 }
 
-const labelStyle = { fontSize: "13px", color: "#888" };
+const labelStyle = { fontSize: "13px", color: "var(--text-3)", fontWeight: "500" };
 
 const inputStyle = {
-  background: "#2a2a2a", border: "1px solid #333",
-  borderRadius: "8px", padding: "12px",
-  color: "white", fontSize: "16px", outline: "none",
+  background: "var(--input-bg)", border: "1px solid var(--input-border)",
+  borderRadius: "10px", padding: "13px 14px",
+  color: "var(--text)", fontSize: "16px", outline: "none",
 };
 
 export default Login;

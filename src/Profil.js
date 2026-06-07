@@ -3,43 +3,52 @@ function Profil({ username, user, listes }) {
   const initiale = username ? username[0].toUpperCase() : "?";
 
   return (
-    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "16px" }}>
+    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "16px", paddingBottom: "8px" }}>
 
       {/* Avatar + nom */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", padding: "24px 0 8px" }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "14px", padding: "28px 0 12px" }}>
         <div style={{
-          width: "72px", height: "72px", borderRadius: "50%",
+          width: "80px", height: "80px", borderRadius: "50%",
           background: "linear-gradient(135deg, #a855f7, #3b82f6)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: "28px", fontWeight: "bold", color: "white",
+          fontSize: "30px", fontWeight: "700", color: "white",
+          boxShadow: "0 6px 20px rgba(168,85,247,0.35)",
         }}>
           {initiale}
         </div>
         <div style={{ textAlign: "center" }}>
-          <p style={{ margin: "0 0 4px", fontSize: "20px", fontWeight: "bold" }}>@{username}</p>
-          <p style={{ margin: 0, color: "#555", fontSize: "13px" }}>{user?.email}</p>
+          <p style={{ margin: "0 0 5px", fontSize: "21px", fontWeight: "700", color: "var(--text)" }}>@{username}</p>
+          <p style={{ margin: 0, color: "var(--text-3)", fontSize: "13px" }}>{user?.email}</p>
         </div>
       </div>
 
       {/* Stats */}
-      <div style={{ background: "#1a1a1a", borderRadius: "16px", padding: "20px" }}>
-        <p style={{ margin: "0 0 16px", color: "#888", fontSize: "12px", fontWeight: "bold", letterSpacing: "1px" }}>
-          MES STATS
+      <div style={{
+        background: "var(--surface)", borderRadius: "18px", padding: "22px 20px",
+        border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)",
+      }}>
+        <p style={{ margin: "0 0 18px", color: "var(--text-3)", fontSize: "11px", fontWeight: "700", letterSpacing: "1.2px", textTransform: "uppercase" }}>
+          Mes stats
         </p>
-        <div style={{ display: "flex", justifyContent: "space-around", textAlign: "center" }}>
-          <StatItem valeur={totalSwipes}              label="Swipés" />
-          <StatItem valeur={listes.aVoir.length}      label="À voir" couleur="#22c55e" />
-          <StatItem valeur={listes.dejavu.length}     label="Déjà vu" couleur="#3b82f6" />
-          <StatItem valeur={listes.pasInteresse.length} label="Skippés" couleur="#ef4444" />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", textAlign: "center", gap: "8px" }}>
+          <StatItem valeur={totalSwipes}                label="Swipés" />
+          <StatItem valeur={listes.aVoir.length}        label="À voir"   couleur="var(--green)" />
+          <StatItem valeur={listes.dejavu.length}       label="Déjà vu"  couleur="var(--blue)" />
+          <StatItem valeur={listes.pasInteresse.length} label="Skippés"  couleur="var(--red)" />
         </div>
       </div>
 
       {/* Info compte */}
-      <div style={{ background: "#1a1a1a", borderRadius: "16px", padding: "20px", display: "flex", flexDirection: "column", gap: "12px" }}>
-        <p style={{ margin: "0 0 4px", color: "#888", fontSize: "12px", fontWeight: "bold", letterSpacing: "1px" }}>
-          MON COMPTE
+      <div style={{
+        background: "var(--surface)", borderRadius: "18px", padding: "22px 20px",
+        border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)",
+        display: "flex", flexDirection: "column", gap: "14px",
+      }}>
+        <p style={{ margin: "0 0 4px", color: "var(--text-3)", fontSize: "11px", fontWeight: "700", letterSpacing: "1.2px", textTransform: "uppercase" }}>
+          Mon compte
         </p>
         <InfoLigne label="Pseudo" valeur={`@${username}`} />
+        <div style={{ height: "1px", background: "var(--divider)" }} />
         <InfoLigne label="Email" valeur={user?.email} />
       </div>
 
@@ -47,20 +56,20 @@ function Profil({ username, user, listes }) {
   );
 }
 
-function StatItem({ valeur, label, couleur = "white" }) {
+function StatItem({ valeur, label, couleur = "var(--text)" }) {
   return (
     <div>
-      <p style={{ margin: "0 0 4px", fontSize: "24px", fontWeight: "bold", color: couleur }}>{valeur}</p>
-      <p style={{ margin: 0, fontSize: "12px", color: "#666" }}>{label}</p>
+      <p style={{ margin: "0 0 4px", fontSize: "24px", fontWeight: "700", color: couleur }}>{valeur}</p>
+      <p style={{ margin: 0, fontSize: "11px", color: "var(--text-3)" }}>{label}</p>
     </div>
   );
 }
 
 function InfoLigne({ label, valeur }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <span style={{ color: "#666", fontSize: "14px" }}>{label}</span>
-      <span style={{ color: "#ccc", fontSize: "14px" }}>{valeur}</span>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
+      <span style={{ color: "var(--text-3)", fontSize: "14px" }}>{label}</span>
+      <span style={{ color: "var(--text-2)", fontSize: "14px", fontWeight: "500", textAlign: "right", wordBreak: "break-all" }}>{valeur}</span>
     </div>
   );
 }
