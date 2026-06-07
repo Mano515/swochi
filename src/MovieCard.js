@@ -67,6 +67,8 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
               borderRadius: "20px 20px 0 0",
               boxShadow: "0 -4px 40px rgba(0,0,0,0.4)",
               maxHeight: "85vh",
+              maxWidth: "650px",
+              margin: "0 auto",
               display: "flex",
               flexDirection: "column",
             }}
