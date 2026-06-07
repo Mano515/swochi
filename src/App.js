@@ -11,6 +11,7 @@ import GenreScroll from "./GenreScroll";
 import MenuBurger from "./MenuBurger";
 import Profil from "./Profil";
 import Onboarding from "./Onboarding";
+import ErrorBoundary from "./ErrorBoundary";
 
 // ─── App ─────────────────────────────────────────────────────────────────────
 
@@ -428,7 +429,7 @@ function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}
+              style={{ width: "100%" }}
             >
               {onglet === "swipe" && (
                 <div className="swipe-section">
@@ -493,17 +494,23 @@ function App() {
 
               {onglet === "match" && (
                 <div className="onglet-content">
-                  <Match user={user} username={username} listesUser={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
+                  <ErrorBoundary>
+                    <Match user={user} username={username} listesUser={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
+                  </ErrorBoundary>
                 </div>
               )}
               {onglet === "mesfilms" && (
                 <div className="onglet-content">
-                  <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} isGuest={isGuest} />
+                  <ErrorBoundary>
+                    <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} isGuest={isGuest} />
+                  </ErrorBoundary>
                 </div>
               )}
               {onglet === "profil" && (
                 <div className="onglet-content">
-                  <Profil username={username} user={user} listes={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
+                  <ErrorBoundary>
+                    <Profil username={username} user={user} listes={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
+                  </ErrorBoundary>
                 </div>
               )}
             </motion.div>
