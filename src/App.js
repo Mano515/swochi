@@ -120,12 +120,23 @@ function App() {
     const monId = fetchIdRef.current;
     setLoadingFilms(true);
     try {
-      const numeros = [pageDebut, pageDebut + 1, pageDebut + 2];
-      const pages   = await Promise.all(numeros.map(n => fetchPage(n, genre)));
-      const nouveaux = pages.flat().filter(f => !swipes.includes(f.id));
-      if (monId !== fetchIdRef.current) return;
+      let nouveaux = [];
+      let pageActuelle = pageDebut;
+      const MAX_TENTATIVES = 8; // cherche jusqu'à 24 pages si tout est déjà vu
+      let tentatives = 0;
+
+      while (nouveaux.length < 6 && tentatives < MAX_TENTATIVES && pageActuelle <= 490) {
+        const numeros = [pageActuelle, pageActuelle + 1, pageActuelle + 2];
+        const pages   = await Promise.all(numeros.map(n => fetchPage(n, genre)));
+        const candidats = pages.flat().filter(f => !swipes.includes(f.id));
+        nouveaux = [...nouveaux, ...candidats];
+        pageActuelle += 3;
+        tentatives++;
+        if (monId !== fetchIdRef.current) return; // annulé entre-temps
+      }
+
       setFilms([...filmsExistants, ...nouveaux]);
-      setPage(pageDebut + 2);
+      setPage(pageActuelle);
     } catch (e) {
       console.error("Erreur chargement films:", e);
       afficherToast("Impossible de charger les films. Vérifiez votre connexion.");
@@ -431,7 +442,7 @@ function App() {
                     {!filmActuel && !loadingFilms && <EcranVide onRelancer={() => {
                       setIndex(0);
                       setFilms([]);
-                      chargerFilms(1, dejaSwiped, [], genreChoisi);
+                      chargerFilms(page, dejaSwiped, [], genreChoisi);
                     }} />}
 
                     {/* Chargement */}
