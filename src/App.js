@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, updateDoc, getDoc, runTransaction } from "firebase/firestore";
@@ -420,14 +419,8 @@ function App() {
           )}
         </header>
 
-        {/* ── Contenu principal avec transitions ── */}
+        {/* ── Contenu principal ── */}
         <main>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={onglet}
-              initial={false}
-              style={{ width: "100%" }}
-            >
               {onglet === "swipe" && (
                 <div className="swipe-section">
                   <div className="card-container">
@@ -510,8 +503,6 @@ function App() {
                   </ErrorBoundary>
                 </div>
               )}
-            </motion.div>
-          </AnimatePresence>
         </main>
       </div>
 
