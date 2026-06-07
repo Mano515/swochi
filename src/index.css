@@ -159,7 +159,6 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
     padding: 0 32px;
   }
   .desktop-wrapper { max-width: 640px; }
-  .bottom-nav { display: none !important; }
 }
 
 /* ── Mobile ──────────────────────────────────────── */
@@ -171,79 +170,26 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
     top: 0;
     background: var(--bg);
     z-index: 10;
-    padding: 16px 16px 0;
+    padding: 14px 16px 0;
     transition: background-color 0.25s ease;
   }
 
-  .top-section .header-row { margin-bottom: 14px; }
+  .top-section .header-row { margin-bottom: 12px; }
   .top-section .genres-row { margin-bottom: 4px; }
 
   .swipe-section {
     flex: 1;
     justify-content: center;
-    padding: 0 12px 0;
+    padding: 0 12px 12px;
   }
 
+  /* Carte : plus étroite, hauteur contrainte pour ne jamais cropper */
   .card-container {
-    width: 94vw;
-    max-width: 400px;
-    height: min(calc(94vw * 1.44), 56vh);
-    max-height: 520px;
+    width: min(78vw, 320px);
+    /* svh = small viewport height (exclut les barres du navigateur) */
+    height: min(calc(78vw * 1.5), 52svh);
+    height: min(calc(78vw * 1.5), 52vh); /* fallback sans svh */
   }
-
-  .app-shell main {
-    padding-bottom: 76px;
-  }
-}
-
-/* ── Bottom Nav (mobile only) ────────────────────── */
-.bottom-nav {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  .bottom-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    padding: 6px 0 max(10px, env(safe-area-inset-bottom));
-    z-index: 50;
-    transition: background-color 0.25s ease, border-color 0.25s ease;
-  }
-}
-
-.bottom-nav-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 6px 4px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-3);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.2px;
-  transition: color 0.15s;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.bottom-nav-btn .nav-icon {
-  font-size: 22px;
-  line-height: 1;
-  transition: transform 0.15s;
-}
-
-.bottom-nav-btn.active {
-  color: var(--purple);
-}
-
-.bottom-nav-btn.active .nav-icon {
-  transform: scale(1.08);
 }
 
 /* ── Animations ──────────────────────────────────── */

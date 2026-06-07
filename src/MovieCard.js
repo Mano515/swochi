@@ -163,7 +163,7 @@ function MovieCard({ film, onSwipe, isTop }) {
         fontWeight: "bold", fontSize: "18px", border: "2px solid white"
       }}>DÉJÀ VU</motion.div>
 
-      {/* Zone cliquable bas — ouvre les détails */}
+      {/* Bandeau bas — titre + bouton Infos */}
       <div
         role="button"
         tabIndex={-1}
@@ -174,15 +174,36 @@ function MovieCard({ film, onSwipe, isTop }) {
         onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetails(); } }}
         style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
-          background: "linear-gradient(transparent, rgba(0,0,0,0.7))",
+          background: "linear-gradient(transparent, rgba(0,0,0,0.82))",
           cursor: "pointer",
-          display: "flex", flexDirection: "column", alignItems: "center",
-          paddingBottom: "12px", paddingTop: "40px",
-          gap: "2px",
+          padding: "36px 14px 14px",
+          display: "flex", flexDirection: "column", gap: "8px",
         }}
       >
-        <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)", letterSpacing: "1px", fontWeight: "500" }}>Infos</span>
-        <span aria-hidden="true" style={{ fontSize: "10px", color: "rgba(255,255,255,0.35)", lineHeight: 1 }}>︿</span>
+        {/* Titre */}
+        <p style={{
+          margin: 0, color: "white",
+          fontWeight: "700", fontSize: "15px", lineHeight: "1.3",
+          textShadow: "0 1px 4px rgba(0,0,0,0.5)",
+        }}>
+          {film.title}
+        </p>
+        {/* Ligne année + bouton Infos */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span style={{ color: "rgba(255,255,255,0.55)", fontSize: "12px" }}>
+            {film.release_date?.slice(0, 4)}
+          </span>
+          <span style={{
+            background: "rgba(255,255,255,0.18)",
+            border: "1px solid rgba(255,255,255,0.35)",
+            backdropFilter: "blur(6px)",
+            color: "white", borderRadius: "20px",
+            padding: "4px 12px", fontSize: "12px",
+            fontWeight: "600", letterSpacing: "0.2px",
+          }}>
+            ℹ︎ Infos
+          </span>
+        </div>
       </div>
 
       {/* Panneau de détails — dialog accessible */}

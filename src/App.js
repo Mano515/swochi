@@ -11,15 +11,6 @@ import MenuBurger from "./MenuBurger";
 import Profil from "./Profil";
 import Onboarding from "./Onboarding";
 
-// ─── Tabs bottom nav ─────────────────────────────────────────────────────────
-
-const NAV_TABS = [
-  { key: "swipe",    emoji: "🎬", label: "Swipe" },
-  { key: "match",    emoji: "🤝", label: "Match" },
-  { key: "mesfilms", emoji: "🎞",  label: "Films" },
-  { key: "profil",   emoji: "👤", label: "Profil" },
-];
-
 // ─── App ─────────────────────────────────────────────────────────────────────
 
 function App() {
@@ -489,21 +480,6 @@ function App() {
         </main>
       </div>
 
-      {/* ── Bottom Nav (mobile) ── */}
-      <nav className="bottom-nav" aria-label="Navigation principale">
-        {NAV_TABS.map(tab => (
-          <button
-            key={tab.key}
-            className={`bottom-nav-btn ${onglet === tab.key ? "active" : ""}`}
-            onClick={() => setOnglet(tab.key)}
-            aria-current={onglet === tab.key ? "page" : undefined}
-          >
-            <span className="nav-icon">{tab.emoji}</span>
-            <span>{tab.label}</span>
-          </button>
-        ))}
-      </nav>
-
       {/* Toast */}
       {toast && (
         <div
@@ -511,7 +487,7 @@ function App() {
           aria-live="assertive"
           onClick={() => setToast(null)}
           style={{
-            position: "fixed", bottom: "90px", left: "50%",
+            position: "fixed", bottom: "24px", left: "50%",
             transform: "translateX(-50%)",
             background: toast.type === "error" ? "var(--red)" : "var(--green)",
             color: "white", borderRadius: "14px",
