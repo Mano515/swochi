@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { auth } from "./firebase";
 import { signOut } from "firebase/auth";
 
@@ -9,22 +9,49 @@ const ONGLETS = [
   { key: "profil",   label: "👤 Profil" },
 ];
 
-function MenuBurger({ ouvert, onFermer, onglet, onOnglet }) {
+// Sélecteurs d'éléments focusables dans le drawer
+const FOCUSABLES = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-  // Ferme avec Escape
+function MenuBurger({ ouvert, onFermer, onglet, onOnglet }) {
+  const drawerRef = useRef(null);
+  const fermerBtnRef = useRef(null);
+
+  // Ferme avec Escape + gestion du focus
   useEffect(() => {
     if (!ouvert) return;
-    const handler = e => { if (e.key === "Escape") onFermer(); };
+
+    // Remet le focus sur le bouton de fermeture à l'ouverture
+    fermerBtnRef.current?.focus();
+
+    const handler = e => {
+      if (e.key === "Escape") onFermer();
+
+      // Piège le focus à l'intérieur du drawer (Tab / Shift+Tab)
+      if (e.key === "Tab") {
+        const focusables = Array.from(drawerRef.current?.querySelectorAll(FOCUSABLES) ?? []);
+        if (focusables.length === 0) return;
+        const first = focusables[0];
+        const last  = focusables[focusables.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+        }
+      }
+    };
+
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [ouvert, onFermer]);
 
   return (
     <>
-      {/* Overlay sombre */}
+      {/* Overlay sombre — masqué aux lecteurs d'écran */}
       {ouvert && (
         <div
           onClick={onFermer}
+          aria-hidden="true"
           style={{
             position: "fixed", inset: 0,
             background: "rgba(0,0,0,0.6)",
@@ -34,19 +61,25 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet }) {
         />
       )}
 
-      {/* Drawer */}
-      <div style={{
-        position: "fixed", top: 0, right: 0,
-        width: "min(280px, 80vw)", height: "100%",
-        background: "#141414",
-        borderLeft: "1px solid #222",
-        zIndex: 101,
-        display: "flex", flexDirection: "column",
-        transform: ouvert ? "translateX(0)" : "translateX(100%)",
-        transition: "transform 0.25s cubic-bezier(0.4,0,0.2,1)",
-        boxShadow: ouvert ? "-8px 0 32px rgba(0,0,0,0.5)" : "none",
-      }}>
-
+      {/* Drawer — dialog accessible */}
+      <div
+        ref={drawerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu de navigation"
+        aria-hidden={!ouvert}
+        style={{
+          position: "fixed", top: 0, right: 0,
+          width: "min(280px, 80vw)", height: "100%",
+          background: "#141414",
+          borderLeft: "1px solid #222",
+          zIndex: 101,
+          display: "flex", flexDirection: "column",
+          transform: ouvert ? "translateX(0)" : "translateX(100%)",
+          transition: "transform 0.25s cubic-bezier(0.4,0,0.2,1)",
+          boxShadow: ouvert ? "-8px 0 32px rgba(0,0,0,0.5)" : "none",
+        }}
+      >
         {/* En-tête du menu */}
         <div style={{
           padding: "20px 20px 16px",
@@ -54,19 +87,25 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet }) {
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
           <span style={{ color: "#555", fontSize: "13px" }}>Menu</span>
-          <button onClick={onFermer} style={{
-            background: "transparent", border: "none",
-            color: "#666", fontSize: "22px", cursor: "pointer",
-            lineHeight: 1, padding: "4px",
-          }}>✕</button>
+          <button
+            ref={fermerBtnRef}
+            onClick={onFermer}
+            aria-label="Fermer le menu"
+            style={{
+              background: "transparent", border: "none",
+              color: "#666", fontSize: "22px", cursor: "pointer",
+              lineHeight: 1, padding: "4px",
+            }}
+          >✕</button>
         </div>
 
         {/* Navigation */}
-        <nav style={{ flex: 1, padding: "12px 12px" }}>
+        <nav aria-label="Navigation principale" style={{ flex: 1, padding: "12px 12px" }}>
           {ONGLETS.map(o => (
             <button
               key={o.key}
               onClick={() => { onOnglet(o.key); onFermer(); }}
+              aria-current={onglet === o.key ? "page" : undefined}
               style={{
                 width: "100%", textAlign: "left",
                 background: onglet === o.key ? "#1f1f1f" : "transparent",

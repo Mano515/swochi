@@ -11,23 +11,23 @@ import MenuBurger from "./MenuBurger";
 import Profil from "./Profil";
 
 function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser]               = useState(null);
+  const [loading, setLoading]         = useState(true);
   const [loadingFilms, setLoadingFilms] = useState(false);
-  const [films, setFilms] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [page, setPage] = useState(1);
-  const [dejaSwiped, setDejaSwiped] = useState([]);
-  const [listes, setListes] = useState({ aVoir: [], pasInteresse: [], dejavu: [] });
-  const [onglet, setOnglet] = useState("swipe");
-  const [genres, setGenres] = useState([]);
+  const [films, setFilms]             = useState([]);
+  const [index, setIndex]             = useState(0);
+  const [page, setPage]               = useState(1);
+  const [dejaSwiped, setDejaSwiped]   = useState([]);
+  const [listes, setListes]           = useState({ aVoir: [], pasInteresse: [], dejavu: [] });
+  const [onglet, setOnglet]           = useState("swipe");
+  const [genres, setGenres]           = useState([]);
   const [genreChoisi, setGenreChoisi] = useState("");
-  const [historique, setHistorique] = useState([]); // { film, direction }
-  const [username, setUsername] = useState(null);
+  const [historique, setHistorique]   = useState([]); // { film, direction }
+  const [username, setUsername]       = useState(null);
   const [usernameInput, setUsernameInput] = useState("");
   const [usernameError, setUsernameError] = useState("");
-  const [menuOuvert, setMenuOuvert] = useState(false);
-  const [toast, setToast] = useState(null); // { message, type: "error"|"success" }
+  const [menuOuvert, setMenuOuvert]   = useState(false);
+  const [toast, setToast]             = useState(null); // { message, type: "error"|"success" }
   const fetchIdRef = useRef(0);
   const toastTimer = useRef(null);
 
@@ -54,7 +54,6 @@ function App() {
   useEffect(() => {
     if (!user) return;
 
-    // Charge les listes depuis Firestore, puis les films
     getDoc(doc(db, "users", user.uid)).catch(() => {
       afficherToast("Impossible de charger vos données. Vérifiez votre connexion.");
     }).then(snap => {
@@ -85,19 +84,15 @@ function App() {
   }
 
   async function chargerFilms(pageDebut, swipes, filmsExistants, genre) {
-    // Chaque appel reçoit un ID unique. Si un appel plus récent démarre,
-    // les résultats de celui-ci seront ignorés à l'arrivée.
     fetchIdRef.current += 1;
     const monId = fetchIdRef.current;
 
     setLoadingFilms(true);
     try {
-      // 3 pages en parallèle = ~60 films d'un coup
       const numeros = [pageDebut, pageDebut + 1, pageDebut + 2];
-      const pages = await Promise.all(numeros.map(n => fetchPage(n, genre)));
+      const pages   = await Promise.all(numeros.map(n => fetchPage(n, genre)));
       const nouveaux = pages.flat().filter(f => !swipes.includes(f.id));
 
-      // On ignore ce résultat si un fetch plus récent a déjà pris le relais
       if (monId !== fetchIdRef.current) return;
 
       setFilms([...filmsExistants, ...nouveaux]);
@@ -106,7 +101,6 @@ function App() {
       console.error("Erreur chargement films:", e);
       afficherToast("Impossible de charger les films. Vérifiez votre connexion.");
     } finally {
-      // Ne touche au loading que si on est toujours le fetch en cours
       if (monId === fetchIdRef.current) setLoadingFilms(false);
     }
   }
@@ -122,7 +116,6 @@ function App() {
   async function saveListes(newListes) {
     if (!user) return;
     try {
-      // updateDoc n'envoie que le champ modifié, pas tout le document
       await updateDoc(doc(db, "users", user.uid), { listes: newListes });
     } catch (e) {
       console.error("Erreur sauvegarde:", e);
@@ -133,21 +126,17 @@ function App() {
   async function handleChoisirUsername() {
     setUsernameError("");
     const pseudo = usernameInput.trim().toLowerCase().replace(/\s+/g, "_");
-    if (pseudo.length < 3) return setUsernameError("Minimum 3 caractères.");
+    if (pseudo.length < 3)  return setUsernameError("Minimum 3 caractères.");
     if (pseudo.length > 30) return setUsernameError("Maximum 30 caractères.");
     if (!/^[a-z0-9_]+$/.test(pseudo)) return setUsernameError("Lettres, chiffres et _ uniquement.");
 
     try {
       await runTransaction(db, async (transaction) => {
-        // Vérifie atomiquement que le pseudo n'est pas déjà pris
-        const usernameRef = doc(db, "usernames", pseudo);
+        const usernameRef  = doc(db, "usernames", pseudo);
         const usernameSnap = await transaction.get(usernameRef);
         if (usernameSnap.exists()) throw new Error("Ce pseudo est déjà pris.");
 
-        // Réserve le pseudo
         transaction.set(usernameRef, { uid: user.uid });
-
-        // Crée le document utilisateur
         transaction.set(doc(db, "users", user.uid), {
           email: user.email,
           username: pseudo,
@@ -165,23 +154,19 @@ function App() {
   function handleSwipe(direction) {
     const film = films[index];
     const newListes = { ...listes };
-    if (direction === "right") newListes.aVoir = [...listes.aVoir, film];
-    if (direction === "left")  newListes.pasInteresse = [...listes.pasInteresse, film];
-    if (direction === "up")    newListes.dejavu = [...listes.dejavu, film];
+    if (direction === "right") newListes.aVoir         = [...listes.aVoir, film];
+    if (direction === "left")  newListes.pasInteresse  = [...listes.pasInteresse, film];
+    if (direction === "up")    newListes.dejavu         = [...listes.dejavu, film];
     setListes(newListes);
     saveListes(newListes);
 
     const nextIndex = index + 1;
     setIndex(nextIndex);
-
-    // Mémorise dans l'historique pour le bouton retour
     setHistorique(h => [...h, { film, direction }]);
 
-    // Mémorise ce film comme déjà swipé pour les prochaines pages
     const newDejaSwiped = [...dejaSwiped, film.id];
     setDejaSwiped(newDejaSwiped);
 
-    // Recharge 3 pages dès qu'il reste 15 films — on ne doit jamais arriver à zéro
     if (nextIndex >= films.length - 15 && !loadingFilms) {
       chargerFilms(page + 1, newDejaSwiped, [...films], genreChoisi);
     }
@@ -192,11 +177,10 @@ function App() {
     const derniere = historique[historique.length - 1];
     const { film, direction } = derniere;
 
-    // Retire le film de la liste où il avait été mis
     const newListes = { ...listes };
-    if (direction === "right") newListes.aVoir = listes.aVoir.filter(f => f.id !== film.id);
+    if (direction === "right") newListes.aVoir        = listes.aVoir.filter(f => f.id !== film.id);
     if (direction === "left")  newListes.pasInteresse = listes.pasInteresse.filter(f => f.id !== film.id);
-    if (direction === "up")    newListes.dejavu = listes.dejavu.filter(f => f.id !== film.id);
+    if (direction === "up")    newListes.dejavu        = listes.dejavu.filter(f => f.id !== film.id);
     setListes(newListes);
     saveListes(newListes);
 
@@ -207,7 +191,7 @@ function App() {
 
   async function handleDeplacer(film, de, vers) {
     const newListes = { ...listes };
-    newListes[de] = listes[de].filter(f => f.id !== film.id);
+    newListes[de]   = listes[de].filter(f => f.id !== film.id);
     newListes[vers] = [...listes[vers], film];
     setListes(newListes);
     await saveListes(newListes);
@@ -221,7 +205,11 @@ function App() {
     await saveListes(newListes);
   }
 
-  if (loading) return <div style={{ background: "#0f0f0f", minHeight: "100vh" }} />;
+  // Écran de chargement initial
+  if (loading) return (
+    <div role="status" aria-label="Chargement en cours" style={{ background: "#0f0f0f", minHeight: "100vh" }} />
+  );
+
   if (!user) return <Login onLogin={() => {}} />;
 
   // Écran de choix du pseudo pour les nouveaux comptes
@@ -243,15 +231,30 @@ function App() {
         <p style={{ margin: 0, color: "#888", fontSize: "13px" }}>
           Tes amis l'utiliseront pour comparer vos listes de films.
         </p>
-        <input
-          type="text"
-          placeholder="ex: cinemafan42"
-          value={usernameInput}
-          onChange={e => setUsernameInput(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && handleChoisirUsername()}
-          style={inputStyle}
-        />
-        {usernameError && <p style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>{usernameError}</p>}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <label htmlFor="username-input" style={{ fontSize: "13px", color: "#aaa" }}>
+            Ton pseudo
+          </label>
+          <input
+            id="username-input"
+            type="text"
+            placeholder="ex: cinemafan42"
+            value={usernameInput}
+            onChange={e => setUsernameInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleChoisirUsername()}
+            aria-describedby={usernameError ? "username-error" : undefined}
+            aria-required="true"
+            style={inputStyle}
+          />
+        </div>
+
+        {usernameError && (
+          <p id="username-error" role="alert" style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>
+            {usernameError}
+          </p>
+        )}
+
         <button onClick={handleChoisirUsername} style={{
           background: "#22c55e", color: "white",
           border: "none", borderRadius: "50px",
@@ -262,7 +265,7 @@ function App() {
     </div>
   );
 
-  const filmActuel = films[index];
+  const filmActuel  = films[index];
   const filmSuivant = films[index + 1];
 
   return (
@@ -271,105 +274,133 @@ function App() {
       <MenuBurger ouvert={menuOuvert} onFermer={() => setMenuOuvert(false)} onglet={onglet} onOnglet={setOnglet} />
 
       <div className="desktop-wrapper">
-      {/* ── Section haute ── */}
-      <div className="top-section">
-        {/* Header centré */}
-        <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-          <span style={{ fontSize: "26px", fontWeight: "bold", letterSpacing: "3px" }}>🎬 SWOCHI</span>
-          {/* Bouton burger top-right */}
-          <button
-            onClick={() => setMenuOuvert(true)}
-            style={{
-              position: "absolute", right: 0,
-              background: "transparent", border: "1px solid #2a2a2a",
-              color: "#aaa", borderRadius: "8px",
-              padding: "9px 12px", cursor: "pointer",
-              display: "flex", flexDirection: "column", gap: "5px",
-            }}
-          >
-            <span style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
-            <span style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
-            <span style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
-          </button>
-        </div>
-
-        {/* Genres — seulement sur l'onglet swipe */}
-        {onglet === "swipe" && (
-          <div className="genres-row">
-            <GenreScroll genres={genres} genreChoisi={genreChoisi} onGenreChange={handleGenreChange} />
-          </div>
-        )}
-      </div>
-
-      {/* ── Contenu principal ── */}
-      {onglet === "swipe" ? (
-        <div className="swipe-section">
-          {/* Carte */}
-          <div className="card-container">
-            {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
-            {filmActuel  && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
-            {!filmActuel && !loadingFilms && <p style={{ color: "#888", textAlign: "center", paddingTop: "40%" }}>Plus de films !</p>}
-            {!filmActuel &&  loadingFilms && <p style={{ color: "#555", textAlign: "center", paddingTop: "40%" }}>Chargement…</p>}
+        {/* ── Section haute ── */}
+        <header className="top-section">
+          <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+            <span aria-label="Swochi" style={{ fontSize: "26px", fontWeight: "bold", letterSpacing: "3px" }}>🎬 SWOCHI</span>
+            <button
+              onClick={() => setMenuOuvert(true)}
+              aria-label="Ouvrir le menu"
+              aria-expanded={menuOuvert}
+              aria-haspopup="dialog"
+              style={{
+                position: "absolute", right: 0,
+                background: "transparent", border: "1px solid #2a2a2a",
+                color: "#aaa", borderRadius: "8px",
+                padding: "9px 12px", cursor: "pointer",
+                display: "flex", flexDirection: "column", gap: "5px",
+              }}
+            >
+              {/* Barres du burger — décoratives */}
+              <span aria-hidden="true" style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
+              <span aria-hidden="true" style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
+              <span aria-hidden="true" style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
+            </button>
           </div>
 
-          {/* Boutons */}
-          {filmActuel && (
-            <div style={{ position: "relative", width: "100%", maxWidth: "340px", marginTop: "24px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-              {/* 3 boutons centrés */}
-              <div style={{ display: "flex", gap: "22px" }}>
-                <button onClick={() => handleSwipe("left")}  style={btnStyle("#ef4444")}>✕</button>
-                <button onClick={() => handleSwipe("up")}    style={btnStyle("#3b82f6")}>👁</button>
-                <button onClick={() => handleSwipe("right")} style={btnStyle("#22c55e")}>♥</button>
-              </div>
-              {/* Bouton retour ancré à droite */}
-              <button
-                onClick={handleRetour}
-                disabled={historique.length === 0}
-                style={{
-                  position: "absolute", right: 0,
-                  background: "transparent",
-                  border: "2px solid " + (historique.length > 0 ? "#f59e0b" : "#2a2a2a"),
-                  color: historique.length > 0 ? "#f59e0b" : "#2a2a2a",
-                  borderRadius: "50%", width: "36px", height: "36px",
-                  fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}
-              >↩</button>
+          {onglet === "swipe" && (
+            <div className="genres-row">
+              <GenreScroll genres={genres} genreChoisi={genreChoisi} onGenreChange={handleGenreChange} />
             </div>
           )}
-        </div>
-      ) : null}
+        </header>
 
-      {onglet === "match" && (
-        <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-          <Match listesUser={listes} username={username} />
-        </div>
-      )}
-      {onglet === "mesfilms" && (
-        <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-          <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} />
-        </div>
-      )}
-      {onglet === "profil" && (
-        <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-          <Profil username={username} user={user} listes={listes} />
-        </div>
-      )}
+        {/* ── Contenu principal ── */}
+        <main>
+          {onglet === "swipe" ? (
+            <div className="swipe-section">
+              {/* Carte */}
+              <div className="card-container">
+                {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
+                {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
+                {!filmActuel && !loadingFilms && (
+                  <p style={{ color: "#888", textAlign: "center", paddingTop: "40%" }}>Plus de films !</p>
+                )}
+                {!filmActuel && loadingFilms && (
+                  <p role="status" style={{ color: "#555", textAlign: "center", paddingTop: "40%" }}>Chargement…</p>
+                )}
+              </div>
+
+              {/* Boutons de swipe */}
+              {filmActuel && (
+                <div style={{
+                  position: "relative", width: "100%", maxWidth: "340px",
+                  marginTop: "24px", display: "flex", justifyContent: "center", alignItems: "center"
+                }}>
+                  <div style={{ display: "flex", gap: "22px" }}>
+                    <button
+                      onClick={() => handleSwipe("left")}
+                      aria-label="Passer ce film"
+                      style={btnStyle("#ef4444")}
+                    >✕</button>
+                    <button
+                      onClick={() => handleSwipe("up")}
+                      aria-label="Déjà vu"
+                      style={btnStyle("#3b82f6")}
+                    >👁</button>
+                    <button
+                      onClick={() => handleSwipe("right")}
+                      aria-label="À voir"
+                      style={btnStyle("#22c55e")}
+                    >♥</button>
+                  </div>
+
+                  {/* Bouton retour */}
+                  <button
+                    onClick={handleRetour}
+                    disabled={historique.length === 0}
+                    aria-label="Annuler le dernier swipe"
+                    style={{
+                      position: "absolute", right: 0,
+                      background: "transparent",
+                      border: "2px solid " + (historique.length > 0 ? "#f59e0b" : "#2a2a2a"),
+                      color: historique.length > 0 ? "#f59e0b" : "#2a2a2a",
+                      borderRadius: "50%", width: "36px", height: "36px",
+                      fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}
+                  >↩</button>
+                </div>
+              )}
+            </div>
+          ) : null}
+
+          {onglet === "match" && (
+            <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
+              <Match listesUser={listes} username={username} />
+            </div>
+          )}
+          {onglet === "mesfilms" && (
+            <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
+              <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} />
+            </div>
+          )}
+          {onglet === "profil" && (
+            <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
+              <Profil username={username} user={user} listes={listes} />
+            </div>
+          )}
+        </main>
       </div>{/* fin desktop-wrapper */}
 
-      {/* Toast de notification */}
+      {/* Toast de notification — annoncé immédiatement aux lecteurs d'écran */}
       {toast && (
-        <div onClick={() => setToast(null)} style={{
-          position: "fixed", bottom: "24px", left: "50%",
-          transform: "translateX(-50%)",
-          background: toast.type === "error" ? "#ef4444" : "#22c55e",
-          color: "white", borderRadius: "12px",
-          padding: "12px 20px", fontSize: "14px",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
-          zIndex: 1000, cursor: "pointer",
-          maxWidth: "90vw", textAlign: "center",
-          animation: "apparaitre 0.2s ease-out",
-        }}>
+        <div
+          role="alert"
+          aria-live="assertive"
+          onClick={() => setToast(null)}
+          style={{
+            position: "fixed", bottom: "24px", left: "50%",
+            transform: "translateX(-50%)",
+            background: toast.type === "error" ? "#ef4444" : "#22c55e",
+            color: "white", borderRadius: "12px",
+            padding: "12px 20px", fontSize: "14px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+            zIndex: 1000, cursor: "pointer",
+            maxWidth: "90vw", textAlign: "center",
+            animation: "apparaitre 0.2s ease-out",
+          }}
+        >
           {toast.message}
         </div>
       )}
@@ -393,6 +424,5 @@ function btnStyle(color) {
     display: "flex", alignItems: "center", justifyContent: "center",
   };
 }
-
 
 export default App;

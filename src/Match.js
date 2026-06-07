@@ -27,26 +27,24 @@ function useConfettis(actif) {
 }
 
 function Match({ listesUser, username }) {
-  const [pseudo, setPseudo] = useState("");
-  const [matches, setMatches] = useState(null);
-  const [nomAmi, setNomAmi] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [pseudo, setPseudo]         = useState("");
+  const [matches, setMatches]       = useState(null);
+  const [nomAmi, setNomAmi]         = useState("");
+  const [error, setError]           = useState("");
+  const [loading, setLoading]       = useState(false);
   const [celebration, setCelebration] = useState(false);
-  const [filmTire, setFilmTire] = useState(null);
-  const [copied, setCopied] = useState(false);
+  const [filmTire, setFilmTire]     = useState(null);
+  const [copied, setCopied]         = useState(false);
   const confettis = useConfettis(celebration);
 
   async function partagerPseudo(username) {
     const texte = `Rejoins-moi sur Swochi ! Mon pseudo : @${username}`;
-    // Web Share API — ouvre le menu de partage natif sur mobile
     if (navigator.share) {
       try {
         await navigator.share({ title: "Swochi", text: texte });
         return;
-      } catch { /* annulé par l'utilisateur */ return; }
+      } catch { return; }
     }
-    // Fallback desktop — copie dans le presse-papier
     try {
       await navigator.clipboard.writeText(texte);
       setCopied(true);
@@ -58,10 +56,8 @@ function Match({ listesUser, username }) {
 
   function tirerAuSort() {
     if (!matches || matches.length === 0) return;
-    const pool = filmTire
-      ? matches.filter(f => f.id !== filmTire.id)  // évite de retomber sur le même
-      : matches;
-    const source = pool.length > 0 ? pool : matches; // si un seul film, on le reprend
+    const pool   = filmTire ? matches.filter(f => f.id !== filmTire.id) : matches;
+    const source = pool.length > 0 ? pool : matches;
     setFilmTire(source[Math.floor(Math.random() * source.length)]);
   }
 
@@ -72,7 +68,7 @@ function Match({ listesUser, username }) {
     setLoading(true);
 
     try {
-      const q = query(collection(db, "users"), where("username", "==", pseudo.trim().toLowerCase()));
+      const q    = query(collection(db, "users"), where("username", "==", pseudo.trim().toLowerCase()));
       const snap = await getDocs(q);
 
       if (snap.empty) {
@@ -81,8 +77,8 @@ function Match({ listesUser, username }) {
         return;
       }
 
-      const ami = snap.docs[0].data();
-      const idsUser = listesUser.aVoir.map(f => f.id);
+      const ami         = snap.docs[0].data();
+      const idsUser     = listesUser.aVoir.map(f => f.id);
       const filmsCommuns = ami.listes.aVoir.filter(f => idsUser.includes(f.id));
 
       setNomAmi(ami.username);
@@ -99,22 +95,24 @@ function Match({ listesUser, username }) {
   return (
     <div style={{ position: "relative", width: "100%" }}>
 
-      {/* Confettis */}
-      {confettis.map(c => (
-        <div key={c.id} style={{
-          position: "fixed",
-          top: "-10px",
-          left: `${c.x}vw`,
-          width: c.taille,
-          height: c.taille,
-          background: c.couleur,
-          borderRadius: Math.random() > 0.5 ? "50%" : "2px",
-          animation: `tomber ${c.duree}s ${c.delai}s ease-in forwards`,
-          transform: `rotate(${c.rotation}deg)`,
-          zIndex: 999,
-          pointerEvents: "none",
-        }} />
-      ))}
+      {/* Confettis — décoratifs, masqués aux lecteurs d'écran */}
+      <div aria-hidden="true">
+        {confettis.map(c => (
+          <div key={c.id} style={{
+            position: "fixed",
+            top: "-10px",
+            left: `${c.x}vw`,
+            width: c.taille,
+            height: c.taille,
+            background: c.couleur,
+            borderRadius: Math.random() > 0.5 ? "50%" : "2px",
+            animation: `tomber ${c.duree}s ${c.delai}s ease-in forwards`,
+            transform: `rotate(${c.rotation}deg)`,
+            zIndex: 999,
+            pointerEvents: "none",
+          }} />
+        ))}
+      </div>
 
       <style>{`
         @keyframes tomber {
@@ -138,14 +136,22 @@ function Match({ listesUser, username }) {
           Entre le pseudo d'un ami pour voir vos films en commun
         </p>
 
-        <input
-          type="text"
-          placeholder="@pseudo de ton ami"
-          value={pseudo}
-          onChange={e => setPseudo(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && findMatch()}
-          style={inputStyle}
-        />
+        {/* Champ pseudo */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <label htmlFor="match-pseudo" style={{ fontSize: "13px", color: "#aaa" }}>
+            Pseudo de ton ami
+          </label>
+          <input
+            id="match-pseudo"
+            type="text"
+            placeholder="@pseudo de ton ami"
+            value={pseudo}
+            onChange={e => setPseudo(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && findMatch()}
+            autoComplete="off"
+            style={inputStyle}
+          />
+        </div>
 
         <button onClick={findMatch} disabled={loading} style={{
           background: "#a855f7", color: "white",
@@ -154,9 +160,10 @@ function Match({ listesUser, username }) {
           fontWeight: "bold", cursor: "pointer",
           opacity: loading ? 0.7 : 1,
         }}>
-          {loading ? "Recherche..." : "Trouver les matches 🎬"}
+          {loading ? "Recherche…" : "Trouver les matches 🎬"}
         </button>
 
+        {/* Partage de son propre pseudo */}
         {username && (
           <div style={{
             background: "#111", border: "1px solid #2a2a2a",
@@ -167,85 +174,99 @@ function Match({ listesUser, username }) {
               <p style={{ margin: "0 0 2px", fontSize: "11px", color: "#555" }}>TON PSEUDO</p>
               <p style={{ margin: 0, fontSize: "16px", fontWeight: "bold", color: "white" }}>@{username}</p>
             </div>
-            <button onClick={() => partagerPseudo(username)} style={{
-              background: copied ? "#22c55e" : "#a855f7", color: "white",
-              border: "none", borderRadius: "20px",
-              padding: "8px 16px", fontSize: "13px",
-              fontWeight: "bold", cursor: "pointer", flexShrink: 0,
-              transition: "background 0.2s",
-            }}>
+            <button
+              onClick={() => partagerPseudo(username)}
+              aria-label={copied ? "Pseudo copié !" : "Partager mon pseudo"}
+              style={{
+                background: copied ? "#22c55e" : "#a855f7", color: "white",
+                border: "none", borderRadius: "20px",
+                padding: "8px 16px", fontSize: "13px",
+                fontWeight: "bold", cursor: "pointer", flexShrink: 0,
+                transition: "background 0.2s",
+              }}
+            >
               {copied ? "✓ Copié !" : "Partager"}
             </button>
           </div>
         )}
 
-        {error && <p style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>{error}</p>}
+        {/* Erreur — annoncée aux lecteurs d'écran */}
+        {error && (
+          <p role="alert" style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>
+            {error}
+          </p>
+        )}
 
-        {matches !== null && (
-          <div>
-            {matches.length === 0 ? (
-              <p style={{ color: "#888", fontSize: "13px" }}>
-                Aucun film en commun avec @{nomAmi} pour l'instant... Swipez plus ! 😄
-              </p>
-            ) : (
-              <div style={{ animation: "apparaitre 0.4s ease-out" }}>
-                <p style={{
-                  color: "#22c55e", fontSize: "16px",
-                  fontWeight: "bold", marginBottom: "16px", textAlign: "center"
-                }}>
-                  🎉 {matches.length} film{matches.length > 1 ? "s" : ""} en commun avec @{nomAmi} !
+        {/* Résultats — annoncés via aria-live */}
+        <div aria-live="polite" aria-atomic="true">
+          {matches !== null && (
+            <div>
+              {matches.length === 0 ? (
+                <p style={{ color: "#888", fontSize: "13px" }}>
+                  Aucun film en commun avec @{nomAmi} pour l'instant… Swipez plus ! 😄
                 </p>
-                {/* Tirage au sort */}
-                <button onClick={tirerAuSort} style={{
-                  background: "#f59e0b", color: "#0f0f0f",
-                  border: "none", borderRadius: "50px",
-                  padding: "12px", fontSize: "15px",
-                  fontWeight: "bold", cursor: "pointer", width: "100%",
-                }}>
-                  🎲 {filmTire ? "Retirer au sort" : "Choisir un film au sort"}
-                </button>
-
-                {filmTire && (
-                  <div style={{
-                    display: "flex", gap: "14px", alignItems: "center",
-                    background: "#1f1a0a", border: "1px solid #f59e0b33",
-                    borderRadius: "12px", padding: "12px",
-                    animation: "apparaitre 0.3s ease-out",
+              ) : (
+                <div style={{ animation: "apparaitre 0.4s ease-out" }}>
+                  <p style={{
+                    color: "#22c55e", fontSize: "16px",
+                    fontWeight: "bold", marginBottom: "16px", textAlign: "center"
                   }}>
-                    <img
-                      src={`https://image.tmdb.org/t/p/w92${filmTire.poster_path}`}
-                      alt={filmTire.title}
-                      style={{ borderRadius: "8px", width: "54px", flexShrink: 0 }}
-                    />
-                    <div>
-                      <p style={{ margin: "0 0 4px", fontSize: "11px", color: "#f59e0b", fontWeight: "bold" }}>CE SOIR ON REGARDE</p>
-                      <p style={{ margin: 0, fontSize: "15px", fontWeight: "bold" }}>{filmTire.title}</p>
-                    </div>
-                  </div>
-                )}
+                    🎉 {matches.length} film{matches.length > 1 ? "s" : ""} en commun avec @{nomAmi} !
+                  </p>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  {matches.map(film => (
-                    <div key={film.id} style={{
-                      display: "flex", gap: "12px", alignItems: "center",
-                      background: filmTire?.id === film.id ? "#1f1a0a" : "#222",
-                      border: filmTire?.id === film.id ? "1px solid #f59e0b55" : "1px solid transparent",
-                      borderRadius: "10px", padding: "8px",
-                      transition: "all 0.2s",
+                  {/* Tirage au sort */}
+                  <button onClick={tirerAuSort} style={{
+                    background: "#f59e0b", color: "#0f0f0f",
+                    border: "none", borderRadius: "50px",
+                    padding: "12px", fontSize: "15px",
+                    fontWeight: "bold", cursor: "pointer", width: "100%",
+                    marginBottom: "12px",
+                  }}>
+                    🎲 {filmTire ? "Retirer au sort" : "Choisir un film au sort"}
+                  </button>
+
+                  {filmTire && (
+                    <div style={{
+                      display: "flex", gap: "14px", alignItems: "center",
+                      background: "#1f1a0a", border: "1px solid #f59e0b33",
+                      borderRadius: "12px", padding: "12px", marginBottom: "12px",
+                      animation: "apparaitre 0.3s ease-out",
                     }}>
                       <img
-                        src={`https://image.tmdb.org/t/p/w92${film.poster_path}`}
-                        alt={film.title}
-                        style={{ borderRadius: "6px", width: "46px", flexShrink: 0 }}
+                        src={`https://image.tmdb.org/t/p/w92${filmTire.poster_path}`}
+                        alt={`Affiche de ${filmTire.title}`}
+                        style={{ borderRadius: "8px", width: "54px", flexShrink: 0 }}
                       />
-                      <span style={{ fontSize: "14px" }}>{film.title}</span>
+                      <div>
+                        <p style={{ margin: "0 0 4px", fontSize: "11px", color: "#f59e0b", fontWeight: "bold" }}>CE SOIR ON REGARDE</p>
+                        <p style={{ margin: 0, fontSize: "15px", fontWeight: "bold" }}>{filmTire.title}</p>
+                      </div>
                     </div>
-                  ))}
+                  )}
+
+                  <ul style={{ display: "flex", flexDirection: "column", gap: "8px", listStyle: "none", margin: 0, padding: 0 }}>
+                    {matches.map(film => (
+                      <li key={film.id} style={{
+                        display: "flex", gap: "12px", alignItems: "center",
+                        background: filmTire?.id === film.id ? "#1f1a0a" : "#222",
+                        border: filmTire?.id === film.id ? "1px solid #f59e0b55" : "1px solid transparent",
+                        borderRadius: "10px", padding: "8px",
+                        transition: "all 0.2s",
+                      }}>
+                        <img
+                          src={`https://image.tmdb.org/t/p/w92${film.poster_path}`}
+                          alt={`Affiche de ${film.title}`}
+                          style={{ borderRadius: "6px", width: "46px", flexShrink: 0 }}
+                        />
+                        <span style={{ fontSize: "14px" }}>{film.title}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

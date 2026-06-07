@@ -3,10 +3,10 @@ import { auth } from "./firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 function Login({ onLogin }) {
-  const [email, setEmail] = useState("");
+  const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError]       = useState("");
 
   async function handleGoogle() {
     try {
@@ -32,6 +32,10 @@ function Login({ onLogin }) {
     }
   }
 
+  function handleKeyDown(e) {
+    if (e.key === "Enter") handleSubmit();
+  }
+
   return (
     <div style={{
       minHeight: "100vh", background: "#0f0f0f",
@@ -51,18 +55,44 @@ function Login({ onLogin }) {
           {isRegister ? "Créer un compte" : "Se connecter"}
         </h2>
 
-        <input
-          type="email" placeholder="Email"
-          value={email} onChange={e => setEmail(e.target.value)}
-          style={inputStyle}
-        />
-        <input
-          type="password" placeholder="Mot de passe"
-          value={password} onChange={e => setPassword(e.target.value)}
-          style={inputStyle}
-        />
+        {/* Champ email */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <label htmlFor="login-email" style={labelStyle}>Adresse e-mail</label>
+          <input
+            id="login-email"
+            type="email"
+            placeholder="exemple@mail.com"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
+            autoComplete="email"
+            aria-required="true"
+            style={inputStyle}
+          />
+        </div>
 
-        {error && <p style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>{error}</p>}
+        {/* Champ mot de passe */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <label htmlFor="login-password" style={labelStyle}>Mot de passe</label>
+          <input
+            id="login-password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
+            autoComplete={isRegister ? "new-password" : "current-password"}
+            aria-required="true"
+            style={inputStyle}
+          />
+        </div>
+
+        {/* Message d'erreur annoncé aux lecteurs d'écran */}
+        {error && (
+          <p role="alert" style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>
+            {error}
+          </p>
+        )}
 
         <button onClick={handleSubmit} style={{
           background: "#22c55e", color: "white",
@@ -73,7 +103,7 @@ function Login({ onLogin }) {
           {isRegister ? "Créer le compte" : "Se connecter"}
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }} aria-hidden="true">
           <div style={{ flex: 1, height: "1px", background: "#333" }} />
           <span style={{ color: "#555", fontSize: "12px" }}>ou</span>
           <div style={{ flex: 1, height: "1px", background: "#333" }} />
@@ -86,20 +116,31 @@ function Login({ onLogin }) {
           fontWeight: "bold", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center", gap: "10px"
         }}>
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20" />
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" width="20" aria-hidden="true" />
           Continuer avec Google
         </button>
 
-        <p
+        {/* Lien de bascule : élément interactif → <button> */}
+        <button
           onClick={() => setIsRegister(r => !r)}
-          style={{ color: "#888", fontSize: "13px", textAlign: "center", cursor: "pointer", margin: 0 }}
+          style={{
+            background: "none", border: "none",
+            color: "#888", fontSize: "13px",
+            textAlign: "center", cursor: "pointer",
+            padding: 0, textDecoration: "underline",
+          }}
         >
           {isRegister ? "Déjà un compte ? Se connecter" : "Pas de compte ? S'inscrire"}
-        </p>
+        </button>
       </div>
     </div>
   );
 }
+
+const labelStyle = {
+  fontSize: "13px",
+  color: "#aaa",
+};
 
 const inputStyle = {
   background: "#2a2a2a", border: "1px solid #333",
