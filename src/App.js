@@ -492,17 +492,17 @@ function App() {
               )}
 
               {onglet === "match" && (
-                <div style={{ padding: "16px", width: "100%", maxWidth: "480px" }}>
+                <div style={{ padding: "16px", width: "100%", maxWidth: "720px" }}>
                   <Match user={user} username={username} listesUser={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
                 </div>
               )}
               {onglet === "mesfilms" && (
-                <div style={{ padding: "16px", width: "100%", maxWidth: "480px" }}>
+                <div style={{ padding: "16px", width: "100%", maxWidth: "720px" }}>
                   <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} isGuest={isGuest} />
                 </div>
               )}
               {onglet === "profil" && (
-                <div style={{ padding: "16px", width: "100%", maxWidth: "480px" }}>
+                <div style={{ padding: "16px", width: "100%", maxWidth: "720px" }}>
                   <Profil username={username} user={user} listes={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
                 </div>
               )}

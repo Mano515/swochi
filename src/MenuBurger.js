@@ -4,10 +4,10 @@ import { signOut } from "firebase/auth";
 import { useTheme } from "./ThemeContext";
 
 const ONGLETS_COMPLET = [
-  { key: "swipe",    label: "🎬 Swipe" },
-  { key: "match",    label: "👥 Amis" },
-  { key: "mesfilms", label: "🎞 Mes films" },
-  { key: "profil",   label: "👤 Profil" },
+  { key: "swipe",    emoji: "🍿", label: "Découvrir" },
+  { key: "match",    emoji: "🤝", label: "Amis"      },
+  { key: "mesfilms", emoji: "🎬", label: "Mes films" },
+  { key: "profil",   emoji: "👤", label: "Profil"    },
 ];
 
 const FOCUSABLES = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -64,7 +64,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
         aria-hidden={!ouvert}
         style={{
           position: "fixed", top: 0, right: 0,
-          width: "min(280px, 82vw)", height: "100%",
+          width: "min(320px, 88vw)", height: "100%",
           background: "var(--drawer)",
           borderLeft: "1px solid var(--border)",
           zIndex: 101,
@@ -78,9 +78,8 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
         <div style={{
           padding: "18px 18px 14px",
           borderBottom: "1px solid var(--divider)",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
+          display: "flex", alignItems: "center", justifyContent: "flex-end",
         }}>
-          <span style={{ color: "var(--text-3)", fontSize: "13px", fontWeight: "500" }}>Réglages</span>
           <button
             ref={fermerBtnRef}
             onClick={onFermer}
@@ -88,7 +87,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
             style={{
               background: "var(--surface-2)", border: "1px solid var(--border)",
               color: "var(--text-3)", fontSize: "18px", cursor: "pointer",
-              lineHeight: 1, padding: "6px 9px", borderRadius: "8px",
+              lineHeight: 1, padding: "6px 10px", borderRadius: "8px",
             }}
           >✕</button>
         </div>
@@ -109,28 +108,47 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
           </div>
         )}
 
-        {/* Navigation (desktop seulement — sur mobile la bottom nav prend le relais) */}
-        <nav aria-label="Navigation principale" style={{ flex: 1, padding: "12px" }}>
-          {ONGLETS.map(o => (
-            <button
-              key={o.key}
-              onClick={() => { onOnglet(o.key); onFermer(); }}
-              aria-current={onglet === o.key ? "page" : undefined}
-              style={{
-                width: "100%", textAlign: "left",
-                background: onglet === o.key ? "var(--surface-2)" : "transparent",
-                color: onglet === o.key ? "var(--text)" : "var(--text-3)",
-                border: "none", borderRadius: "10px",
-                padding: "13px 16px", fontSize: "15px",
-                fontWeight: onglet === o.key ? "600" : "normal",
-                cursor: "pointer", marginBottom: "3px",
-                display: "flex", alignItems: "center", gap: "4px",
-                borderLeft: onglet === o.key ? "3px solid var(--purple)" : "3px solid transparent",
-              }}
-            >
-              {o.label}
-            </button>
-          ))}
+        {/* Navigation */}
+        <nav aria-label="Navigation principale" style={{ flex: 1, padding: "16px 14px 12px" }}>
+          {ONGLETS.map(o => {
+            const actif = onglet === o.key;
+            return (
+              <button
+                key={o.key}
+                onClick={() => { onOnglet(o.key); onFermer(); }}
+                aria-current={actif ? "page" : undefined}
+                style={{
+                  width: "100%", textAlign: "left",
+                  background: actif ? "var(--purple-dim)" : "transparent",
+                  color: actif ? "var(--purple)" : "var(--text-2)",
+                  border: "none", borderRadius: "14px",
+                  padding: "14px 18px",
+                  cursor: "pointer", marginBottom: "4px",
+                  display: "flex", alignItems: "center", gap: "14px",
+                  transition: "background 0.15s, color 0.15s",
+                }}
+              >
+                <span style={{
+                  fontSize: "22px", lineHeight: 1,
+                  width: "28px", textAlign: "center", flexShrink: 0,
+                }}>{o.emoji}</span>
+                <span style={{
+                  fontSize: "17px",
+                  fontWeight: actif ? "700" : "500",
+                  letterSpacing: "-0.2px",
+                }}>{o.label}</span>
+                {actif && (
+                  <span style={{
+                    marginLeft: "auto",
+                    width: "6px", height: "6px",
+                    borderRadius: "50%",
+                    background: "var(--purple)",
+                    flexShrink: 0,
+                  }} />
+                )}
+              </button>
+            );
+          })}
 
 
           {/* Toggle thème */}
@@ -140,14 +158,18 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
               style={{
                 width: "100%", textAlign: "left",
                 background: "transparent", border: "none",
-                color: "var(--text-3)", borderRadius: "10px",
-                padding: "13px 16px", fontSize: "15px",
-                cursor: "pointer", marginBottom: "3px",
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-                borderLeft: "3px solid transparent",
+                color: "var(--text-3)", borderRadius: "14px",
+                padding: "14px 18px", cursor: "pointer",
+                display: "flex", alignItems: "center", gap: "14px",
+                transition: "background 0.15s",
               }}
             >
-              <span>{theme === "dark" ? "☀️  Mode clair" : "🌙  Mode sombre"}</span>
+              <span style={{ fontSize: "22px", lineHeight: 1, width: "28px", textAlign: "center", flexShrink: 0 }}>
+                {theme === "dark" ? "☀️" : "🌙"}
+              </span>
+              <span style={{ fontSize: "17px", fontWeight: "500" }}>
+                {theme === "dark" ? "Mode clair" : "Mode sombre"}
+              </span>
             </button>
           </div>
         </nav>

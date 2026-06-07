@@ -155,10 +155,10 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
 /* ── Desktop ─────────────────────────────────────── */
 @media (min-width: 769px) {
   .top-section {
-    max-width: 640px;
-    padding: 0 32px;
+    max-width: 820px;
+    padding: 0 40px;
   }
-  .desktop-wrapper { max-width: 640px; }
+  .desktop-wrapper { max-width: 820px; }
 }
 
 /* ── Mobile ──────────────────────────────────────── */
