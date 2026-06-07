@@ -208,16 +208,18 @@ function VueAjouter({ myUid, myUsername, onRetour }) {
       const cibleDoc = userSnap.docs[0];
       const cibleUid = cibleDoc.id;
 
-      const [sent, received] = await Promise.all([
-        getDocs(query(collection(db, "friendRequests"),
-          where("fromUid", "==", myUid), where("toUid", "==", cibleUid))),
-        getDocs(query(collection(db, "friendRequests"),
-          where("fromUid", "==", cibleUid), where("toUid", "==", myUid))),
+      // Requêtes simples sur un seul champ (règles Firestore OR + queries)
+      const [sentSnap, receivedSnap] = await Promise.all([
+        getDocs(query(collection(db, "friendRequests"), where("fromUid", "==", myUid))),
+        getDocs(query(collection(db, "friendRequests"), where("toUid",   "==", myUid))),
       ]);
 
+      const sentDoc     = sentSnap.docs.find(d => d.data().toUid   === cibleUid);
+      const receivedDoc = receivedSnap.docs.find(d => d.data().fromUid === cibleUid);
+
       let etat = "aucun";
-      if (!sent.empty)     { etat = sent.docs[0].data().status === "accepted" ? "ami" : "envoyée"; }
-      if (!received.empty) { etat = received.docs[0].data().status === "accepted" ? "ami" : "recue"; }
+      if (sentDoc)     { etat = sentDoc.data().status     === "accepted" ? "ami" : "envoyée"; }
+      if (receivedDoc) { etat = receivedDoc.data().status === "accepted" ? "ami" : "recue"; }
 
       setResultat({ uid: cibleUid, username: cible, etat });
     } catch (e) {
