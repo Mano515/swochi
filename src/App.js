@@ -10,7 +10,6 @@ import GenreScroll from "./GenreScroll";
 import MenuBurger from "./MenuBurger";
 import Profil from "./Profil";
 import Onboarding from "./Onboarding";
-import { useTheme } from "./ThemeContext";
 
 // ─── Tabs bottom nav ─────────────────────────────────────────────────────────
 
@@ -24,7 +23,6 @@ const NAV_TABS = [
 // ─── App ─────────────────────────────────────────────────────────────────────
 
 function App() {
-  const { theme, toggleTheme } = useTheme();
   const [user, setUser]               = useState(null);
   const [loading, setLoading]         = useState(true);
   const [isGuest, setIsGuest]         = useState(true);
@@ -370,27 +368,16 @@ function App() {
         {/* ── Header ── */}
         <header className="top-section">
           <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-            <span aria-label="Swochi" style={{ fontSize: "24px", fontWeight: "700", letterSpacing: "3px", color: "var(--text)" }}>
+            <button
+              onClick={() => setOnglet("swipe")}
+              aria-label="Retour au swipe"
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "24px", fontWeight: "700", letterSpacing: "3px", color: "var(--text)" }}
+            >
               🎬 SWOCHI
-            </span>
+            </button>
 
-            {/* Actions header : thème + burger */}
-            <div style={{ position: "absolute", right: 0, display: "flex", gap: "8px", alignItems: "center" }}>
-              {/* Toggle thème */}
-              <button
-                onClick={toggleTheme}
-                aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
-                title={theme === "dark" ? "Mode clair" : "Mode sombre"}
-                style={{
-                  background: "var(--surface-2)", border: "1px solid var(--border)",
-                  borderRadius: "8px", padding: "8px 10px",
-                  cursor: "pointer", fontSize: "16px", lineHeight: 1,
-                  transition: "background 0.2s",
-                }}
-              >
-                {theme === "dark" ? "☀️" : "🌙"}
-              </button>
-
+            {/* Burger menu */}
+            <div style={{ position: "absolute", right: 0 }}>
               {/* Burger menu */}
               <button
                 onClick={() => setMenuOuvert(true)}
