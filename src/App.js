@@ -50,6 +50,21 @@ function App() {
   // ── Auth Firebase ──────────────────────────────────────────────────────────
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        // Reconnexion : déclencher le splash immédiatement
+        setLoadingUserData(true);
+        setMenuOuvert(false);
+      } else {
+        // Déconnexion : remettre à zéro l'état utilisateur
+        setUsername(null);
+        setListes({ aVoir: [], pasInteresse: [], dejavu: [] });
+        setDejaSwiped([]);
+        setFilms([]);
+        setIndex(0);
+        setPage(1);
+        setMenuOuvert(false);
+        setLoadingUserData(false);
+      }
       setUser(firebaseUser);
       setLoading(false);
     });
@@ -67,7 +82,6 @@ function App() {
   useEffect(() => {
     if (!user) return;
     setIsGuest(false);
-    setLoadingUserData(true);
     localStorage.removeItem("swochi_guest_listes");
     localStorage.removeItem("swochi_guest_swiped");
     getDoc(doc(db, "users", user.uid)).catch(() => {
