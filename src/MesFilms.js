@@ -85,7 +85,7 @@ function FilmItem({ film, ongletActif, onDeplacer, onSupprimer }) {
   );
 }
 
-function MesFilms({ listes, onDeplacer, onSupprimer }) {
+function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
   const [ongletActif, setOngletActif] = useState("aVoir");
   const [recherche, setRecherche]     = useState("");
 
@@ -95,6 +95,20 @@ function MesFilms({ listes, onDeplacer, onSupprimer }) {
 
   return (
     <div style={{ width: "100%" }}>
+
+      {/* Bandeau invité */}
+      {isGuest && (
+        <div style={{
+          background: "var(--surface-2)", border: "1px solid var(--border)",
+          borderRadius: "12px", padding: "11px 14px",
+          display: "flex", alignItems: "center", gap: "10px",
+          marginBottom: "16px", fontSize: "13px", color: "var(--text-3)",
+        }}>
+          <span>💾</span>
+          <span>Tes films ne sont sauvegardés que pour cette session.</span>
+        </div>
+      )}
+
       {/* Sous-onglets */}
       <div role="tablist" aria-label="Mes listes de films" style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
         {ONGLETS.map(o => (

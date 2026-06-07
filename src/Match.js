@@ -473,16 +473,16 @@ function VueComparer({ ami, listesUser, onRetour }) {
 
 // ─── Composant principal ──────────────────────────────────────────────────────
 
-function Match({ user, username, listesUser }) {
+function Match({ user, username, listesUser, isGuest, onSeConnecter }) {
   const [vue, setVue]                       = useState("amis");
   const [amis, setAmis]                     = useState([]);
   const [demandesRecues, setDemandesRecues] = useState([]);
   const [amiSelectionne, setAmiSelectionne] = useState(null);
   const [copied, setCopied]                 = useState(false);
-  const [chargement, setChargement]         = useState(true);
+  const [chargement, setChargement]         = useState(!isGuest);
 
   const chargerAmis = useCallback(async () => {
-    if (!user) return;
+    if (!user || isGuest) return;
     setChargement(true);
     try {
       const [snap1, snap2, snap3] = await Promise.all([
@@ -557,6 +557,53 @@ function Match({ user, username, listesUser }) {
           listesUser={listesUser}
           onRetour={() => setVue("amis")}
         />
+      </div>
+    );
+  }
+
+  /* ── Mode invité ── */
+  if (isGuest) {
+    return (
+      <div style={conteneurStyle}>
+        {/* Bannière info */}
+        <div style={{
+          background: "var(--purple-dim)", border: "1px solid rgba(168,85,247,0.2)",
+          borderRadius: "14px", padding: "16px 18px", marginBottom: "20px",
+          display: "flex", gap: "12px", alignItems: "flex-start",
+        }}>
+          <span style={{ fontSize: "20px", lineHeight: 1, flexShrink: 0 }}>🔒</span>
+          <div>
+            <p style={{ margin: "0 0 6px", fontSize: "14px", fontWeight: "600", color: "var(--purple)" }}>
+              Les amis nécessitent un compte
+            </p>
+            <p style={{ margin: "0 0 12px", fontSize: "13px", color: "var(--text-3)", lineHeight: "1.5" }}>
+              Crée un compte gratuit pour ajouter des amis et comparer vos listes de films.
+            </p>
+            <button onClick={onSeConnecter} style={{
+              background: "var(--purple)", color: "white", border: "none",
+              borderRadius: "20px", padding: "8px 18px",
+              fontSize: "13px", fontWeight: "600", cursor: "pointer",
+            }}>
+              Créer un compte →
+            </button>
+          </div>
+        </div>
+
+        {/* Aperçu désactivé */}
+        <div style={{ opacity: 0.35, pointerEvents: "none", userSelect: "none" }}>
+          <div style={{ background: "var(--surface)", borderRadius: "14px", padding: "14px", marginBottom: "8px", border: "1px solid var(--border)" }}>
+            <p style={{ margin: 0, fontSize: "13px", color: "var(--text-3)", fontWeight: "700", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "12px" }}>👥 Mes amis</p>
+            {[1,2].map(i => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 0", borderBottom: i === 1 ? "1px solid var(--divider)" : "none" }}>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--surface-3)" }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ width: "60%", height: 12, background: "var(--surface-3)", borderRadius: 6 }} />
+                </div>
+                <div style={{ width: 70, height: 28, background: "var(--surface-3)", borderRadius: 20 }} />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

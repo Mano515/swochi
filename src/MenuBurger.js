@@ -10,16 +10,12 @@ const ONGLETS_COMPLET = [
   { key: "profil",   label: "👤 Profil" },
 ];
 
-const ONGLETS_INVITE = [
-  { key: "swipe", label: "🎬 Swipe" },
-];
-
 const FOCUSABLES = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
 function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter }) {
   const drawerRef    = useRef(null);
   const fermerBtnRef = useRef(null);
-  const ONGLETS      = isGuest ? ONGLETS_INVITE : ONGLETS_COMPLET;
+  const ONGLETS      = ONGLETS_COMPLET;
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
@@ -136,19 +132,6 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
             </button>
           ))}
 
-          {/* Onglets verrouillés pour les invités */}
-          {isGuest && ONGLETS_COMPLET.filter(o => o.key !== "swipe").map(o => (
-            <div key={o.key} style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "13px 16px", borderRadius: "10px", marginBottom: "3px",
-              opacity: 0.35,
-            }}>
-              <span style={{ fontSize: "15px", color: "var(--text-3)" }}>{o.label}</span>
-              <span style={{ fontSize: "11px", color: "var(--text-3)", background: "var(--surface-2)", borderRadius: "6px", padding: "2px 6px" }}>
-                🔒
-              </span>
-            </div>
-          ))}
 
           {/* Toggle thème */}
           <div style={{ borderTop: "1px solid var(--divider)", marginTop: "8px", paddingTop: "8px" }}>

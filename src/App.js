@@ -517,26 +517,17 @@ function App() {
 
           {onglet === "match" && (
             <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-              {isGuest
-                ? <EcranVerrouille titre="Rejoins la communauté !" emoji="🤝" onSeConnecter={basculerModeConnexion} />
-                : <Match user={user} username={username} listesUser={listes} />
-              }
+              <Match user={user} username={username} listesUser={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
             </div>
           )}
           {onglet === "mesfilms" && (
             <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-              {isGuest
-                ? <EcranVerrouille titre="Tes listes de films" emoji="🎞" onSeConnecter={basculerModeConnexion} />
-                : <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} />
-              }
+              <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} isGuest={isGuest} />
             </div>
           )}
           {onglet === "profil" && (
             <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-              {isGuest
-                ? <EcranVerrouille titre="Ton profil" emoji="👤" onSeConnecter={basculerModeConnexion} />
-                : <Profil username={username} user={user} listes={listes} />
-              }
+              <Profil username={username} user={user} listes={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
             </div>
           )}
         </main>
