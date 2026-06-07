@@ -47,7 +47,7 @@ function Avatar({ username, size = 36 }) {
 
 // ─── Vue principale : liste d'amis ────────────────────────────────────────────
 
-function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRefuser, onAjouter, onPartager, copied }) {
+function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRefuser, onAjouter, onCopier, onPartager, copied }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
@@ -121,27 +121,56 @@ function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRef
           <p style={titreSectionStyle}>Mon pseudo</p>
           <div style={{
             background: "var(--surface)", border: "1px solid var(--border)",
-            borderRadius: "14px", padding: "14px 16px",
-            display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
+            borderRadius: "14px", padding: "16px",
             boxShadow: "var(--shadow-sm)",
+            display: "flex", flexDirection: "column", gap: "12px",
           }}>
-            <div>
-              <p style={{ margin: 0, fontSize: "16px", fontWeight: "700", color: "var(--text)" }}>@{username}</p>
-              <p style={{ margin: "3px 0 0", fontSize: "12px", color: "var(--text-3)" }}>Partage-le à tes amis</p>
+            {/* Pseudo sélectionnable en grand */}
+            <div style={{
+              background: "var(--surface-2)", borderRadius: "10px",
+              padding: "12px 14px",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+            }}>
+              <span style={{
+                fontSize: "20px", fontWeight: "800", color: "var(--text)",
+                letterSpacing: "0.5px",
+                userSelect: "text", WebkitUserSelect: "text",
+                cursor: "text",
+              }}>
+                @{username}
+              </span>
+              {/* Bouton copier le pseudo brut */}
+              <button
+                onClick={onCopier}
+                aria-label="Copier le pseudo"
+                style={{
+                  background: copied === "pseudo" ? "var(--green)" : "var(--surface-3)",
+                  color: copied === "pseudo" ? "white" : "var(--text-2)",
+                  border: "none", borderRadius: "8px",
+                  padding: "7px 12px", fontSize: "13px",
+                  fontWeight: "600", cursor: "pointer", flexShrink: 0,
+                  transition: "background 0.2s, color 0.2s",
+                }}
+              >
+                {copied === "pseudo" ? "✓ Copié" : "📋 Copier"}
+              </button>
             </div>
+
+            {/* Bouton partager avec message */}
             <button
               onClick={onPartager}
-              aria-label={copied ? "Pseudo copié !" : "Partager mon pseudo"}
+              aria-label="Partager mon pseudo"
               style={{
-                background: copied ? "var(--green)" : "var(--surface-3)",
-                color: copied ? "white" : "var(--text-2)", border: "none",
-                borderRadius: "20px", padding: "8px 16px",
-                fontSize: "13px", fontWeight: "600",
-                cursor: "pointer", flexShrink: 0,
-                transition: "background 0.2s, color 0.2s",
+                background: copied === "partage" ? "var(--green)" : "var(--purple)",
+                color: "white", border: "none",
+                borderRadius: "10px", padding: "12px",
+                fontSize: "14px", fontWeight: "600",
+                cursor: "pointer", width: "100%",
+                transition: "background 0.2s",
+                boxShadow: copied === "partage" ? "0 4px 14px rgba(34,197,94,0.3)" : "0 4px 14px rgba(168,85,247,0.25)",
               }}
             >
-              {copied ? "✓ Copié !" : "Partager"}
+              {copied === "partage" ? "✓ Lien copié !" : "↗ Partager mon pseudo"}
             </button>
           </div>
         </section>
@@ -227,14 +256,31 @@ function VueAjouter({ myUid, myUsername, onRetour }) {
       </div>
 
       <div style={{ display: "flex", gap: "8px" }}>
-        <input
-          type="text"
-          placeholder="@pseudo"
-          value={pseudo}
-          onChange={e => setPseudo(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && chercher()}
-          style={{ ...inputStyle, flex: 1 }}
-        />
+        {/* Champ avec @ fixe devant */}
+        <div style={{
+          flex: 1, display: "flex", alignItems: "center",
+          background: "var(--input-bg)", border: "1px solid var(--input-border)",
+          borderRadius: "10px", overflow: "hidden",
+        }}>
+          <span style={{
+            padding: "0 0 0 14px",
+            fontSize: "16px", fontWeight: "700",
+            color: "var(--text-3)", flexShrink: 0,
+            userSelect: "none",
+          }}>@</span>
+          <input
+            type="text"
+            placeholder="pseudo de ton ami"
+            value={pseudo.replace(/^@/, "")}
+            onChange={e => setPseudo(e.target.value.replace(/^@/, ""))}
+            onKeyDown={e => e.key === "Enter" && chercher()}
+            style={{
+              flex: 1, background: "transparent", border: "none",
+              padding: "13px 14px 13px 6px",
+              color: "var(--text)", fontSize: "16px", outline: "none",
+            }}
+          />
+        </div>
         <button onClick={chercher} disabled={loading} style={{
           background: "var(--purple)", color: "white",
           border: "none", borderRadius: "10px",
@@ -478,7 +524,7 @@ function Match({ user, username, listesUser, isGuest, onSeConnecter }) {
   const [amis, setAmis]                     = useState([]);
   const [demandesRecues, setDemandesRecues] = useState([]);
   const [amiSelectionne, setAmiSelectionne] = useState(null);
-  const [copied, setCopied]                 = useState(false);
+  const [copied, setCopied]                 = useState(null); // "pseudo" | "partage" | null
   const [chargement, setChargement]         = useState(!isGuest);
 
   const chargerAmis = useCallback(async () => {
@@ -525,15 +571,23 @@ function Match({ user, username, listesUser, isGuest, onSeConnecter }) {
     } catch (e) { console.error(e); }
   }
 
+  async function copierPseudo() {
+    try {
+      await navigator.clipboard.writeText(username);
+      setCopied("pseudo");
+      setTimeout(() => setCopied(null), 2500);
+    } catch { /* silencieux */ }
+  }
+
   async function partagerPseudo() {
     const texte = `Rejoins-moi sur Swochi ! Mon pseudo : @${username}`;
     if (navigator.share) {
-      try { await navigator.share({ title: "Swochi", text: texte }); return; } catch { return; }
+      try { await navigator.share({ title: "Swochi", text: texte }); return; } catch {}
     }
     try {
       await navigator.clipboard.writeText(texte);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      setCopied("partage");
+      setTimeout(() => setCopied(null), 2500);
     } catch { /* silencieux */ }
   }
 
@@ -621,6 +675,7 @@ function Match({ user, username, listesUser, isGuest, onSeConnecter }) {
           onAccepter={accepterDemande}
           onRefuser={refuserDemande}
           onAjouter={() => setVue("ajouter")}
+          onCopier={copierPseudo}
           onPartager={partagerPseudo}
           copied={copied}
         />
@@ -637,6 +692,5 @@ const titreSectionStyle = { margin: "0 0 10px", fontSize: "11px", fontWeight: "7
 const btnVertStyle      = { background: "var(--green)", color: "white", border: "none", borderRadius: "20px", padding: "6px 14px", fontSize: "13px", fontWeight: "700", cursor: "pointer", flexShrink: 0 };
 const btnGrisStyle      = { background: "transparent", color: "var(--text-3)", border: "1px solid var(--border-2)", borderRadius: "20px", padding: "6px 12px", fontSize: "14px", cursor: "pointer", flexShrink: 0 };
 const btnRetourStyle    = { background: "transparent", border: "none", color: "var(--text-3)", fontSize: "14px", cursor: "pointer", padding: 0, textAlign: "left" };
-const inputStyle        = { background: "var(--input-bg)", border: "1px solid var(--input-border)", borderRadius: "10px", padding: "13px 14px", color: "var(--text)", fontSize: "15px", outline: "none" };
 
 export default Match;

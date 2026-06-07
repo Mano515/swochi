@@ -5,7 +5,7 @@ import { useTheme } from "./ThemeContext";
 
 const ONGLETS_COMPLET = [
   { key: "swipe",    label: "🎬 Swipe" },
-  { key: "match",    label: "🤝 Match" },
+  { key: "match",    label: "👥 Amis" },
   { key: "mesfilms", label: "🎞 Mes films" },
   { key: "profil",   label: "👤 Profil" },
 ];
