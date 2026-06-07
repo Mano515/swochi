@@ -23,3 +23,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 package-lock.json
+
+# Firebase Admin — clé privée (ne jamais committer)
+serviceAccount.json
+scripts/serviceAccount.json
