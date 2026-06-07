@@ -220,8 +220,10 @@ function VueAjouter({ myUid, myUsername, onRetour }) {
       if (!received.empty) { etat = received.docs[0].data().status === "accepted" ? "ami" : "recue"; }
 
       setResultat({ uid: cibleUid, username: cible, etat });
-    } catch {
-      setResultat({ etat: "erreur" });
+    } catch (e) {
+      console.error("Erreur recherche ami:", e?.code, e?.message);
+      const etat = e?.code === "permission-denied" ? "permission" : "erreur";
+      setResultat({ etat });
     }
     setLoading(false);
   }
@@ -310,7 +312,12 @@ function VueAjouter({ myUid, myUsername, onRetour }) {
           )}
           {resultat.etat === "erreur" && (
             <p style={{ color: "var(--red)", margin: 0, fontSize: "14px" }}>
-              Une erreur est survenue, réessaie.
+              Une erreur est survenue, réessaie. (détails dans la console)
+            </p>
+          )}
+          {resultat.etat === "permission" && (
+            <p style={{ color: "var(--amber)", margin: 0, fontSize: "14px" }}>
+              Index Firestore manquant — crée l'index <strong>fromUid + toUid</strong> dans la Firebase Console.
             </p>
           )}
           {resultat.etat === "ami" && (
