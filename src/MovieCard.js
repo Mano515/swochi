@@ -209,9 +209,12 @@ function MovieCard({ film, onSwipe, isTop }) {
   const y = useMotionValue(0);
   const rotate        = useTransform(x, [-200, 200], [-25, 25]);
   const opacity       = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
-  const labelOpacityLeft  = useTransform(x, [-60, -20, 0], [1, 0, 0]);
-  const labelOpacityRight = useTransform(x, [0, 20, 60],  [0, 0, 1]);
+  const labelOpacityLeft  = useTransform(x, [-60, -20, 0],  [1, 0, 0]);
+  const labelOpacityRight = useTransform(x, [0, 20, 60],   [0, 0, 1]);
   const labelOpacityUp    = useTransform(y, [-60, -20, 0], [1, 0, 0]);
+  const labelScaleLeft    = useTransform(x, [-120, -20], [1.15, 0.8]);
+  const labelScaleRight   = useTransform(x, [20, 120],   [0.8, 1.15]);
+  const labelScaleUp      = useTransform(y, [-120, -20], [1.15, 0.8]);
 
   const [showDetails, setShowDetails]       = useState(false);
   const [details, setDetails]               = useState(null);
@@ -335,30 +338,72 @@ function MovieCard({ film, onSwipe, isTop }) {
         style={{ width: "100%", height: "100%", display: "block", objectFit: "cover", pointerEvents: "none" }}
       />
 
-      {/* Labels swipe — décoratifs */}
+      {/* Labels swipe — centrés, grands, stylés */}
       <motion.div aria-hidden="true" style={{
         opacity: labelOpacityLeft,
-        position: "absolute", top: 20, right: 20,
-        background: "#ef4444", color: "white",
-        padding: "6px 16px", borderRadius: "8px",
-        fontWeight: "bold", fontSize: "18px", border: "2px solid white",
-      }}>SKIP</motion.div>
+        scale: labelScaleLeft,
+        position: "absolute",
+        top: "50%", left: "50%",
+        x: "-50%", y: "-50%",
+        background: "rgba(239,68,68,0.18)",
+        border: "3px solid #ef4444",
+        backdropFilter: "blur(8px)",
+        color: "#ff6b6b",
+        borderRadius: "20px",
+        padding: "14px 28px",
+        fontWeight: "800",
+        fontSize: "28px",
+        letterSpacing: "2px",
+        textTransform: "uppercase",
+        boxShadow: "0 0 32px rgba(239,68,68,0.35), inset 0 0 20px rgba(239,68,68,0.08)",
+        textShadow: "0 0 20px rgba(239,68,68,0.6)",
+        whiteSpace: "nowrap",
+        pointerEvents: "none",
+      }}>✕ Skip</motion.div>
 
       <motion.div aria-hidden="true" style={{
         opacity: labelOpacityRight,
-        position: "absolute", top: 20, left: 20,
-        background: "#22c55e", color: "white",
-        padding: "6px 16px", borderRadius: "8px",
-        fontWeight: "bold", fontSize: "18px", border: "2px solid white",
-      }}>À VOIR</motion.div>
+        scale: labelScaleRight,
+        position: "absolute",
+        top: "50%", left: "50%",
+        x: "-50%", y: "-50%",
+        background: "rgba(34,197,94,0.18)",
+        border: "3px solid #22c55e",
+        backdropFilter: "blur(8px)",
+        color: "#4ade80",
+        borderRadius: "20px",
+        padding: "14px 28px",
+        fontWeight: "800",
+        fontSize: "28px",
+        letterSpacing: "2px",
+        textTransform: "uppercase",
+        boxShadow: "0 0 32px rgba(34,197,94,0.35), inset 0 0 20px rgba(34,197,94,0.08)",
+        textShadow: "0 0 20px rgba(34,197,94,0.6)",
+        whiteSpace: "nowrap",
+        pointerEvents: "none",
+      }}>♥ À voir</motion.div>
 
       <motion.div aria-hidden="true" style={{
         opacity: labelOpacityUp,
-        position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)",
-        background: "#3b82f6", color: "white",
-        padding: "6px 16px", borderRadius: "8px",
-        fontWeight: "bold", fontSize: "18px", border: "2px solid white",
-      }}>DÉJÀ VU</motion.div>
+        scale: labelScaleUp,
+        position: "absolute",
+        top: "50%", left: "50%",
+        x: "-50%", y: "-50%",
+        background: "rgba(59,130,246,0.18)",
+        border: "3px solid #3b82f6",
+        backdropFilter: "blur(8px)",
+        color: "#60a5fa",
+        borderRadius: "20px",
+        padding: "14px 28px",
+        fontWeight: "800",
+        fontSize: "28px",
+        letterSpacing: "2px",
+        textTransform: "uppercase",
+        boxShadow: "0 0 32px rgba(59,130,246,0.35), inset 0 0 20px rgba(59,130,246,0.08)",
+        textShadow: "0 0 20px rgba(59,130,246,0.6)",
+        whiteSpace: "nowrap",
+        pointerEvents: "none",
+      }}>✓ Déjà vu</motion.div>
 
       {/* Bandeau bas — juste l'année + le bouton Infos */}
       <div
