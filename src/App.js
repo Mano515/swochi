@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, updateDoc, getDoc, runTransaction } from "firebase/firestore";
@@ -33,7 +34,6 @@ function App() {
   const [usernameError, setUsernameError] = useState("");
   const [menuOuvert, setMenuOuvert]   = useState(false);
   const [toast, setToast]             = useState(null);
-  // Prompt "créer un compte" après 10 swipes en mode invité
   const [showGuestPrompt, setShowGuestPrompt] = useState(false);
   const swipesInvite = useRef(0);
   const fetchIdRef   = useRef(0);
@@ -45,7 +45,7 @@ function App() {
     toastTimer.current = setTimeout(() => setToast(null), 4000);
   }
 
-  // Auth Firebase
+  // ── Auth Firebase ──────────────────────────────────────────────────────────
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
@@ -54,17 +54,20 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // Genres TMDB
+  // ── Genres TMDB ────────────────────────────────────────────────────────────
   useEffect(() => {
     fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.REACT_APP_TMDB_KEY}&language=fr-FR`)
       .then(res => res.json())
       .then(data => setGenres(data.genres || []));
   }, []);
 
-  // Chargement des données utilisateur connecté
+  // ── Données utilisateur connecté ───────────────────────────────────────────
   useEffect(() => {
     if (!user) return;
     setIsGuest(false);
+    // Quand on se connecte, on efface les données invité du localStorage
+    localStorage.removeItem("swochi_guest_listes");
+    localStorage.removeItem("swochi_guest_swiped");
     getDoc(doc(db, "users", user.uid)).catch(() => {
       afficherToast("Impossible de charger vos données. Vérifiez votre connexion.");
     }).then(snap => {
@@ -82,28 +85,28 @@ function App() {
       setDejaSwiped(ids);
       if (snap.exists() && snap.data().username) {
         chargerFilms(1, ids, [], "");
-        // Onboarding : première connexion
         if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
       }
     });
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Mode invité : charge les films sans auth
+  // ── Mode invité — restaure depuis localStorage ─────────────────────────────
   useEffect(() => {
     if (!isGuest) return;
-    setListes({ aVoir: [], pasInteresse: [], dejavu: [] });
-    setDejaSwiped([]);
+    const savedListes  = JSON.parse(localStorage.getItem("swochi_guest_listes") || "null")
+      || { aVoir: [], pasInteresse: [], dejavu: [] };
+    const savedSwiped  = JSON.parse(localStorage.getItem("swochi_guest_swiped") || "[]");
+    setListes(savedListes);
+    setDejaSwiped(savedSwiped);
     setIndex(0);
     setFilms([]);
     setHistorique([]);
     swipesInvite.current = 0;
-    chargerFilms(1, [], [], "");
-    // Onboarding invité
+    chargerFilms(1, savedSwiped, [], "");
     if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
   }, [isGuest]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Chargement des films ───────────────────────────────────────────────────
-
   async function fetchPage(numPage, genre) {
     const key = process.env.REACT_APP_TMDB_KEY;
     const genreParam = genre ? `&with_genres=${genre}` : "";
@@ -140,9 +143,8 @@ function App() {
   }
 
   // ── Sauvegarde Firestore ───────────────────────────────────────────────────
-
   async function saveListes(newListes) {
-    if (!user || isGuest) return; // pas de sauvegarde en mode invité
+    if (!user || isGuest) return;
     try {
       await updateDoc(doc(db, "users", user.uid), { listes: newListes });
     } catch (e) {
@@ -152,7 +154,6 @@ function App() {
   }
 
   // ── Choix du username ──────────────────────────────────────────────────────
-
   async function handleChoisirUsername() {
     setUsernameError("");
     const pseudo = usernameInput.trim().toLowerCase().replace(/\s+/g, "_");
@@ -180,7 +181,6 @@ function App() {
   }
 
   // ── Swipe ──────────────────────────────────────────────────────────────────
-
   function handleSwipe(direction) {
     const film = films[index];
     const newListes = { ...listes };
@@ -196,8 +196,10 @@ function App() {
     const newDejaSwiped = [...dejaSwiped, film.id];
     setDejaSwiped(newDejaSwiped);
 
-    // Prompt invité après 10 swipes
+    // Persistance localStorage en mode invité
     if (isGuest) {
+      localStorage.setItem("swochi_guest_listes", JSON.stringify(newListes));
+      localStorage.setItem("swochi_guest_swiped", JSON.stringify(newDejaSwiped));
       swipesInvite.current += 1;
       if (swipesInvite.current === 10) setShowGuestPrompt(true);
     }
@@ -217,8 +219,14 @@ function App() {
     setListes(newListes);
     saveListes(newListes);
     setHistorique(h => h.slice(0, -1));
-    setDejaSwiped(d => d.filter(id => id !== film.id));
+    const newDejaSwiped = dejaSwiped.filter(id => id !== film.id);
+    setDejaSwiped(newDejaSwiped);
     setIndex(i => i - 1);
+
+    if (isGuest) {
+      localStorage.setItem("swochi_guest_listes", JSON.stringify(newListes));
+      localStorage.setItem("swochi_guest_swiped", JSON.stringify(newDejaSwiped));
+    }
   }
 
   async function handleDeplacer(film, de, vers) {
@@ -243,12 +251,10 @@ function App() {
   }
 
   // ── Rendu ──────────────────────────────────────────────────────────────────
-
   if (!loading && !user && !isGuest) return (
     <Login onLogin={() => {}} onGuest={() => setIsGuest(true)} />
   );
 
-  // Écran de choix du pseudo (nouveaux comptes)
   if (user && (username === "" || username === null)) return (
     <div style={{
       minHeight: "100vh", background: "var(--bg)",
@@ -303,7 +309,6 @@ function App() {
   return (
     <div className="no-select app-shell">
 
-      {/* Onboarding (premier lancement) */}
       {showOnboarding && <Onboarding onTerminer={() => setShowOnboarding(false)} />}
 
       {/* Prompt invité après 10 swipes */}
@@ -366,10 +371,7 @@ function App() {
             >
               🎬 SWOCHI
             </button>
-
-            {/* Burger menu */}
             <div style={{ position: "absolute", right: 0 }}>
-              {/* Burger menu */}
               <button
                 onClick={() => setMenuOuvert(true)}
                 aria-label="Ouvrir le menu"
@@ -390,7 +392,6 @@ function App() {
             </div>
           </div>
 
-          {/* Bandeau invité */}
           {isGuest && (
             <div style={{
               background: "var(--purple-dim)", borderRadius: "10px",
@@ -398,7 +399,7 @@ function App() {
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
             }}>
               <p style={{ margin: 0, fontSize: "12px", color: "var(--purple)", fontWeight: "500" }}>
-                Mode invité · swipes non sauvegardés
+                Mode invité · swipes sauvegardés localement
               </p>
               <button onClick={basculerModeConnexion} style={{
                 background: "none", border: "1px solid var(--purple)",
@@ -418,65 +419,95 @@ function App() {
           )}
         </header>
 
-        {/* ── Contenu principal ── */}
+        {/* ── Contenu principal avec transitions ── */}
         <main>
-          {onglet === "swipe" && (
-            <div className="swipe-section">
-              <div className="card-container">
-                {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
-                {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
-                {!filmActuel && !loadingFilms && (
-                  <p style={{ color: "var(--text-3)", textAlign: "center", paddingTop: "40%" }}>Plus de films !</p>
-                )}
-                {!filmActuel && loadingFilms && (
-                  <p role="status" style={{ color: "var(--text-4)", textAlign: "center", paddingTop: "40%" }}>Chargement…</p>
-                )}
-              </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={onglet}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
+              style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}
+            >
+              {onglet === "swipe" && (
+                <div className="swipe-section">
+                  <div className="card-container">
+                    {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
+                    {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
 
-              {filmActuel && (
-                <div style={{
-                  position: "relative", width: "100%", maxWidth: "320px",
-                  marginTop: "22px", display: "flex", justifyContent: "center", alignItems: "center",
-                }}>
-                  <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                    <button onClick={() => handleSwipe("left")}  aria-label="Passer ce film" style={btnStyle("var(--red)")}>✕</button>
-                    <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu"        style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
-                    <button onClick={() => handleSwipe("right")} aria-label="À voir"         style={btnStyle("var(--green)")}>♥</button>
+                    {/* Écran vide — plus de films */}
+                    {!filmActuel && !loadingFilms && <EcranVide onRelancer={() => {
+                      setIndex(0);
+                      setFilms([]);
+                      chargerFilms(1, dejaSwiped, [], genreChoisi);
+                    }} />}
+
+                    {/* Chargement */}
+                    {!filmActuel && loadingFilms && (
+                      <div style={{
+                        position: "absolute", inset: 0,
+                        display: "flex", flexDirection: "column",
+                        alignItems: "center", justifyContent: "center", gap: "14px",
+                      }}>
+                        <div style={{
+                          width: "36px", height: "36px",
+                          border: "3px solid var(--border-2)",
+                          borderTopColor: "var(--purple)",
+                          borderRadius: "50%",
+                          animation: "spin 0.8s linear infinite",
+                        }} />
+                        <p role="status" style={{ color: "var(--text-4)", fontSize: "13px", margin: 0 }}>Chargement…</p>
+                      </div>
+                    )}
                   </div>
-                  <button
-                    onClick={handleRetour}
-                    disabled={historique.length === 0}
-                    aria-label="Annuler le dernier swipe"
-                    style={{
-                      position: "absolute", right: 0,
-                      background: "transparent",
-                      border: "2px solid " + (historique.length > 0 ? "var(--amber)" : "var(--text-5)"),
-                      color: historique.length > 0 ? "var(--amber)" : "var(--text-5)",
-                      borderRadius: "50%", width: "36px", height: "36px",
-                      fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                    }}
-                  >↩</button>
+
+                  {filmActuel && (
+                    <div style={{
+                      position: "relative", width: "100%", maxWidth: "320px",
+                      marginTop: "22px", display: "flex", justifyContent: "center", alignItems: "center",
+                    }}>
+                      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                        <button onClick={() => handleSwipe("left")}  aria-label="Passer ce film" style={btnStyle("var(--red)")}>✕</button>
+                        <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu"        style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
+                        <button onClick={() => handleSwipe("right")} aria-label="À voir"         style={btnStyle("var(--green)")}>♥</button>
+                      </div>
+                      <button
+                        onClick={handleRetour}
+                        disabled={historique.length === 0}
+                        aria-label="Annuler le dernier swipe"
+                        style={{
+                          position: "absolute", right: 0,
+                          background: "transparent",
+                          border: "2px solid " + (historique.length > 0 ? "var(--amber)" : "var(--text-5)"),
+                          color: historique.length > 0 ? "var(--amber)" : "var(--text-5)",
+                          borderRadius: "50%", width: "36px", height: "36px",
+                          fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                      >↩</button>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
 
-          {onglet === "match" && (
-            <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-              <Match user={user} username={username} listesUser={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
-            </div>
-          )}
-          {onglet === "mesfilms" && (
-            <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-              <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} isGuest={isGuest} />
-            </div>
-          )}
-          {onglet === "profil" && (
-            <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-              <Profil username={username} user={user} listes={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
-            </div>
-          )}
+              {onglet === "match" && (
+                <div style={{ padding: "16px", width: "100%", maxWidth: "480px" }}>
+                  <Match user={user} username={username} listesUser={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
+                </div>
+              )}
+              {onglet === "mesfilms" && (
+                <div style={{ padding: "16px", width: "100%", maxWidth: "480px" }}>
+                  <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} isGuest={isGuest} />
+                </div>
+              )}
+              {onglet === "profil" && (
+                <div style={{ padding: "16px", width: "100%", maxWidth: "480px" }}>
+                  <Profil username={username} user={user} listes={listes} isGuest={isGuest} onSeConnecter={basculerModeConnexion} />
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
 
@@ -505,6 +536,40 @@ function App() {
   );
 }
 
+// ── Écran "plus de films" ──────────────────────────────────────────────────────
+function EcranVide({ onRelancer }) {
+  return (
+    <div style={{
+      position: "absolute", inset: 0,
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      gap: "16px", padding: "24px", textAlign: "center",
+    }}>
+      <div style={{ fontSize: "52px", lineHeight: 1 }}>🎬</div>
+      <p style={{ margin: 0, fontSize: "16px", fontWeight: "700", color: "var(--text)" }}>
+        Tu as tout vu !
+      </p>
+      <p style={{ margin: 0, fontSize: "13px", color: "var(--text-3)", lineHeight: "1.6" }}>
+        Impressionnant. Essaie un autre genre ou recharge pour découvrir de nouveaux films.
+      </p>
+      <button
+        onClick={onRelancer}
+        style={{
+          marginTop: "4px",
+          background: "var(--purple)", color: "white",
+          border: "none", borderRadius: "50px",
+          padding: "12px 28px", fontSize: "14px",
+          fontWeight: "700", cursor: "pointer",
+          boxShadow: "0 4px 16px rgba(168,85,247,0.35)",
+        }}
+      >
+        Recharger
+      </button>
+    </div>
+  );
+}
+
+// ── Styles ─────────────────────────────────────────────────────────────────────
 const inputStyle = {
   background: "var(--input-bg)", border: "1px solid var(--input-border)",
   borderRadius: "10px", padding: "13px 14px",
