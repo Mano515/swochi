@@ -46,6 +46,8 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
   const fleche = (direction, visible) => (
     <button
       onClick={() => scrollerVers(direction)}
+      aria-label={direction === -1 ? "Défiler vers la gauche" : "Défiler vers la droite"}
+      tabIndex={visible ? 0 : -1}
       style={{
         display: visible ? "flex" : "none",
         alignItems: "center", justifyContent: "center",
@@ -67,6 +69,8 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
 
       <div
         ref={scrollRef}
+        role="group"
+        aria-label="Filtrer par genre"
         className="genres-scroll"
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
@@ -76,7 +80,6 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
           display: "flex", gap: "6px",
           cursor: "grab",
           padding: "4px 0",
-          // Laisse de la place pour les flèches quand elles sont visibles
           paddingLeft: peutAllerGauche ? "28px" : "0",
           paddingRight: peutAllerDroite ? "28px" : "0",
           transition: "padding 0.15s",
@@ -84,12 +87,14 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
       >
         <button
           onClick={() => onGenreChange("")}
+          aria-pressed={genreChoisi === ""}
           style={{ ...genreStyle(genreChoisi === ""), flexShrink: 0 }}
         >Tous</button>
         {genres.map(g => (
           <button
             key={g.id}
             onClick={() => onGenreChange(String(g.id))}
+            aria-pressed={genreChoisi === String(g.id)}
             style={{ ...genreStyle(genreChoisi === String(g.id)), flexShrink: 0 }}
           >
             {g.name}
