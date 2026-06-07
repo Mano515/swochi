@@ -428,7 +428,7 @@ function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
-              style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}
+              style={{ width: "100%", flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}
             >
               {onglet === "swipe" && (
                 <div className="swipe-section">
