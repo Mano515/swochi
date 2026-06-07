@@ -168,6 +168,8 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
   .desktop-wrapper { max-width: 1100px; }
 
   .onglet-content {
+    max-width: 520px;
+    margin: 0 auto;
     padding: 20px 32px 32px;
   }
 }
