@@ -120,8 +120,6 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
 
 .app-shell main {
   width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
 }
 
 .desktop-wrapper {
@@ -174,8 +172,10 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
 /* ── Contenu des onglets ── */
 .onglet-content {
   width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
   box-sizing: border-box;
-  padding: 12px 12px 24px;
+  padding: 12px 16px 24px;
 }
 
 /* ── Mobile ──────────────────────────────────────── */
