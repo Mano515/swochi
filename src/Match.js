@@ -507,7 +507,7 @@ function Match({ user, username, listesUser, isGuest, onSeConnecter }) {
       console.error("Erreur chargement amis:", e);
     }
     setChargement(false);
-  }, [user]);
+  }, [user, isGuest]);
 
   useEffect(() => { chargerAmis(); }, [chargerAmis]);
 

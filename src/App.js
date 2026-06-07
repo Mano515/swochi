@@ -12,33 +12,6 @@ import Profil from "./Profil";
 import Onboarding from "./Onboarding";
 import { useTheme } from "./ThemeContext";
 
-// ─── Écran verrouillé pour les invités ───────────────────────────────────────
-
-function EcranVerrouille({ titre, emoji, onSeConnecter }) {
-  return (
-    <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center",
-      justifyContent: "center", textAlign: "center",
-      padding: "56px 24px", gap: "16px",
-    }}>
-      <span style={{ fontSize: "52px" }}>{emoji}</span>
-      <h2 style={{ margin: 0, fontSize: "20px", color: "var(--text)" }}>{titre}</h2>
-      <p style={{ color: "var(--text-3)", fontSize: "14px", margin: 0, maxWidth: "260px", lineHeight: "1.6" }}>
-        Crée un compte gratuitement pour débloquer cette fonctionnalité et sauvegarder tous tes swipes.
-      </p>
-      <button onClick={onSeConnecter} style={{
-        background: "var(--purple)", color: "white",
-        border: "none", borderRadius: "50px",
-        padding: "14px 32px", fontSize: "15px",
-        fontWeight: "600", cursor: "pointer",
-        marginTop: "8px", boxShadow: "0 4px 16px rgba(168,85,247,0.35)",
-      }}>
-        Se connecter / S'inscrire
-      </button>
-    </div>
-  );
-}
-
 // ─── Tabs bottom nav ─────────────────────────────────────────────────────────
 
 const NAV_TABS = [
