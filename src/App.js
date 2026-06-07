@@ -58,8 +58,12 @@ function App() {
   const [usernameError, setUsernameError] = useState("");
   const [menuOuvert, setMenuOuvert]   = useState(false);
   const [toast, setToast]             = useState(null); // { message, type: "error"|"success" }
-  const fetchIdRef = useRef(0);
-  const toastTimer = useRef(null);
+  const [isGuest, setIsGuest]         = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showGuestPrompt, setShowGuestPrompt] = useState(false);
+  const fetchIdRef   = useRef(0);
+  const toastTimer   = useRef(null);
+  const swipesInvite = useRef(0);
 
   function afficherToast(message, type = "error") {
     if (toastTimer.current) clearTimeout(toastTimer.current);
