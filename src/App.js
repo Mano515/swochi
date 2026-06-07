@@ -27,7 +27,7 @@ function App() {
   const { theme, toggleTheme } = useTheme();
   const [user, setUser]               = useState(null);
   const [loading, setLoading]         = useState(true);
-  const [isGuest, setIsGuest]         = useState(false);
+  const [isGuest, setIsGuest]         = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [loadingFilms, setLoadingFilms] = useState(false);
   const [films, setFilms]             = useState([]);
@@ -255,11 +255,7 @@ function App() {
 
   // ── Rendu ──────────────────────────────────────────────────────────────────
 
-  if (loading) return (
-    <div role="status" aria-label="Chargement" style={{ background: "var(--bg)", minHeight: "100vh" }} />
-  );
-
-  if (!user && !isGuest) return (
+  if (!loading && !user && !isGuest) return (
     <Login onLogin={() => {}} onGuest={() => setIsGuest(true)} />
   );
 
