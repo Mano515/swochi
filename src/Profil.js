@@ -5,113 +5,78 @@ function Profil({ username, user, listes, isGuest, onSeConnecter }) {
   /* ── Mode invité ── */
   if (isGuest) {
     return (
-      <div style={{ width: "100%" }}>
-        <div className="profil-grid">
-          {/* Colonne gauche */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <AvatarCard initiale="👤" username={null} email={null} guest />
+      <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "16px" }}>
 
-            <div style={{
-              background: "var(--purple-dim)", border: "1px solid rgba(168,85,247,0.2)",
-              borderRadius: "18px", padding: "24px 20px", textAlign: "center",
-              display: "flex", flexDirection: "column", gap: "12px",
-            }}>
-              <p style={{ margin: 0, fontSize: "16px", fontWeight: "700", color: "var(--text)" }}>
-                Sauvegarde tes swipes 🎬
-              </p>
-              <p style={{ margin: 0, fontSize: "13px", color: "var(--text-3)", lineHeight: "1.6" }}>
-                Crée un compte gratuit pour ne plus jamais perdre ta liste et comparer avec tes amis.
-              </p>
-              <button onClick={onSeConnecter} style={{
-                background: "var(--purple)", color: "white", border: "none",
-                borderRadius: "50px", padding: "13px 28px",
-                fontSize: "15px", fontWeight: "700", cursor: "pointer",
-                boxShadow: "0 4px 16px rgba(168,85,247,0.35)",
-              }}>
-                Créer un compte →
-              </button>
-            </div>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "14px", padding: "28px 0 12px" }}>
+          <div style={{
+            width: "80px", height: "80px", borderRadius: "50%",
+            background: "linear-gradient(135deg, var(--surface-3), var(--surface-2))",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "32px", border: "2px dashed var(--border-2)",
+          }}>👤</div>
+          <div style={{ textAlign: "center" }}>
+            <p style={{ margin: "0 0 5px", fontSize: "19px", fontWeight: "700", color: "var(--text)" }}>Mode invité</p>
+            <p style={{ margin: 0, color: "var(--text-3)", fontSize: "13px" }}>Swipes non sauvegardés</p>
           </div>
+        </div>
 
-          {/* Colonne droite — stats */}
-          <div>
-            <StatsCard
-              label="Cette session"
-              totalSwipes={totalSwipes}
-              listes={listes}
-            />
-          </div>
+        <StatsCard label="Cette session" totalSwipes={totalSwipes} listes={listes} />
+
+        <div style={{
+          background: "var(--purple-dim)", border: "1px solid rgba(168,85,247,0.2)",
+          borderRadius: "18px", padding: "24px 20px", textAlign: "center",
+          display: "flex", flexDirection: "column", gap: "12px",
+        }}>
+          <p style={{ margin: 0, fontSize: "16px", fontWeight: "700", color: "var(--text)" }}>Sauvegarde tes swipes 🎬</p>
+          <p style={{ margin: 0, fontSize: "13px", color: "var(--text-3)", lineHeight: "1.6" }}>
+            Crée un compte gratuit pour ne plus jamais perdre ta liste et comparer avec tes amis.
+          </p>
+          <button onClick={onSeConnecter} style={{
+            background: "var(--purple)", color: "white", border: "none",
+            borderRadius: "50px", padding: "13px 28px",
+            fontSize: "15px", fontWeight: "700", cursor: "pointer",
+            boxShadow: "0 4px 16px rgba(168,85,247,0.35)",
+          }}>Créer un compte →</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ width: "100%" }}>
-      <div className="profil-grid">
-        {/* Colonne gauche */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <AvatarCard initiale={initiale} username={username} email={user?.email} />
+    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "16px" }}>
 
-          {/* Info compte */}
-          <div style={{
-            background: "var(--surface)", borderRadius: "18px", padding: "22px 20px",
-            border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)",
-            display: "flex", flexDirection: "column", gap: "14px",
-          }}>
-            <p style={{ margin: "0 0 4px", color: "var(--text-3)", fontSize: "11px", fontWeight: "700", letterSpacing: "1.2px", textTransform: "uppercase" }}>
-              Mon compte
-            </p>
-            <InfoLigne label="Pseudo" valeur={`@${username}`} />
-            <div style={{ height: "1px", background: "var(--divider)" }} />
-            <InfoLigne label="Email" valeur={user?.email} />
-          </div>
-        </div>
-
-        {/* Colonne droite — stats */}
-        <div>
-          <StatsCard
-            label="Mes stats"
-            totalSwipes={totalSwipes}
-            listes={listes}
-          />
+      {/* Avatar + nom */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "14px", padding: "28px 0 12px" }}>
+        <div style={{
+          width: "80px", height: "80px", borderRadius: "50%",
+          background: "linear-gradient(135deg, #a855f7, #3b82f6)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "30px", fontWeight: "700", color: "white",
+          boxShadow: "0 6px 20px rgba(168,85,247,0.35)",
+        }}>{initiale}</div>
+        <div style={{ textAlign: "center" }}>
+          <p style={{ margin: "0 0 5px", fontSize: "21px", fontWeight: "700", color: "var(--text)" }}>@{username}</p>
+          <p style={{ margin: 0, color: "var(--text-3)", fontSize: "13px" }}>{user?.email}</p>
         </div>
       </div>
-    </div>
-  );
-}
 
-/* ── Sous-composants ───────────────────────────────────────── */
+      {/* Stats */}
+      <StatsCard label="Mes stats" totalSwipes={totalSwipes} listes={listes} />
 
-function AvatarCard({ initiale, username, email, guest }) {
-  return (
-    <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center",
-      gap: "14px", padding: "28px 20px",
-      background: "var(--surface)", borderRadius: "18px",
-      border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)",
-    }}>
+      {/* Info compte */}
       <div style={{
-        width: "80px", height: "80px", borderRadius: "50%",
-        background: guest
-          ? "linear-gradient(135deg, var(--surface-3), var(--surface-2))"
-          : "linear-gradient(135deg, #a855f7, #3b82f6)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: guest ? "32px" : "30px",
-        fontWeight: "700", color: "white",
-        boxShadow: guest ? "none" : "0 6px 20px rgba(168,85,247,0.35)",
-        border: guest ? "2px dashed var(--border-2)" : "none",
+        background: "var(--surface)", borderRadius: "18px", padding: "22px 20px",
+        border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)",
+        display: "flex", flexDirection: "column", gap: "14px",
       }}>
-        {initiale}
-      </div>
-      <div style={{ textAlign: "center" }}>
-        <p style={{ margin: "0 0 5px", fontSize: "20px", fontWeight: "700", color: "var(--text)" }}>
-          {guest ? "Mode invité" : `@${username}`}
+        <p style={{ margin: "0 0 4px", color: "var(--text-3)", fontSize: "11px", fontWeight: "700", letterSpacing: "1.2px", textTransform: "uppercase" }}>
+          Mon compte
         </p>
-        <p style={{ margin: 0, color: "var(--text-3)", fontSize: "13px" }}>
-          {guest ? "Swipes non sauvegardés" : email}
-        </p>
+        <InfoLigne label="Pseudo" valeur={`@${username}`} />
+        <div style={{ height: "1px", background: "var(--divider)" }} />
+        <InfoLigne label="Email" valeur={user?.email} />
       </div>
+
     </div>
   );
 }
@@ -121,15 +86,12 @@ function StatsCard({ label, totalSwipes, listes }) {
     <div style={{
       background: "var(--surface)", borderRadius: "18px", padding: "22px 20px",
       border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)",
-      height: "100%", boxSizing: "border-box",
     }}>
-      <p style={{ margin: "0 0 20px", color: "var(--text-3)", fontSize: "11px", fontWeight: "700", letterSpacing: "1.2px", textTransform: "uppercase" }}>
+      <p style={{ margin: "0 0 18px", color: "var(--text-3)", fontSize: "11px", fontWeight: "700", letterSpacing: "1.2px", textTransform: "uppercase" }}>
         {label}
       </p>
-
-      {/* 2×2 sur mobile, 4 colonnes si colonne large */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-        <StatItem valeur={totalSwipes}                label="Swipés"   couleur="var(--text)" />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", textAlign: "center", gap: "8px" }}>
+        <StatItem valeur={totalSwipes}                label="Swipés" />
         <StatItem valeur={listes.aVoir.length}        label="À voir"   couleur="var(--green)" />
         <StatItem valeur={listes.dejavu.length}       label="Déjà vu"  couleur="var(--blue)" />
         <StatItem valeur={listes.pasInteresse.length} label="Skippés"  couleur="var(--red)" />
@@ -138,14 +100,11 @@ function StatsCard({ label, totalSwipes, listes }) {
   );
 }
 
-function StatItem({ valeur, label, couleur }) {
+function StatItem({ valeur, label, couleur = "var(--text)" }) {
   return (
-    <div style={{
-      background: "var(--surface-2)", borderRadius: "14px",
-      padding: "16px", textAlign: "center",
-    }}>
-      <p style={{ margin: "0 0 6px", fontSize: "28px", fontWeight: "800", color: couleur }}>{valeur}</p>
-      <p style={{ margin: 0, fontSize: "12px", color: "var(--text-3)", fontWeight: "500" }}>{label}</p>
+    <div>
+      <p style={{ margin: "0 0 4px", fontSize: "24px", fontWeight: "700", color: couleur }}>{valeur}</p>
+      <p style={{ margin: 0, fontSize: "11px", color: "var(--text-3)" }}>{label}</p>
     </div>
   );
 }
