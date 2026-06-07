@@ -422,13 +422,13 @@ function App() {
 
         {/* ── Contenu principal avec transitions ── */}
         <main>
-          <AnimatePresence mode="wait">
+          <AnimatePresence>
             <motion.div
               key={onglet}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.18, ease: "easeOut" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.12 }}
               style={{ width: "100%" }}
             >
               {onglet === "swipe" && (
