@@ -2,10 +2,9 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Collection principale des utilisateurs ──
+    // ── Utilisateurs ──────────────────────────────────────────────────────────
     match /users/{userId} {
-      // Lecture : tout utilisateur connecté peut lire
-      // (nécessaire pour la fonctionnalité Match)
+      // Lecture : tout utilisateur connecté (nécessaire pour le système d'amis)
       allow read: if request.auth != null;
 
       // Écriture : uniquement sur son propre document, avec validation
@@ -18,18 +17,41 @@ service cloud.firestore {
                    && request.resource.data.listes is map;
     }
 
-    // ── Collection de réservation des pseudos ──
+    // ── Pseudos (réservation atomique) ────────────────────────────────────────
     match /usernames/{username} {
-      // Lecture : tout utilisateur connecté peut vérifier si un pseudo existe
-      allow read: if request.auth != null;
-
-      // Création uniquement : on ne peut créer que si le uid correspond
-      // et que le document n'existe pas encore (géré par la transaction)
+      allow read:   if request.auth != null;
       allow create: if request.auth != null
                     && request.resource.data.uid == request.auth.uid;
-
-      // Modification et suppression interdites : un pseudo est définitif
+      // Un pseudo est définitif : ni modification ni suppression
       allow update, delete: if false;
+    }
+
+    // ── Demandes d'amis ───────────────────────────────────────────────────────
+    match /friendRequests/{requestId} {
+      // Lecture : uniquement les demandes qui me concernent
+      allow read: if request.auth != null && (
+        resource.data.fromUid == request.auth.uid ||
+        resource.data.toUid   == request.auth.uid
+      );
+
+      // Création : je ne peux envoyer qu'en mon nom
+      allow create: if request.auth != null
+                    && request.resource.data.fromUid == request.auth.uid
+                    && request.resource.data.status  == "pending"
+                    && request.resource.data.fromUsername is string
+                    && request.resource.data.toUsername   is string;
+
+      // Mise à jour : le destinataire peut accepter, l'expéditeur peut annuler
+      allow update: if request.auth != null && (
+        resource.data.toUid   == request.auth.uid ||
+        resource.data.fromUid == request.auth.uid
+      );
+
+      // Suppression : l'une ou l'autre partie peut refuser / supprimer
+      allow delete: if request.auth != null && (
+        resource.data.fromUid == request.auth.uid ||
+        resource.data.toUid   == request.auth.uid
+      );
     }
   }
 }

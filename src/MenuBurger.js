@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { auth } from "./firebase";
 import { signOut } from "firebase/auth";
 
-const ONGLETS = [
+const ONGLETS_COMPLET = [
   { key: "swipe",    label: "🎬 Swipe" },
   { key: "match",    label: "🤝 Match" },
   { key: "mesfilms", label: "🎞 Mes films" },
@@ -99,6 +99,22 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet }) {
           >✕</button>
         </div>
 
+        {/* Badge invité */}
+        {isGuest && (
+          <div style={{
+            margin: "12px 12px 0",
+            background: "#a855f710", border: "1px solid #a855f730",
+            borderRadius: "10px", padding: "10px 14px",
+          }}>
+            <p style={{ margin: "0 0 6px", fontSize: "13px", color: "#a855f7", fontWeight: "bold" }}>
+              Mode invité
+            </p>
+            <p style={{ margin: 0, fontSize: "12px", color: "#666" }}>
+              Crée un compte pour sauvegarder tes swipes et rejoindre tes amis.
+            </p>
+          </div>
+        )}
+
         {/* Navigation */}
         <nav aria-label="Navigation principale" style={{ flex: 1, padding: "12px 12px" }}>
           {ONGLETS.map(o => (
@@ -121,29 +137,54 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet }) {
               {o.label}
             </button>
           ))}
+
+          {/* Onglets verrouillés pour les invités */}
+          {isGuest && ONGLETS_COMPLET.filter(o => o.key !== "swipe").map(o => (
+            <div key={o.key} style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "14px 16px", borderRadius: "10px", marginBottom: "4px",
+              opacity: 0.4,
+            }}>
+              <span style={{ fontSize: "15px", color: "#555" }}>{o.label}</span>
+              <span style={{ fontSize: "11px", color: "#555", background: "#222", borderRadius: "6px", padding: "2px 6px" }}>
+                🔒
+              </span>
+            </div>
+          ))}
         </nav>
 
-        {/* Déconnexion en bas */}
+        {/* Pied de page */}
         <div style={{ padding: "16px", borderTop: "1px solid #1f1f1f" }}>
-          <button
-            onClick={() => signOut(auth)}
-            style={{
-              width: "100%", background: "transparent",
-              border: "1px solid #333", color: "#666",
-              borderRadius: "10px", padding: "12px",
-              fontSize: "14px", cursor: "pointer",
-            }}
-          >
-            Déconnexion
-          </button>
+          {isGuest ? (
+            <button
+              onClick={onSeConnecter}
+              style={{
+                width: "100%", background: "#a855f7",
+                border: "none", color: "white",
+                borderRadius: "10px", padding: "13px",
+                fontSize: "14px", fontWeight: "bold", cursor: "pointer",
+              }}
+            >
+              Se connecter / S'inscrire
+            </button>
+          ) : (
+            <button
+              onClick={() => signOut(auth)}
+              style={{
+                width: "100%", background: "transparent",
+                border: "1px solid #333", color: "#666",
+                borderRadius: "10px", padding: "12px",
+                fontSize: "14px", cursor: "pointer",
+              }}
+            >
+              Déconnexion
+            </button>
+          )}
         </div>
       </div>
 
       <style>{`
-        @keyframes fonduIn {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
+        @keyframes fonduIn { from { opacity: 0; } to { opacity: 1; } }
       `}</style>
     </>
   );

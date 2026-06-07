@@ -9,6 +9,36 @@ import MesFilms from "./MesFilms";
 import GenreScroll from "./GenreScroll";
 import MenuBurger from "./MenuBurger";
 import Profil from "./Profil";
+import Onboarding from "./Onboarding";
+
+// ─── Écran verrouillé pour les invités ───────────────────────────────────────
+
+function EcranVerrouille({ titre, emoji, onSeConnecter }) {
+  return (
+    <div style={{
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", textAlign: "center",
+      padding: "48px 24px", gap: "16px",
+    }}>
+      <span style={{ fontSize: "48px" }}>{emoji}</span>
+      <h2 style={{ margin: 0, fontSize: "18px" }}>{titre}</h2>
+      <p style={{ color: "#666", fontSize: "14px", margin: 0, maxWidth: "260px" }}>
+        Crée un compte gratuitement pour débloquer cette fonctionnalité et sauvegarder tous tes swipes.
+      </p>
+      <button onClick={onSeConnecter} style={{
+        background: "#a855f7", color: "white",
+        border: "none", borderRadius: "50px",
+        padding: "14px 28px", fontSize: "15px",
+        fontWeight: "bold", cursor: "pointer",
+        marginTop: "8px",
+      }}>
+        Se connecter / S'inscrire
+      </button>
+    </div>
+  );
+}
+
+// ─── App ─────────────────────────────────────────────────────────────────────
 
 function App() {
   const [user, setUser]               = useState(null);
@@ -37,6 +67,7 @@ function App() {
     toastTimer.current = setTimeout(() => setToast(null), 4000);
   }
 
+  // Auth Firebase
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
@@ -45,12 +76,14 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  // Genres TMDB
   useEffect(() => {
     fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.REACT_APP_TMDB_KEY}&language=fr-FR`)
       .then(res => res.json())
       .then(data => setGenres(data.genres || []));
   }, []);
 
+  // Chargement des données utilisateur connecté
   useEffect(() => {
     if (!user) return;
 
@@ -58,22 +91,40 @@ function App() {
       afficherToast("Impossible de charger vos données. Vérifiez votre connexion.");
     }).then(snap => {
       if (!snap) return;
-      const listesExistantes = snap.exists() ? snap.data().listes : { aVoir: [], pasInteresse: [], dejavu: [] };
+      const listesExistantes = snap.exists()
+        ? snap.data().listes
+        : { aVoir: [], pasInteresse: [], dejavu: [] };
       setListes(listesExistantes);
-
       const ids = [
         ...listesExistantes.aVoir,
         ...listesExistantes.pasInteresse,
         ...listesExistantes.dejavu,
       ].map(f => f.id);
-
       setUsername(snap.exists() ? (snap.data().username || "") : "");
       setDejaSwiped(ids);
       if (snap.exists() && snap.data().username) {
         chargerFilms(1, ids, [], "");
+        // Onboarding : première connexion
+        if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
       }
     });
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Mode invité : charge les films sans auth
+  useEffect(() => {
+    if (!isGuest) return;
+    setListes({ aVoir: [], pasInteresse: [], dejavu: [] });
+    setDejaSwiped([]);
+    setIndex(0);
+    setFilms([]);
+    setHistorique([]);
+    swipesInvite.current = 0;
+    chargerFilms(1, [], [], "");
+    // Onboarding invité
+    if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
+  }, [isGuest]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Chargement des films ───────────────────────────────────────────────────
 
   async function fetchPage(numPage, genre) {
     const key = process.env.REACT_APP_TMDB_KEY;
@@ -86,7 +137,6 @@ function App() {
   async function chargerFilms(pageDebut, swipes, filmsExistants, genre) {
     fetchIdRef.current += 1;
     const monId = fetchIdRef.current;
-
     setLoadingFilms(true);
     try {
       const numeros = [pageDebut, pageDebut + 1, pageDebut + 2];
@@ -94,7 +144,6 @@ function App() {
       const nouveaux = pages.flat().filter(f => !swipes.includes(f.id));
 
       if (monId !== fetchIdRef.current) return;
-
       setFilms([...filmsExistants, ...nouveaux]);
       setPage(pageDebut + 2);
     } catch (e) {
@@ -113,8 +162,10 @@ function App() {
     chargerFilms(1, dejaSwiped, [], nouveauGenre);
   }
 
+  // ── Sauvegarde Firestore ───────────────────────────────────────────────────
+
   async function saveListes(newListes) {
-    if (!user) return;
+    if (!user || isGuest) return; // pas de sauvegarde en mode invité
     try {
       await updateDoc(doc(db, "users", user.uid), { listes: newListes });
     } catch (e) {
@@ -123,13 +174,14 @@ function App() {
     }
   }
 
+  // ── Choix du username ──────────────────────────────────────────────────────
+
   async function handleChoisirUsername() {
     setUsernameError("");
     const pseudo = usernameInput.trim().toLowerCase().replace(/\s+/g, "_");
     if (pseudo.length < 3)  return setUsernameError("Minimum 3 caractères.");
     if (pseudo.length > 30) return setUsernameError("Maximum 30 caractères.");
     if (!/^[a-z0-9_]+$/.test(pseudo)) return setUsernameError("Lettres, chiffres et _ uniquement.");
-
     try {
       await runTransaction(db, async (transaction) => {
         const usernameRef  = doc(db, "usernames", pseudo);
@@ -143,13 +195,15 @@ function App() {
           listes: { aVoir: [], pasInteresse: [], dejavu: [] }
         });
       });
-
       setUsername(pseudo);
       chargerFilms(1, [], [], "");
+      if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
     } catch (e) {
       setUsernameError(e.message || "Une erreur est survenue, réessayez.");
     }
   }
+
+  // ── Swipe ──────────────────────────────────────────────────────────────────
 
   function handleSwipe(direction) {
     const film = films[index];
@@ -183,7 +237,6 @@ function App() {
     if (direction === "up")    newListes.dejavu        = listes.dejavu.filter(f => f.id !== film.id);
     setListes(newListes);
     saveListes(newListes);
-
     setHistorique(h => h.slice(0, -1));
     setDejaSwiped(d => d.filter(id => id !== film.id));
     setIndex(i => i - 1);
@@ -212,24 +265,31 @@ function App() {
 
   if (!user) return <Login onLogin={() => {}} />;
 
-  // Écran de choix du pseudo pour les nouveaux comptes
-  if (username === "" || username === null) return (
+  if (loading) return (
+    <div role="status" aria-label="Chargement" style={{ background: "#0f0f0f", minHeight: "100vh" }} />
+  );
+
+  if (!user && !isGuest) return (
+    <Login onLogin={() => {}} onGuest={() => setIsGuest(true)} />
+  );
+
+  // Écran de choix du pseudo (nouveaux comptes)
+  if (user && (username === "" || username === null)) return (
     <div style={{
       minHeight: "100vh", background: "#0f0f0f",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
-      fontFamily: "sans-serif", color: "white",
-      padding: "20px",
+      fontFamily: "sans-serif", color: "white", padding: "20px",
     }}>
       <h1 style={{ fontSize: "28px", letterSpacing: "2px", marginBottom: "8px" }}>🎬 SWOCHI</h1>
       <div style={{
         background: "#1a1a1a", borderRadius: "16px",
-        padding: "32px", width: "300px",
+        padding: "32px", width: "100%", maxWidth: "300px",
         display: "flex", flexDirection: "column", gap: "16px", marginTop: "24px"
       }}>
         <h2 style={{ margin: 0, fontSize: "18px" }}>Choisis ton pseudo</h2>
-        <p style={{ margin: 0, color: "#888", fontSize: "13px" }}>
-          Tes amis l'utiliseront pour comparer vos listes de films.
+        <p style={{ margin: 0, color: "#666", fontSize: "13px", lineHeight: "1.5" }}>
+          Tes amis l'utiliseront pour t'ajouter et comparer vos listes de films.
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -259,7 +319,7 @@ function App() {
           background: "#22c55e", color: "white",
           border: "none", borderRadius: "50px",
           padding: "14px", fontSize: "16px",
-          fontWeight: "bold", cursor: "pointer"
+          fontWeight: "bold", cursor: "pointer",
         }}>Confirmer</button>
       </div>
     </div>
@@ -411,7 +471,7 @@ function App() {
 const inputStyle = {
   background: "#2a2a2a", border: "1px solid #333",
   borderRadius: "8px", padding: "12px",
-  color: "white", fontSize: "16px", outline: "none"
+  color: "white", fontSize: "16px", outline: "none",
 };
 
 function btnStyle(color) {

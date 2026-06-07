@@ -1,11 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { db } from "./firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection, query, where, getDocs,
+  addDoc, updateDoc, deleteDoc, doc, getDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
-// Génère des confettis aléatoires
+// ─── Confettis ────────────────────────────────────────────────────────────────
+
 function useConfettis(actif) {
   const [confettis, setConfettis] = useState([]);
-
   useEffect(() => {
     if (!actif) { setConfettis([]); return; }
     const couleurs = ["#22c55e", "#a855f7", "#f59e0b", "#3b82f6", "#ef4444", "#ec4899"];
@@ -22,7 +26,6 @@ function useConfettis(actif) {
     const t = setTimeout(() => setConfettis([]), 4000);
     return () => clearTimeout(t);
   }, [actif]);
-
   return confettis;
 }
 
@@ -61,39 +64,171 @@ function Match({ listesUser, username }) {
     setFilmTire(source[Math.floor(Math.random() * source.length)]);
   }
 
-  async function findMatch() {
-    setError("");
-    setMatches(null);
-    setCelebration(false);
-    setLoading(true);
+// ─── Vue principale : liste d'amis ────────────────────────────────────────────
 
+function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRefuser, onAjouter, onPartager, copied }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+
+      {/* Bouton ajouter */}
+      <button onClick={onAjouter} style={{
+        background: "#a855f7", color: "white",
+        border: "none", borderRadius: "12px",
+        padding: "14px", fontSize: "15px",
+        fontWeight: "bold", cursor: "pointer",
+        display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+      }}>
+        + Ajouter un ami
+      </button>
+
+      {/* Demandes reçues */}
+      {demandesRecues.length > 0 && (
+        <section>
+          <p style={titreSectionStyle}>📬 Demandes reçues ({demandesRecues.length})</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {demandesRecues.map(d => (
+              <div key={d.id} style={carteStyle}>
+                <Avatar username={d.username} />
+                <span style={{ flex: 1, fontSize: "15px", fontWeight: "500" }}>@{d.username}</span>
+                <button onClick={() => onAccepter(d)} style={btnVertStyle}>Accepter</button>
+                <button onClick={() => onRefuser(d)} style={btnGrisStyle}>✕</button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Mes amis */}
+      <section>
+        <p style={titreSectionStyle}>
+          👥 Mes amis {amis.length > 0 ? `(${amis.length})` : ""}
+        </p>
+        {amis.length === 0 ? (
+          <div style={{
+            background: "#1a1a1a", borderRadius: "12px",
+            padding: "24px", textAlign: "center",
+          }}>
+            <p style={{ color: "#555", fontSize: "14px", margin: 0 }}>
+              Aucun ami pour l'instant.<br />Ajoute quelqu'un pour comparer vos listes !
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {amis.map(a => (
+              <div key={a.id} style={carteStyle}>
+                <Avatar username={a.username} />
+                <span style={{ flex: 1, fontSize: "15px", fontWeight: "500" }}>@{a.username}</span>
+                <button onClick={() => onComparer(a)} style={{
+                  background: "#1f1f1f", color: "#a855f7",
+                  border: "1px solid #a855f733",
+                  borderRadius: "20px", padding: "7px 14px",
+                  fontSize: "13px", fontWeight: "bold",
+                  cursor: "pointer", flexShrink: 0,
+                }}>
+                  Comparer →
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Mon pseudo */}
+      {username && (
+        <section>
+          <p style={titreSectionStyle}>Mon pseudo</p>
+          <div style={{
+            background: "#1a1a1a", border: "1px solid #222",
+            borderRadius: "12px", padding: "14px 16px",
+            display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
+          }}>
+            <div>
+              <p style={{ margin: 0, fontSize: "16px", fontWeight: "bold" }}>@{username}</p>
+              <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#555" }}>Partage-le à tes amis</p>
+            </div>
+            <button
+              onClick={onPartager}
+              aria-label={copied ? "Pseudo copié !" : "Partager mon pseudo"}
+              style={{
+                background: copied ? "#22c55e" : "#2a2a2a",
+                color: "white", border: "none",
+                borderRadius: "20px", padding: "8px 16px",
+                fontSize: "13px", fontWeight: "bold",
+                cursor: "pointer", flexShrink: 0,
+                transition: "background 0.2s",
+              }}
+            >
+              {copied ? "✓ Copié !" : "Partager"}
+            </button>
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+// ─── Vue : ajouter un ami ────────────────────────────────────────────────────
+
+function VueAjouter({ myUid, myUsername, onRetour }) {
+  const [pseudo, setPseudo]               = useState("");
+  const [resultat, setResultat]           = useState(null); // null | "not_found" | { uid, username, etat }
+  const [loading, setLoading]             = useState(false);
+  const [loadingAction, setLoadingAction] = useState(false);
+  const [succès, setSuccès]               = useState(false);
+
+  async function chercher() {
+    if (!pseudo.trim()) return;
+    setLoading(true);
+    setResultat(null);
+    setSuccès(false);
+    const cible = pseudo.trim().toLowerCase().replace(/^@/, "");
+    if (cible === myUsername) {
+      setResultat({ etat: "soi_meme" });
+      setLoading(false);
+      return;
+    }
     try {
       const q    = query(collection(db, "users"), where("username", "==", pseudo.trim().toLowerCase()));
       const snap = await getDocs(q);
 
-      if (snap.empty) {
-        setError("Aucun utilisateur trouvé avec ce pseudo.");
-        setLoading(false);
-        return;
-      }
+      const cibleDoc = userSnap.docs[0];
+      const cibleUid = cibleDoc.id;
 
       const ami         = snap.docs[0].data();
       const idsUser     = listesUser.aVoir.map(f => f.id);
       const filmsCommuns = ami.listes.aVoir.filter(f => idsUser.includes(f.id));
 
-      setNomAmi(ami.username);
-      setMatches(filmsCommuns);
-      setFilmTire(null);
-      if (filmsCommuns.length > 0) setCelebration(true);
-    } catch (e) {
-      setError("Erreur : " + e.message);
-    }
+      let etat = "aucun";
+      let reqId = null;
+      if (!sent.empty)     { etat = sent.docs[0].data().status === "accepted" ? "ami" : "envoyée"; reqId = sent.docs[0].id; }
+      if (!received.empty) { etat = received.docs[0].data().status === "accepted" ? "ami" : "recue"; reqId = received.docs[0].id; }
 
+      setResultat({ uid: cibleUid, username: cible, etat, reqId });
+    } catch (e) {
+      setResultat({ etat: "erreur" });
+    }
     setLoading(false);
   }
 
+  async function envoyerDemande(cibleUid, cibleUsername) {
+    setLoadingAction(true);
+    try {
+      await addDoc(collection(db, "friendRequests"), {
+        fromUid:      myUid,
+        fromUsername: myUsername,
+        toUid:        cibleUid,
+        toUsername:   cibleUsername,
+        status:       "pending",
+        createdAt:    serverTimestamp(),
+      });
+      setSuccès(true);
+      setResultat(r => ({ ...r, etat: "envoyée" }));
+    } catch { /* silencieux */ }
+    setLoadingAction(false);
+  }
+
   return (
-    <div style={{ position: "relative", width: "100%" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
       {/* Confettis — décoratifs, masqués aux lecteurs d'écran */}
       <div aria-hidden="true">
@@ -135,6 +270,7 @@ function Match({ listesUser, username }) {
         <p style={{ margin: 0, color: "#888", fontSize: "13px" }}>
           Entre le pseudo d'un ami pour voir vos films en commun
         </p>
+      </div>
 
         {/* Champ pseudo */}
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -155,13 +291,14 @@ function Match({ listesUser, username }) {
 
         <button onClick={findMatch} disabled={loading} style={{
           background: "#a855f7", color: "white",
-          border: "none", borderRadius: "50px",
-          padding: "12px", fontSize: "15px",
+          border: "none", borderRadius: "8px",
+          padding: "0 18px", fontSize: "14px",
           fontWeight: "bold", cursor: "pointer",
-          opacity: loading ? 0.7 : 1,
+          opacity: loading ? 0.7 : 1, flexShrink: 0,
         }}>
           {loading ? "Recherche…" : "Trouver les matches 🎬"}
         </button>
+      </div>
 
         {/* Partage de son propre pseudo */}
         {username && (
@@ -268,14 +405,76 @@ function Match({ listesUser, username }) {
           )}
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div style={conteneurStyle}>
+      {chargement ? (
+        <p role="status" style={{ color: "#555", textAlign: "center", padding: "40px" }}>Chargement…</p>
+      ) : (
+        <VueAmis
+          amis={amis}
+          demandesRecues={demandesRecues}
+          username={username}
+          onComparer={comparerAvec}
+          onAccepter={accepterDemande}
+          onRefuser={refuserDemande}
+          onAjouter={() => setVue("ajouter")}
+          onPartager={partagerPseudo}
+          copied={copied}
+        />
+      )}
     </div>
   );
 }
 
+// ─── Styles partagés ─────────────────────────────────────────────────────────
+
+const conteneurStyle = {
+  width: "100%",
+  fontFamily: "sans-serif",
+  color: "white",
+};
+
+const carteStyle = {
+  background: "#1a1a1a", borderRadius: "12px",
+  padding: "12px 14px",
+  display: "flex", alignItems: "center", gap: "12px",
+};
+
+const titreSectionStyle = {
+  margin: "0 0 10px",
+  fontSize: "12px", fontWeight: "bold",
+  color: "#555", letterSpacing: "1px",
+  textTransform: "uppercase",
+};
+
+const btnVertStyle = {
+  background: "#22c55e", color: "white",
+  border: "none", borderRadius: "20px",
+  padding: "6px 14px", fontSize: "13px",
+  fontWeight: "bold", cursor: "pointer", flexShrink: 0,
+};
+
+const btnGrisStyle = {
+  background: "transparent", color: "#666",
+  border: "1px solid #333", borderRadius: "20px",
+  padding: "6px 12px", fontSize: "14px",
+  cursor: "pointer", flexShrink: 0,
+};
+
+const btnRetourStyle = {
+  background: "transparent", border: "none",
+  color: "#666", fontSize: "14px",
+  cursor: "pointer", padding: 0,
+  textAlign: "left",
+};
+
 const inputStyle = {
-  background: "#2a2a2a", border: "1px solid #333",
+  background: "#1a1a1a", border: "1px solid #333",
   borderRadius: "8px", padding: "12px",
-  color: "white", fontSize: "15px", outline: "none"
+  color: "white", fontSize: "15px", outline: "none",
 };
 
 export default Match;

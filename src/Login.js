@@ -41,15 +41,16 @@ function Login({ onLogin }) {
       minHeight: "100vh", background: "#0f0f0f",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
-      fontFamily: "sans-serif", color: "white"
+      fontFamily: "sans-serif", color: "white",
+      padding: "20px",
     }}>
       <h1 style={{ fontSize: "32px", letterSpacing: "2px", marginBottom: "8px" }}>🎬 SWOCHI</h1>
       <p style={{ color: "#888", marginBottom: "40px" }}>Découvre ton prochain film</p>
 
       <div style={{
         background: "#1a1a1a", borderRadius: "16px",
-        padding: "32px", width: "300px",
-        display: "flex", flexDirection: "column", gap: "16px"
+        padding: "32px", width: "100%", maxWidth: "320px",
+        display: "flex", flexDirection: "column", gap: "14px",
       }}>
         <h2 style={{ margin: 0, fontSize: "20px" }}>
           {isRegister ? "Créer un compte" : "Se connecter"}
@@ -98,7 +99,7 @@ function Login({ onLogin }) {
           background: "#22c55e", color: "white",
           border: "none", borderRadius: "50px",
           padding: "14px", fontSize: "16px",
-          fontWeight: "bold", cursor: "pointer"
+          fontWeight: "bold", cursor: "pointer",
         }}>
           {isRegister ? "Créer le compte" : "Se connecter"}
         </button>
@@ -114,7 +115,7 @@ function Login({ onLogin }) {
           border: "none", borderRadius: "50px",
           padding: "14px", fontSize: "15px",
           fontWeight: "bold", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center", gap: "10px"
+          display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
         }}>
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" width="20" aria-hidden="true" />
           Continuer avec Google
@@ -145,7 +146,7 @@ const labelStyle = {
 const inputStyle = {
   background: "#2a2a2a", border: "1px solid #333",
   borderRadius: "8px", padding: "12px",
-  color: "white", fontSize: "16px", outline: "none"
+  color: "white", fontSize: "16px", outline: "none",
 };
 
 export default Login;
