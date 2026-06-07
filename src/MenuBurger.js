@@ -9,28 +9,30 @@ const ONGLETS_COMPLET = [
   { key: "profil",   label: "👤 Profil" },
 ];
 
-const ONGLETS_INVITE = [
-  { key: "swipe", label: "🎬 Swipe" },
-];
-
+// Sélecteurs d'éléments focusables dans le drawer
 const FOCUSABLES = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
-function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter }) {
-  const drawerRef    = useRef(null);
+function MenuBurger({ ouvert, onFermer, onglet, onOnglet }) {
+  const drawerRef = useRef(null);
   const fermerBtnRef = useRef(null);
-  const ONGLETS      = isGuest ? ONGLETS_INVITE : ONGLETS_COMPLET;
 
+  // Ferme avec Escape + gestion du focus
   useEffect(() => {
     if (!ouvert) return;
+
+    // Remet le focus sur le bouton de fermeture à l'ouverture
     fermerBtnRef.current?.focus();
 
     const handler = e => {
       if (e.key === "Escape") onFermer();
+
+      // Piège le focus à l'intérieur du drawer (Tab / Shift+Tab)
       if (e.key === "Tab") {
         const focusables = Array.from(drawerRef.current?.querySelectorAll(FOCUSABLES) ?? []);
         if (focusables.length === 0) return;
         const first = focusables[0];
         const last  = focusables[focusables.length - 1];
+
         if (e.shiftKey) {
           if (document.activeElement === first) { e.preventDefault(); last.focus(); }
         } else {
@@ -38,12 +40,14 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
         }
       }
     };
+
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [ouvert, onFermer]);
 
   return (
     <>
+      {/* Overlay sombre — masqué aux lecteurs d'écran */}
       {ouvert && (
         <div
           onClick={onFermer}
@@ -57,6 +61,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
         />
       )}
 
+      {/* Drawer — dialog accessible */}
       <div
         ref={drawerRef}
         role="dialog"
@@ -75,7 +80,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
           boxShadow: ouvert ? "-8px 0 32px rgba(0,0,0,0.5)" : "none",
         }}
       >
-        {/* En-tête */}
+        {/* En-tête du menu */}
         <div style={{
           padding: "20px 20px 16px",
           borderBottom: "1px solid #1f1f1f",
@@ -111,7 +116,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
         )}
 
         {/* Navigation */}
-        <nav aria-label="Navigation principale" style={{ flex: 1, padding: "12px" }}>
+        <nav aria-label="Navigation principale" style={{ flex: 1, padding: "12px 12px" }}>
           {ONGLETS.map(o => (
             <button
               key={o.key}

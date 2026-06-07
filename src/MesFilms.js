@@ -1,13 +1,14 @@
 import { useState } from "react";
 
 const ONGLETS = [
-  { key: "aVoir",       label: "❤️ À voir",  color: "#22c55e" },
-  { key: "dejavu",      label: "👁 Déjà vu", color: "#3b82f6" },
-  { key: "pasInteresse",label: "✕ Skip",     color: "#ef4444" },
+  { key: "aVoir",        label: "❤️ À voir",  color: "#22c55e" },
+  { key: "dejavu",       label: "👁 Déjà vu", color: "#3b82f6" },
+  { key: "pasInteresse", label: "✕ Skip",     color: "#ef4444" },
 ];
 
 function FilmItem({ film, ongletActif, onDeplacer, onSupprimer }) {
   const [ouvert, setOuvert] = useState(false);
+  const menuId = `options-${film.id}`;
 
   return (
     <div style={{ background: "#1a1a1a", borderRadius: "12px", overflow: "hidden" }}>
@@ -15,12 +16,15 @@ function FilmItem({ film, ongletActif, onDeplacer, onSupprimer }) {
       <div style={{ display: "flex", gap: "12px", alignItems: "center", padding: "10px" }}>
         <img
           src={`https://image.tmdb.org/t/p/w92${film.poster_path}`}
-          alt={film.title}
+          alt={`Affiche de ${film.title}`}
           style={{ borderRadius: "6px", width: "46px", flexShrink: 0 }}
         />
         <div style={{ flex: 1, fontSize: "14px" }}>{film.title}</div>
         <button
           onClick={() => setOuvert(o => !o)}
+          aria-label={`Options pour ${film.title}`}
+          aria-expanded={ouvert}
+          aria-controls={menuId}
           style={{
             background: ouvert ? "#333" : "transparent",
             border: "1px solid #333",
@@ -34,12 +38,17 @@ function FilmItem({ film, ongletActif, onDeplacer, onSupprimer }) {
 
       {/* Panneau d'options déroulant */}
       {ouvert && (
-        <div style={{
-          borderTop: "1px solid #2a2a2a",
-          padding: "10px 12px",
-          display: "flex", flexWrap: "wrap", gap: "8px",
-          animation: "apparaitre 0.15s ease-out",
-        }}>
+        <div
+          id={menuId}
+          role="group"
+          aria-label={`Actions pour ${film.title}`}
+          style={{
+            borderTop: "1px solid #2a2a2a",
+            padding: "10px 12px",
+            display: "flex", flexWrap: "wrap", gap: "8px",
+            animation: "apparaitre 0.15s ease-out",
+          }}
+        >
           {ONGLETS.filter(o => o.key !== ongletActif).map(o => (
             <button
               key={o.key}
@@ -75,7 +84,7 @@ function FilmItem({ film, ongletActif, onDeplacer, onSupprimer }) {
 
 function MesFilms({ listes, onDeplacer, onSupprimer }) {
   const [ongletActif, setOngletActif] = useState("aVoir");
-  const [recherche, setRecherche] = useState("");
+  const [recherche, setRecherche]     = useState("");
 
   const films = (listes[ongletActif] || []).filter(f =>
     f.title.toLowerCase().includes(recherche.toLowerCase())
@@ -84,10 +93,12 @@ function MesFilms({ listes, onDeplacer, onSupprimer }) {
   return (
     <div style={{ width: "100%" }}>
       {/* Sous-onglets */}
-      <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+      <div role="tablist" aria-label="Mes listes de films" style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
         {ONGLETS.map(o => (
           <button
             key={o.key}
+            role="tab"
+            aria-selected={ongletActif === o.key}
             onClick={() => { setOngletActif(o.key); setRecherche(""); }}
             style={{
               flex: 1,
@@ -104,11 +115,16 @@ function MesFilms({ listes, onDeplacer, onSupprimer }) {
       </div>
 
       {/* Barre de recherche */}
+      <label htmlFor="recherche-film" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}>
+        Rechercher un film
+      </label>
       <input
-        type="text"
+        id="recherche-film"
+        type="search"
         placeholder="🔍 Rechercher un film..."
         value={recherche}
         onChange={e => setRecherche(e.target.value)}
+        aria-label="Rechercher un film dans cette liste"
         style={{
           background: "#1a1a1a", border: "1px solid #333",
           borderRadius: "8px", padding: "10px 14px",
@@ -123,17 +139,18 @@ function MesFilms({ listes, onDeplacer, onSupprimer }) {
           {recherche ? "Aucun résultat" : "Aucun film dans cette liste"}
         </p>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <ul style={{ display: "flex", flexDirection: "column", gap: "8px", listStyle: "none", margin: 0, padding: 0 }}>
           {films.map(film => (
-            <FilmItem
-              key={film.id}
-              film={film}
-              ongletActif={ongletActif}
-              onDeplacer={onDeplacer}
-              onSupprimer={onSupprimer}
-            />
+            <li key={film.id}>
+              <FilmItem
+                film={film}
+                ongletActif={ongletActif}
+                onDeplacer={onDeplacer}
+                onSupprimer={onSupprimer}
+              />
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );

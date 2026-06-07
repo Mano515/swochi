@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 
 function formatDuree(minutes) {
-  const h = Math.floor(minutes / 60);
+  const h   = Math.floor(minutes / 60);
   const min = minutes % 60;
   if (h === 0) return `${min}min`;
   if (min === 0) return `${h}h`;
@@ -12,15 +12,25 @@ function formatDuree(minutes) {
 function MovieCard({ film, onSwipe, isTop }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-25, 25]);
-  const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
+  const rotate        = useTransform(x, [-200, 200], [-25, 25]);
+  const opacity       = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
   const labelOpacityLeft  = useTransform(x, [-100, -30, 0], [1, 0, 0]);
-  const labelOpacityRight = useTransform(x, [0, 30, 100], [0, 0, 1]);
+  const labelOpacityRight = useTransform(x, [0, 30, 100],  [0, 0, 1]);
   const labelOpacityUp    = useTransform(y, [-100, -30, 0], [1, 0, 0]);
 
-  const [showDetails, setShowDetails] = useState(false);
-  const [details, setDetails]         = useState(null);
+  const [showDetails, setShowDetails]     = useState(false);
+  const [details, setDetails]             = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
+
+  // Ref pour remettre le focus sur la carte à la fermeture du panneau
+  const cardRef  = useRef(null);
+  const closeRef = useRef(null);
+
+  // Focus sur le bouton Fermer à l'ouverture du panneau
+  useEffect(() => {
+    if (showDetails) closeRef.current?.focus();
+    else if (cardRef.current) cardRef.current.focus();
+  }, [showDetails]);
 
   function handleDragEnd(_, info) {
     if (info.offset.x > 120)       flyOut("right");
@@ -37,6 +47,15 @@ function MovieCard({ film, onSwipe, isTop }) {
     animate(x, targets[direction].x, { duration: 0.3 });
     animate(y, targets[direction].y, { duration: 0.3 });
     setTimeout(() => onSwipe(direction), 300);
+  }
+
+  // Navigation clavier sur la carte (↑ → ↓ ← + Entrée pour les infos)
+  function handleKeyDown(e) {
+    if (showDetails) return;
+    if (e.key === "ArrowRight") { e.preventDefault(); flyOut("right"); }
+    if (e.key === "ArrowLeft")  { e.preventDefault(); flyOut("left");  }
+    if (e.key === "ArrowUp")    { e.preventDefault(); flyOut("up");    }
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetails(); }
   }
 
   async function openDetails() {
@@ -56,13 +75,13 @@ function MovieCard({ film, onSwipe, isTop }) {
       const actors   = creditsData.cast?.slice(0, 5).map(a => a.name).join(", ");
 
       setDetails({
-        synopsis:  detailData.overview || "Aucun synopsis disponible.",
-        genres:    detailData.genres?.map(g => g.name).join(", ") || "—",
-        duree:     detailData.runtime ? formatDuree(detailData.runtime) : "—",
-        note:      detailData.vote_average ? detailData.vote_average.toFixed(1) : "—",
-        annee:     detailData.release_date?.slice(0, 4) || "—",
+        synopsis:    detailData.overview || "Aucun synopsis disponible.",
+        genres:      detailData.genres?.map(g => g.name).join(", ") || "—",
+        duree:       detailData.runtime ? formatDuree(detailData.runtime) : "—",
+        note:        detailData.vote_average ? detailData.vote_average.toFixed(1) : "—",
+        annee:       detailData.release_date?.slice(0, 4) || "—",
         realisateur: director?.name || "—",
-        acteurs:   actors || "—",
+        acteurs:     actors || "—",
       });
     } catch {
       setDetails({ synopsis: "Impossible de charger les informations.", genres: "—", duree: "—", note: "—", annee: "—", realisateur: "—", acteurs: "—" });
@@ -72,23 +91,33 @@ function MovieCard({ film, onSwipe, isTop }) {
 
   if (!isTop) {
     return (
-      <motion.div style={{
-        position: "absolute", inset: 0,
-        borderRadius: "16px", overflow: "hidden",
-        boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
-        scale: 0.95, top: 10, zIndex: 0,
-      }}>
+      <motion.div
+        aria-hidden="true"
+        style={{
+          position: "absolute", inset: 0,
+          borderRadius: "16px", overflow: "hidden",
+          boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
+          scale: 0.95, top: 10, zIndex: 0,
+        }}
+      >
         <img
           src={`https://image.tmdb.org/t/p/w500${film.poster_path}`}
-          alt={film.title}
+          alt=""
           style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }}
         />
       </motion.div>
     );
   }
 
+  const panneauId = `details-${film.id}`;
+
   return (
     <motion.div
+      ref={cardRef}
+      role="article"
+      aria-label={`${film.title}. Utilisez les flèches du clavier pour swiper, Entrée pour voir les détails.`}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
       style={{
         x, y, rotate, opacity,
         position: "absolute", inset: 0,
@@ -96,6 +125,7 @@ function MovieCard({ film, onSwipe, isTop }) {
         cursor: "grab",
         boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
         zIndex: 1,
+        outline: "none",
       }}
       drag
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
@@ -104,12 +134,12 @@ function MovieCard({ film, onSwipe, isTop }) {
     >
       <img
         src={`https://image.tmdb.org/t/p/w500${film.poster_path}`}
-        alt={film.title}
+        alt={`Affiche du film : ${film.title}`}
         style={{ width: "100%", height: "100%", display: "block", objectFit: "cover", pointerEvents: "none" }}
       />
 
-      {/* Labels de swipe */}
-      <motion.div style={{
+      {/* Labels de swipe — décoratifs, masqués aux lecteurs d'écran */}
+      <motion.div aria-hidden="true" style={{
         opacity: labelOpacityLeft,
         position: "absolute", top: 20, right: 20,
         background: "#ef4444", color: "white",
@@ -117,7 +147,7 @@ function MovieCard({ film, onSwipe, isTop }) {
         fontWeight: "bold", fontSize: "18px", border: "2px solid white"
       }}>SKIP</motion.div>
 
-      <motion.div style={{
+      <motion.div aria-hidden="true" style={{
         opacity: labelOpacityRight,
         position: "absolute", top: 20, left: 20,
         background: "#22c55e", color: "white",
@@ -125,7 +155,7 @@ function MovieCard({ film, onSwipe, isTop }) {
         fontWeight: "bold", fontSize: "18px", border: "2px solid white"
       }}>À VOIR</motion.div>
 
-      <motion.div style={{
+      <motion.div aria-hidden="true" style={{
         opacity: labelOpacityUp,
         position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)",
         background: "#3b82f6", color: "white",
@@ -133,9 +163,15 @@ function MovieCard({ film, onSwipe, isTop }) {
         fontWeight: "bold", fontSize: "18px", border: "2px solid white"
       }}>DÉJÀ VU</motion.div>
 
-      {/* Zone cliquable bas — indicateur d'infos centré */}
+      {/* Zone cliquable bas — ouvre les détails */}
       <div
+        role="button"
+        tabIndex={-1}
+        aria-label={`Voir les détails de ${film.title}`}
+        aria-expanded={showDetails}
+        aria-controls={panneauId}
         onClick={openDetails}
+        onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetails(); } }}
         style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
           background: "linear-gradient(transparent, rgba(0,0,0,0.7))",
@@ -146,12 +182,16 @@ function MovieCard({ film, onSwipe, isTop }) {
         }}
       >
         <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)", letterSpacing: "1px", fontWeight: "500" }}>Infos</span>
-        <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.35)", lineHeight: 1 }}>︿</span>
+        <span aria-hidden="true" style={{ fontSize: "10px", color: "rgba(255,255,255,0.35)", lineHeight: 1 }}>︿</span>
       </div>
 
-      {/* Panneau de détails */}
+      {/* Panneau de détails — dialog accessible */}
       {showDetails && (
         <motion.div
+          id={panneauId}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Détails de ${film.title}`}
           initial={{ y: "100%" }}
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
@@ -167,17 +207,19 @@ function MovieCard({ film, onSwipe, isTop }) {
           }}
           onClick={e => e.stopPropagation()}
         >
-          {/* Poignée + fermeture */}
+          {/* En-tête + fermeture */}
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
             <span style={{ fontSize: "16px", fontWeight: "bold" }}>{film.title}</span>
             <button
+              ref={closeRef}
               onClick={() => setShowDetails(false)}
+              aria-label="Fermer les détails"
               style={{ background: "none", border: "none", color: "#888", fontSize: "20px", cursor: "pointer" }}
             >✕</button>
           </div>
 
           {loadingDetails ? (
-            <p style={{ color: "#888", textAlign: "center", padding: "20px 0" }}>Chargement…</p>
+            <p role="status" style={{ color: "#888", textAlign: "center", padding: "20px 0" }}>Chargement…</p>
           ) : details && (
             <>
               {/* Méta infos */}

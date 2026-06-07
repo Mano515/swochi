@@ -2,7 +2,7 @@ import { useState } from "react";
 import { auth } from "./firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-function Login({ onLogin, onGuest }) {
+function Login({ onLogin }) {
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
@@ -30,6 +30,10 @@ function Login({ onLogin, onGuest }) {
     } catch (e) {
       setError("Erreur : " + e.message);
     }
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === "Enter") handleSubmit();
   }
 
   return (
@@ -61,8 +65,9 @@ function Login({ onLogin, onGuest }) {
             placeholder="exemple@mail.com"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && handleSubmit()}
+            onKeyDown={handleKeyDown}
             autoComplete="email"
+            aria-required="true"
             style={inputStyle}
           />
         </div>
@@ -76,14 +81,18 @@ function Login({ onLogin, onGuest }) {
             placeholder="••••••••"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && handleSubmit()}
+            onKeyDown={handleKeyDown}
             autoComplete={isRegister ? "new-password" : "current-password"}
+            aria-required="true"
             style={inputStyle}
           />
         </div>
 
+        {/* Message d'erreur annoncé aux lecteurs d'écran */}
         {error && (
-          <p role="alert" style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>{error}</p>
+          <p role="alert" style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>
+            {error}
+          </p>
         )}
 
         <button onClick={handleSubmit} style={{
@@ -95,10 +104,10 @@ function Login({ onLogin, onGuest }) {
           {isRegister ? "Créer le compte" : "Se connecter"}
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div style={{ flex: 1, height: "1px", background: "#2a2a2a" }} />
-          <span style={{ color: "#444", fontSize: "12px" }}>ou</span>
-          <div style={{ flex: 1, height: "1px", background: "#2a2a2a" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }} aria-hidden="true">
+          <div style={{ flex: 1, height: "1px", background: "#333" }} />
+          <span style={{ color: "#555", fontSize: "12px" }}>ou</span>
+          <div style={{ flex: 1, height: "1px", background: "#333" }} />
         </div>
 
         <button onClick={handleGoogle} style={{
@@ -108,43 +117,31 @@ function Login({ onLogin, onGuest }) {
           fontWeight: "bold", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
         }}>
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" aria-hidden="true" width="20" />
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" width="20" aria-hidden="true" />
           Continuer avec Google
         </button>
 
+        {/* Lien de bascule : élément interactif → <button> */}
         <button
           onClick={() => setIsRegister(r => !r)}
           style={{
             background: "none", border: "none",
-            color: "#666", fontSize: "13px",
+            color: "#888", fontSize: "13px",
             textAlign: "center", cursor: "pointer",
-            padding: "4px 0", textDecoration: "underline",
+            padding: 0, textDecoration: "underline",
           }}
         >
           {isRegister ? "Déjà un compte ? Se connecter" : "Pas de compte ? S'inscrire"}
-        </button>
-      </div>
-
-      {/* Mode invité */}
-      <div style={{ marginTop: "24px", textAlign: "center" }}>
-        <p style={{ color: "#444", fontSize: "13px", marginBottom: "10px" }}>
-          Pas prêt à créer un compte ?
-        </p>
-        <button onClick={onGuest} style={{
-          background: "transparent",
-          border: "1px solid #2a2a2a",
-          color: "#666", borderRadius: "50px",
-          padding: "10px 24px", fontSize: "14px",
-          cursor: "pointer",
-        }}>
-          Continuer sans compte →
         </button>
       </div>
     </div>
   );
 }
 
-const labelStyle = { fontSize: "13px", color: "#888" };
+const labelStyle = {
+  fontSize: "13px",
+  color: "#aaa",
+};
 
 const inputStyle = {
   background: "#2a2a2a", border: "1px solid #333",

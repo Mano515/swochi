@@ -43,8 +43,6 @@ function EcranVerrouille({ titre, emoji, onSeConnecter }) {
 function App() {
   const [user, setUser]               = useState(null);
   const [loading, setLoading]         = useState(true);
-  const [isGuest, setIsGuest]         = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
   const [loadingFilms, setLoadingFilms] = useState(false);
   const [films, setFilms]             = useState([]);
   const [index, setIndex]             = useState(0);
@@ -54,17 +52,14 @@ function App() {
   const [onglet, setOnglet]           = useState("swipe");
   const [genres, setGenres]           = useState([]);
   const [genreChoisi, setGenreChoisi] = useState("");
-  const [historique, setHistorique]   = useState([]);
+  const [historique, setHistorique]   = useState([]); // { film, direction }
   const [username, setUsername]       = useState(null);
   const [usernameInput, setUsernameInput] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [menuOuvert, setMenuOuvert]   = useState(false);
-  const [toast, setToast]             = useState(null);
-  // Prompt "créer un compte" après 10 swipes en mode invité
-  const [showGuestPrompt, setShowGuestPrompt] = useState(false);
-  const swipesInvite = useRef(0);
-  const fetchIdRef   = useRef(0);
-  const toastTimer   = useRef(null);
+  const [toast, setToast]             = useState(null); // { message, type: "error"|"success" }
+  const fetchIdRef = useRef(0);
+  const toastTimer = useRef(null);
 
   function afficherToast(message, type = "error") {
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -91,7 +86,7 @@ function App() {
   // Chargement des données utilisateur connecté
   useEffect(() => {
     if (!user) return;
-    setIsGuest(false);
+
     getDoc(doc(db, "users", user.uid)).catch(() => {
       afficherToast("Impossible de charger vos données. Vérifiez votre connexion.");
     }).then(snap => {
@@ -147,6 +142,7 @@ function App() {
       const numeros = [pageDebut, pageDebut + 1, pageDebut + 2];
       const pages   = await Promise.all(numeros.map(n => fetchPage(n, genre)));
       const nouveaux = pages.flat().filter(f => !swipes.includes(f.id));
+
       if (monId !== fetchIdRef.current) return;
       setFilms([...filmsExistants, ...nouveaux]);
       setPage(pageDebut + 2);
@@ -191,6 +187,7 @@ function App() {
         const usernameRef  = doc(db, "usernames", pseudo);
         const usernameSnap = await transaction.get(usernameRef);
         if (usernameSnap.exists()) throw new Error("Ce pseudo est déjà pris.");
+
         transaction.set(usernameRef, { uid: user.uid });
         transaction.set(doc(db, "users", user.uid), {
           email: user.email,
@@ -211,23 +208,18 @@ function App() {
   function handleSwipe(direction) {
     const film = films[index];
     const newListes = { ...listes };
-    if (direction === "right") newListes.aVoir        = [...listes.aVoir, film];
-    if (direction === "left")  newListes.pasInteresse = [...listes.pasInteresse, film];
-    if (direction === "up")    newListes.dejavu        = [...listes.dejavu, film];
+    if (direction === "right") newListes.aVoir         = [...listes.aVoir, film];
+    if (direction === "left")  newListes.pasInteresse  = [...listes.pasInteresse, film];
+    if (direction === "up")    newListes.dejavu         = [...listes.dejavu, film];
     setListes(newListes);
     saveListes(newListes);
 
     const nextIndex = index + 1;
     setIndex(nextIndex);
     setHistorique(h => [...h, { film, direction }]);
+
     const newDejaSwiped = [...dejaSwiped, film.id];
     setDejaSwiped(newDejaSwiped);
-
-    // Prompt invité après 10 swipes
-    if (isGuest) {
-      swipesInvite.current += 1;
-      if (swipesInvite.current === 10) setShowGuestPrompt(true);
-    }
 
     if (nextIndex >= films.length - 15 && !loadingFilms) {
       chargerFilms(page + 1, newDejaSwiped, [...films], genreChoisi);
@@ -236,7 +228,9 @@ function App() {
 
   function handleRetour() {
     if (historique.length === 0) return;
-    const { film, direction } = historique[historique.length - 1];
+    const derniere = historique[historique.length - 1];
+    const { film, direction } = derniere;
+
     const newListes = { ...listes };
     if (direction === "right") newListes.aVoir        = listes.aVoir.filter(f => f.id !== film.id);
     if (direction === "left")  newListes.pasInteresse = listes.pasInteresse.filter(f => f.id !== film.id);
@@ -264,12 +258,12 @@ function App() {
     await saveListes(newListes);
   }
 
-  function basculerModeConnexion() {
-    setIsGuest(false);
-    setMenuOuvert(false);
-  }
+  // Écran de chargement initial
+  if (loading) return (
+    <div role="status" aria-label="Chargement en cours" style={{ background: "#0f0f0f", minHeight: "100vh" }} />
+  );
 
-  // ── Rendu ──────────────────────────────────────────────────────────────────
+  if (!user) return <Login onLogin={() => {}} />;
 
   if (loading) return (
     <div role="status" aria-label="Chargement" style={{ background: "#0f0f0f", minHeight: "100vh" }} />
@@ -297,8 +291,11 @@ function App() {
         <p style={{ margin: 0, color: "#666", fontSize: "13px", lineHeight: "1.5" }}>
           Tes amis l'utiliseront pour t'ajouter et comparer vos listes de films.
         </p>
+
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <label htmlFor="username-input" style={{ fontSize: "13px", color: "#888" }}>Ton pseudo</label>
+          <label htmlFor="username-input" style={{ fontSize: "13px", color: "#aaa" }}>
+            Ton pseudo
+          </label>
           <input
             id="username-input"
             type="text"
@@ -307,14 +304,17 @@ function App() {
             onChange={e => setUsernameInput(e.target.value)}
             onKeyDown={e => e.key === "Enter" && handleChoisirUsername()}
             aria-describedby={usernameError ? "username-error" : undefined}
+            aria-required="true"
             style={inputStyle}
           />
         </div>
+
         {usernameError && (
           <p id="username-error" role="alert" style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>
             {usernameError}
           </p>
         )}
+
         <button onClick={handleChoisirUsername} style={{
           background: "#22c55e", color: "white",
           border: "none", borderRadius: "50px",
@@ -331,57 +331,10 @@ function App() {
   return (
     <div className="no-select app-shell">
 
-      {/* Onboarding (premier lancement) */}
-      {showOnboarding && <Onboarding onTerminer={() => setShowOnboarding(false)} />}
-
-      {/* Prompt invité après 10 swipes */}
-      {showGuestPrompt && (
-        <div style={{
-          position: "fixed", inset: 0,
-          background: "rgba(0,0,0,0.85)",
-          zIndex: 500,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          padding: "24px",
-        }}>
-          <div style={{
-            background: "#1a1a1a", borderRadius: "20px",
-            padding: "32px 24px", maxWidth: "320px", width: "100%",
-            textAlign: "center", display: "flex", flexDirection: "column", gap: "16px",
-          }}>
-            <span style={{ fontSize: "40px" }}>🎬</span>
-            <h2 style={{ margin: 0, fontSize: "20px", color: "white" }}>Tu kiffes Swochi ?</h2>
-            <p style={{ color: "#888", fontSize: "14px", margin: 0, lineHeight: "1.6" }}>
-              Crée un compte gratuit pour sauvegarder tes swipes, faire des listes et comparer avec tes amis.
-            </p>
-            <button onClick={basculerModeConnexion} style={{
-              background: "#a855f7", color: "white",
-              border: "none", borderRadius: "50px",
-              padding: "14px", fontSize: "15px",
-              fontWeight: "bold", cursor: "pointer",
-            }}>
-              Créer un compte
-            </button>
-            <button onClick={() => setShowGuestPrompt(false)} style={{
-              background: "none", border: "none",
-              color: "#555", fontSize: "13px", cursor: "pointer",
-            }}>
-              Continuer sans compte
-            </button>
-          </div>
-        </div>
-      )}
-
-      <MenuBurger
-        ouvert={menuOuvert}
-        onFermer={() => setMenuOuvert(false)}
-        onglet={onglet}
-        onOnglet={setOnglet}
-        isGuest={isGuest}
-        onSeConnecter={basculerModeConnexion}
-      />
+      <MenuBurger ouvert={menuOuvert} onFermer={() => setMenuOuvert(false)} onglet={onglet} onOnglet={setOnglet} />
 
       <div className="desktop-wrapper">
-        {/* ── Header ── */}
+        {/* ── Section haute ── */}
         <header className="top-section">
           <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
             <span aria-label="Swochi" style={{ fontSize: "26px", fontWeight: "bold", letterSpacing: "3px" }}>🎬 SWOCHI</span>
@@ -398,32 +351,12 @@ function App() {
                 display: "flex", flexDirection: "column", gap: "5px",
               }}
             >
+              {/* Barres du burger — décoratives */}
               <span aria-hidden="true" style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
               <span aria-hidden="true" style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
               <span aria-hidden="true" style={{ display: "block", width: "22px", height: "2px", background: "#aaa", borderRadius: "2px" }} />
             </button>
           </div>
-
-          {/* Bandeau invité */}
-          {isGuest && (
-            <div style={{
-              background: "#a855f710", borderBottom: "1px solid #a855f720",
-              padding: "8px 16px",
-              display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
-            }}>
-              <p style={{ margin: 0, fontSize: "12px", color: "#a855f7" }}>
-                Mode invité · swipes non sauvegardés
-              </p>
-              <button onClick={basculerModeConnexion} style={{
-                background: "none", border: "1px solid #a855f7",
-                color: "#a855f7", borderRadius: "20px",
-                padding: "4px 12px", fontSize: "12px",
-                fontWeight: "bold", cursor: "pointer", flexShrink: 0,
-              }}>
-                Se connecter
-              </button>
-            </div>
-          )}
 
           {onglet === "swipe" && (
             <div className="genres-row">
@@ -434,8 +367,9 @@ function App() {
 
         {/* ── Contenu principal ── */}
         <main>
-          {onglet === "swipe" && (
+          {onglet === "swipe" ? (
             <div className="swipe-section">
+              {/* Carte */}
               <div className="card-container">
                 {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
                 {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
@@ -447,16 +381,31 @@ function App() {
                 )}
               </div>
 
+              {/* Boutons de swipe */}
               {filmActuel && (
                 <div style={{
                   position: "relative", width: "100%", maxWidth: "340px",
-                  marginTop: "24px", display: "flex", justifyContent: "center", alignItems: "center",
+                  marginTop: "24px", display: "flex", justifyContent: "center", alignItems: "center"
                 }}>
                   <div style={{ display: "flex", gap: "22px" }}>
-                    <button onClick={() => handleSwipe("left")}  aria-label="Passer ce film" style={btnStyle("#ef4444")}>✕</button>
-                    <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu"        style={btnStyle("#3b82f6")}>👁</button>
-                    <button onClick={() => handleSwipe("right")} aria-label="À voir"         style={btnStyle("#22c55e")}>♥</button>
+                    <button
+                      onClick={() => handleSwipe("left")}
+                      aria-label="Passer ce film"
+                      style={btnStyle("#ef4444")}
+                    >✕</button>
+                    <button
+                      onClick={() => handleSwipe("up")}
+                      aria-label="Déjà vu"
+                      style={btnStyle("#3b82f6")}
+                    >👁</button>
+                    <button
+                      onClick={() => handleSwipe("right")}
+                      aria-label="À voir"
+                      style={btnStyle("#22c55e")}
+                    >♥</button>
                   </div>
+
+                  {/* Bouton retour */}
                   <button
                     onClick={handleRetour}
                     disabled={historique.length === 0}
@@ -474,36 +423,27 @@ function App() {
                 </div>
               )}
             </div>
-          )}
+          ) : null}
 
           {onglet === "match" && (
             <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-              {isGuest
-                ? <EcranVerrouille titre="Rejoins la communauté !" emoji="🤝" onSeConnecter={basculerModeConnexion} />
-                : <Match user={user} username={username} listesUser={listes} />
-              }
+              <Match listesUser={listes} username={username} />
             </div>
           )}
           {onglet === "mesfilms" && (
             <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-              {isGuest
-                ? <EcranVerrouille titre="Tes listes de films" emoji="🎞" onSeConnecter={basculerModeConnexion} />
-                : <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} />
-              }
+              <MesFilms listes={listes} onDeplacer={handleDeplacer} onSupprimer={handleSupprimer} />
             </div>
           )}
           {onglet === "profil" && (
             <div style={{ padding: "16px", width: "100%", maxWidth: "480px", margin: "0 auto" }}>
-              {isGuest
-                ? <EcranVerrouille titre="Ton profil" emoji="👤" onSeConnecter={basculerModeConnexion} />
-                : <Profil username={username} user={user} listes={listes} />
-              }
+              <Profil username={username} user={user} listes={listes} />
             </div>
           )}
         </main>
-      </div>
+      </div>{/* fin desktop-wrapper */}
 
-      {/* Toast */}
+      {/* Toast de notification — annoncé immédiatement aux lecteurs d'écran */}
       {toast && (
         <div
           role="alert"
