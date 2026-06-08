@@ -7,14 +7,9 @@ service cloud.firestore {
       // Lecture : tout utilisateur connecté (nécessaire pour le système d'amis)
       allow read: if request.auth != null;
 
-      // Écriture : uniquement sur son propre document, avec validation
+      // Écriture : uniquement sur son propre document
       allow write: if request.auth != null
-                   && request.auth.uid == userId
-                   && request.resource.data.email == request.auth.token.email
-                   && request.resource.data.username is string
-                   && request.resource.data.username.size() >= 3
-                   && request.resource.data.username.size() <= 30
-                   && request.resource.data.listes is map;
+                   && request.auth.uid == userId;
     }
 
     // ── Pseudos (réservation atomique) ────────────────────────────────────────
