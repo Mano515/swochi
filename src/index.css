@@ -159,17 +159,41 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
   height: 450px;
 }
 
-/* ── Desktop ─────────────────────────────────────── */
+/* ── Desktop (laptop) ────────────────────────────── */
 @media (min-width: 769px) {
   .top-section {
+    max-width: 360px;
+    padding: clamp(12px, 3vh, 40px) 20px 0;
+  }
+  .desktop-wrapper { max-width: 900px; }
+
+  .card-container {
+    width: 240px;
+    height: 360px;
+  }
+
+  .onglet-content {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 16px 28px 28px;
+  }
+}
+
+/* ── Desktop large (≥1400px) ─────────────────────── */
+@media (min-width: 1400px) {
+  .top-section {
     max-width: 420px;
-    padding: clamp(24px, 5vh, 72px) 24px 0;
+    padding: clamp(20px, 4vh, 60px) 24px 0;
   }
   .desktop-wrapper { max-width: 1100px; }
 
+  .card-container {
+    width: 280px;
+    height: 420px;
+  }
+
   .onglet-content {
-    max-width: 520px;
-    margin: 0 auto;
+    max-width: 500px;
     padding: 20px 32px 32px;
   }
 }
