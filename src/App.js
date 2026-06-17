@@ -53,7 +53,9 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        // Reconnexion : déclencher le splash immédiatement
+        // Reconnexion : vider les films invité et déclencher le splash immédiatement
+        setFilms([]);
+        setIndex(0);
         setLoadingUserData(true);
         setMenuOuvert(false);
       } else {
