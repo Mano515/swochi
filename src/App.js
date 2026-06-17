@@ -535,14 +535,20 @@ function App() {
 
                   {/* Bloc connexion invité — desktop uniquement, coin haut-gauche */}
                   {isGuest && (
-                    <button
-                      onClick={basculerModeConnexion}
-                      className="guest-connect-block"
-                      aria-label="Se connecter"
-                    >
-                      <span style={{ fontSize: "20px" }}>👤</span>
-                      <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--purple)", lineHeight: 1.3 }}>Se connecter</span>
-                    </button>
+                    <div className="guest-connect-block">
+                      <span style={{ fontSize: "26px" }}>👤</span>
+                      <p style={{ margin: 0, fontSize: "12px", fontWeight: "700", color: "var(--text)" }}>Mode invité</p>
+                      <p style={{ margin: 0, fontSize: "11px", color: "var(--text-3)", lineHeight: 1.4, textAlign: "center" }}>Sauvegarde tes swipes et rejoins tes amis.</p>
+                      <button
+                        onClick={basculerModeConnexion}
+                        style={{
+                          marginTop: "4px", background: "var(--purple)", color: "#fff",
+                          border: "none", borderRadius: "20px", padding: "6px 14px",
+                          fontSize: "11px", fontWeight: "700", cursor: "pointer",
+                          boxShadow: "0 2px 8px rgba(29,99,205,0.35)",
+                        }}
+                      >Se connecter</button>
+                    </div>
                   )}
 
                   {/* Zone centrale : carte + actions */}
