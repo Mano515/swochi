@@ -533,6 +533,18 @@ function App() {
               {onglet === "swipe" && (
                 <div className="swipe-section">
 
+                  {/* Bloc connexion invité — desktop uniquement, coin haut-gauche */}
+                  {isGuest && (
+                    <button
+                      onClick={basculerModeConnexion}
+                      className="guest-connect-block"
+                      aria-label="Se connecter"
+                    >
+                      <span style={{ fontSize: "20px" }}>👤</span>
+                      <span style={{ fontSize: "11px", fontWeight: "700", color: "var(--purple)", lineHeight: 1.3 }}>Se connecter</span>
+                    </button>
+                  )}
+
                   {/* Zone centrale : carte + actions */}
                   <div className="swipe-center">
                     <div className="card-container" style={{ zIndex: 1 }}>
