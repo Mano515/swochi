@@ -655,16 +655,4 @@ function btnStyle(color) {
   };
 }
 
-function btnSidebarStyle(color, bg) {
-  return {
-    background: bg, border: `1.5px solid ${color}`,
-    color: color, borderRadius: "12px",
-    padding: "12px 18px", fontSize: "15px",
-    fontWeight: "600", cursor: "pointer",
-    display: "flex", alignItems: "center", gap: "10px",
-    transition: "opacity 0.15s, transform 0.1s",
-    width: "100%",
-  };
-}
-
 export default App;
