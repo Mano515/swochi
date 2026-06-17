@@ -56,6 +56,7 @@ function App() {
         // Reconnexion : vider les films invité et déclencher le splash immédiatement
         setFilms([]);
         setIndex(0);
+        setLoadingFilms(true);
         setLoadingUserData(true);
         setMenuOuvert(false);
       } else {
