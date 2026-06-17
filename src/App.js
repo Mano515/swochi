@@ -296,7 +296,7 @@ function App() {
       alignItems: "center", justifyContent: "center",
       color: "var(--text)", padding: "20px",
     }}>
-      <h1 style={{ fontSize: "28px", letterSpacing: "2px", marginBottom: "6px", color: "var(--text)" }}>🎬 SWOCHI</h1>
+      <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "36px", width: "auto", marginBottom: "6px" }} />
       <p style={{ color: "var(--text-3)", marginBottom: "32px", fontSize: "14px" }}>Dernière étape ✨</p>
       <div style={{
         background: "var(--surface)", borderRadius: "20px",
@@ -395,7 +395,7 @@ function App() {
               border: "none", borderRadius: "50px",
               padding: "14px", fontSize: "15px",
               fontWeight: "700", cursor: "pointer",
-              boxShadow: "0 4px 16px rgba(168,85,247,0.35)",
+              boxShadow: "0 4px 16px rgba(29,99,205,0.35)",
             }}>
               Créer un compte
             </button>
@@ -420,7 +420,9 @@ function App() {
 
       {/* ── Sidebar desktop ── */}
       <aside className="sidebar">
-        <button className="sidebar-logo" onClick={() => setOnglet("swipe")}>🎬 SWOCHI</button>
+        <button className="sidebar-logo" onClick={() => setOnglet("swipe")} aria-label="Accueil">
+          <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ width: "130px", height: "auto" }} />
+        </button>
 
         {isGuest && (
           <div style={{ background: "var(--purple-dim)", borderRadius: "10px", padding: "10px 12px", marginBottom: "8px" }}>
@@ -475,8 +477,8 @@ function App() {
         <header className="top-section">
           <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
             <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "20px", fontWeight: "700", letterSpacing: "3px", color: "var(--text)" }}>
-              🎬 SWOCHI
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+              <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "28px", width: "auto" }} />
             </button>
             <div style={{ position: "absolute", right: 0, display: "flex", gap: "8px", alignItems: "center" }}>
               <button onClick={() => setRechercheOuverte(true)} aria-label="Rechercher"
@@ -624,7 +626,7 @@ function EcranVide({ onRelancer }) {
           border: "none", borderRadius: "50px",
           padding: "12px 28px", fontSize: "14px",
           fontWeight: "700", cursor: "pointer",
-          boxShadow: "0 4px 16px rgba(168,85,247,0.35)",
+          boxShadow: "0 4px 16px rgba(29,99,205,0.35)",
         }}
       >
         Recharger

@@ -24,7 +24,7 @@ function Profil({ username, user, listes: listesBrut, isGuest, onSeConnecter }) 
         <StatsCard label="Cette session" totalSwipes={totalSwipes} listes={listes} />
 
         <div style={{
-          background: "var(--purple-dim)", border: "1px solid rgba(168,85,247,0.2)",
+          background: "var(--purple-dim)", border: "1px solid rgba(29,99,205,0.2)",
           borderRadius: "18px", padding: "24px 20px", textAlign: "center",
           display: "flex", flexDirection: "column", gap: "12px",
         }}>
@@ -36,7 +36,7 @@ function Profil({ username, user, listes: listesBrut, isGuest, onSeConnecter }) 
             background: "var(--purple)", color: "white", border: "none",
             borderRadius: "50px", padding: "13px 28px",
             fontSize: "15px", fontWeight: "700", cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(168,85,247,0.35)",
+            boxShadow: "0 4px 16px rgba(29,99,205,0.35)",
           }}>Créer un compte →</button>
         </div>
       </div>
@@ -50,10 +50,10 @@ function Profil({ username, user, listes: listesBrut, isGuest, onSeConnecter }) 
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "14px", padding: "28px 0 12px" }}>
         <div style={{
           width: "80px", height: "80px", borderRadius: "50%",
-          background: "linear-gradient(135deg, #a855f7, #3b82f6)",
+          background: "linear-gradient(135deg, #1d63cd, #3b82f6)",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: "30px", fontWeight: "700", color: "white",
-          boxShadow: "0 6px 20px rgba(168,85,247,0.35)",
+          boxShadow: "0 6px 20px rgba(29,99,205,0.35)",
         }}>{initiale}</div>
         <div style={{ textAlign: "center" }}>
           <p style={{ margin: "0 0 5px", fontSize: "21px", fontWeight: "700", color: "var(--text)" }}>@{username}</p>

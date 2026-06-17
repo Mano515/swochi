@@ -12,7 +12,7 @@ function useConfettis(actif) {
   const [confettis, setConfettis] = useState([]);
   useEffect(() => {
     if (!actif) { setConfettis([]); return; }
-    const couleurs = ["#22c55e", "#a855f7", "#f59e0b", "#3b82f6", "#ef4444", "#ec4899"];
+    const couleurs = ["#22c55e", "#1d63cd", "#f59e0b", "#3b82f6", "#ef4444", "#ec4899"];
     const items = Array.from({ length: 60 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
@@ -35,7 +35,7 @@ function Avatar({ username, size = 36 }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: "50%",
-      background: "linear-gradient(135deg, #a855f7, #3b82f6)",
+      background: "linear-gradient(135deg, #1d63cd, #3b82f6)",
       display: "flex", alignItems: "center", justifyContent: "center",
       fontSize: size * 0.4, fontWeight: "bold", color: "white",
       flexShrink: 0,
@@ -57,7 +57,7 @@ function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRef
         padding: "14px", fontSize: "15px",
         fontWeight: "700", cursor: "pointer",
         display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-        boxShadow: "0 4px 14px rgba(168,85,247,0.3)",
+        boxShadow: "0 4px 14px rgba(29,99,205,0.3)",
       }}>
         + Ajouter un ami
       </button>
@@ -102,7 +102,7 @@ function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRef
                 <span style={{ flex: 1, fontSize: "15px", fontWeight: "500" }}>@{a.username}</span>
                 <button onClick={() => onComparer(a)} style={{
                   background: "var(--purple-dim)", color: "var(--purple)",
-                  border: "1px solid rgba(168,85,247,0.25)",
+                  border: "1px solid rgba(29,99,205,0.25)",
                   borderRadius: "20px", padding: "7px 16px",
                   fontSize: "13px", fontWeight: "600",
                   cursor: "pointer", flexShrink: 0,
@@ -167,7 +167,7 @@ function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRef
                 fontSize: "14px", fontWeight: "600",
                 cursor: "pointer", width: "100%",
                 transition: "background 0.2s",
-                boxShadow: copied === "partage" ? "0 4px 14px rgba(34,197,94,0.3)" : "0 4px 14px rgba(168,85,247,0.25)",
+                boxShadow: copied === "partage" ? "0 4px 14px rgba(34,197,94,0.3)" : "0 4px 14px rgba(29,99,205,0.25)",
               }}
             >
               {copied === "partage" ? "✓ Lien copié !" : "↗ Partager mon pseudo"}
@@ -630,7 +630,7 @@ function Match({ user, username, listesUser, isGuest, onSeConnecter }) {
       <div style={conteneurStyle}>
         {/* Bannière info */}
         <div style={{
-          background: "var(--purple-dim)", border: "1px solid rgba(168,85,247,0.2)",
+          background: "var(--purple-dim)", border: "1px solid rgba(29,99,205,0.2)",
           borderRadius: "14px", padding: "16px 18px", marginBottom: "20px",
           display: "flex", gap: "12px", alignItems: "flex-start",
         }}>

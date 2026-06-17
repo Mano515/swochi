@@ -136,11 +136,11 @@ function Onboarding({ onTerminer }) {
           )}
           <button onClick={suivant} style={{
             flex: 2,
-            background: "#a855f7", border: "none",
+            background: "#1d63cd", border: "none",
             color: "white", borderRadius: "50px",
             padding: "14px", fontSize: "15px",
             fontWeight: "700", cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(168,85,247,0.4)",
+            boxShadow: "0 4px 16px rgba(29,99,205,0.4)",
           }}>
             {derniere ? "C'est parti ! 🚀" : "Suivant →"}
           </button>

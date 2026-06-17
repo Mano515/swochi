@@ -5,23 +5,16 @@ function SplashScreen() {
       background: "var(--bg)",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
-      gap: "32px",
+      gap: "36px",
       zIndex: 9999,
       animation: "fonduIn 0.3s ease",
     }}>
-      {/* Logo */}
-      <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: "52px", marginBottom: "12px", lineHeight: 1 }}>🎬</div>
-        <h1 style={{
-          margin: 0,
-          fontSize: "28px",
-          fontWeight: "800",
-          letterSpacing: "4px",
-          color: "var(--text)",
-        }}>SWOCHI</h1>
-      </div>
+      <img
+        src="/logo_swochi_nom.svg"
+        alt="Swochi"
+        style={{ width: "200px", height: "auto" }}
+      />
 
-      {/* Indicateur de chargement — trois points pulsants */}
       <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
         {[0, 1, 2].map(i => (
           <div

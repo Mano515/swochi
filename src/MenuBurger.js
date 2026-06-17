@@ -96,7 +96,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
         {isGuest && (
           <div style={{
             margin: "12px 12px 0",
-            background: "var(--purple-dim)", border: "1px solid rgba(168,85,247,0.2)",
+            background: "var(--purple-dim)", border: "1px solid rgba(29,99,205,0.2)",
             borderRadius: "12px", padding: "12px 14px",
           }}>
             <p style={{ margin: "0 0 4px", fontSize: "13px", color: "var(--purple)", fontWeight: "600" }}>
@@ -184,7 +184,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
                 border: "none", color: "white",
                 borderRadius: "12px", padding: "13px",
                 fontSize: "14px", fontWeight: "600", cursor: "pointer",
-                boxShadow: "0 4px 14px rgba(168,85,247,0.3)",
+                boxShadow: "0 4px 14px rgba(29,99,205,0.3)",
               }}
             >
               Se connecter / S'inscrire

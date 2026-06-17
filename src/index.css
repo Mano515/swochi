@@ -28,8 +28,8 @@
   --shadow-md:   0 4px 16px rgba(0,0,0,0.6);
   --shadow-lg:   0 8px 32px rgba(0,0,0,0.7);
 
-  --purple:      #a855f7;
-  --purple-dim:  rgba(168,85,247,0.12);
+  --purple:      #1d63cd;
+  --purple-dim:  rgba(29,99,205,0.12);
   --green:       #22c55e;
   --red:         #ef4444;
   --blue:        #3b82f6;
@@ -61,7 +61,7 @@
   --shadow-md:   0 4px 16px rgba(0,0,0,0.08);
   --shadow-lg:   0 8px 32px rgba(0,0,0,0.12);
 
-  --purple-dim:  rgba(168,85,247,0.09);
+  --purple-dim:  rgba(29,99,205,0.09);
 }
 
 /* ── Reset ───────────────────────────────────────── */
@@ -179,7 +179,7 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
     width: 100%; font-family: inherit;
   }
   .sidebar-nav-item:hover { background: var(--surface-2); color: var(--text); }
-  .sidebar-nav-item.active { background: rgba(168,85,247,0.14); color: var(--purple); font-weight: 700; }
+  .sidebar-nav-item.active { background: rgba(29,99,205,0.14); color: var(--purple); font-weight: 700; }
   .sidebar-divider { height: 1px; background: var(--divider); margin: 8px 0; }
   .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 4px; }
 
