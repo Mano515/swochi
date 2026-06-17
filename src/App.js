@@ -12,6 +12,7 @@ import Profil from "./Profil";
 import Onboarding from "./Onboarding";
 import ErrorBoundary from "./ErrorBoundary";
 import SplashScreen from "./SplashScreen";
+import Recherche from "./Recherche";
 
 // ─── App ─────────────────────────────────────────────────────────────────────
 
@@ -35,6 +36,7 @@ function App() {
   const [usernameInput, setUsernameInput] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [menuOuvert, setMenuOuvert]   = useState(false);
+  const [rechercheOuverte, setRechercheOuverte] = useState(false);
   const [toast, setToast]             = useState(null);
   const [showGuestPrompt, setShowGuestPrompt] = useState(false);
   const swipesInvite = useRef(0);
@@ -333,11 +335,35 @@ function App() {
     </div>
   );
 
+  function ajouterFilmDansListe(film, liste) {
+    if (dejaSwiped.includes(film.id)) return;
+    const newListes = { ...listes, [liste]: [...listes[liste], film] };
+    setListes(newListes);
+    setDejaSwiped(d => [...d, film.id]);
+    saveListes(newListes);
+    if (isGuest) {
+      const newSwiped = [...dejaSwiped, film.id];
+      localStorage.setItem("swochi_guest_listes", JSON.stringify(newListes));
+      localStorage.setItem("swochi_guest_swiped", JSON.stringify(newSwiped));
+    }
+  }
+
   const filmActuel  = films[index];
   const filmSuivant = films[index + 1];
 
   return (
     <div className="no-select app-shell">
+
+      {rechercheOuverte && (
+        <Recherche
+          onFermer={() => setRechercheOuverte(false)}
+          listes={listes}
+          dejaSwiped={dejaSwiped}
+          onAVoir={f => ajouterFilmDansListe(f, "aVoir")}
+          onPasInteresse={f => ajouterFilmDansListe(f, "pasInteresse")}
+          onDejaVu={f => ajouterFilmDansListe(f, "dejavu")}
+        />
+      )}
 
       {showOnboarding && <Onboarding onTerminer={() => setShowOnboarding(false)} />}
 
@@ -401,7 +427,17 @@ function App() {
             >
               🎬 SWOCHI
             </button>
-            <div style={{ position: "absolute", right: 0 }}>
+            <div style={{ position: "absolute", right: 0, display: "flex", gap: "8px", alignItems: "center" }}>
+              <button
+                onClick={() => setRechercheOuverte(true)}
+                aria-label="Rechercher un film"
+                style={{
+                  background: "var(--surface-2)", border: "1px solid var(--border)",
+                  color: "var(--text-2)", borderRadius: "8px",
+                  padding: "9px 11px", cursor: "pointer",
+                  fontSize: "16px", lineHeight: 1,
+                }}
+              >🔍</button>
               <button
                 onClick={() => setMenuOuvert(true)}
                 aria-label="Ouvrir le menu"
