@@ -118,11 +118,11 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
         )}
 
         <button onClick={handleSubmit} style={{
-          background: "#22c55e", color: "white",
+          background: "var(--purple)", color: "white",
           border: "none", borderRadius: "50px",
           padding: "15px", fontSize: "16px",
           fontWeight: "700", cursor: "pointer",
-          boxShadow: "0 4px 14px rgba(34,197,94,0.3)",
+          boxShadow: "0 4px 14px rgba(29,99,205,0.35)",
           marginTop: "2px",
         }}>
           {isRegister ? "Créer le compte" : "Se connecter"}
@@ -135,11 +135,12 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
         </div>
 
         <button onClick={handleGoogle} style={{
-          background: "var(--surface-2)", color: "var(--text)",
-          border: "1px solid var(--border)", borderRadius: "50px",
+          background: "#ffffff", color: "#1a1a1a",
+          border: "1px solid rgba(0,0,0,0.12)", borderRadius: "50px",
           padding: "13px", fontSize: "15px",
           fontWeight: "600", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
+          boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
         }}>
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" aria-hidden="true" width="18" />
           Continuer avec Google
@@ -148,10 +149,10 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
         <button
           onClick={() => setIsRegister(r => !r)}
           style={{
-            background: "none", border: "none",
-            color: "var(--text-3)", fontSize: "13px",
+            background: "none", border: "1px solid var(--border-2)",
+            color: "var(--text-2)", fontSize: "13px", borderRadius: "50px",
             textAlign: "center", cursor: "pointer",
-            padding: "4px 0", textDecoration: "underline",
+            padding: "10px 0", fontWeight: "500",
           }}
         >
           {isRegister ? "Déjà un compte ? Se connecter" : "Pas de compte ? S'inscrire"}
