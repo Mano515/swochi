@@ -438,15 +438,6 @@ function App() {
           <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ width: "130px", height: "auto" }} />
         </button>
 
-        {isGuest && (
-          <div style={{ background: "var(--purple-dim)", borderRadius: "10px", padding: "10px 12px", marginBottom: "8px" }}>
-            <p style={{ margin: "0 0 6px", fontSize: "12px", color: "var(--purple)", fontWeight: "600" }}>Mode invité</p>
-            <button onClick={basculerModeConnexion} style={{ background: "none", border: "1px solid var(--purple)", color: "var(--purple)", borderRadius: "20px", padding: "3px 10px", fontSize: "11px", fontWeight: "600", cursor: "pointer", width: "100%" }}>
-              Se connecter
-            </button>
-          </div>
-        )}
-
         {[
           { key: "swipe",    emoji: "🍿", label: "Découvrir" },
           { key: "match",    emoji: "🤝", label: "Amis"      },
@@ -525,7 +516,7 @@ function App() {
             </button>
           </div>
           {isGuest && (
-            <div style={{ background: "var(--purple-dim)", borderRadius: "10px", margin: "8px 0 10px", padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+            <div className="mobile-only" style={{ background: "var(--purple-dim)", borderRadius: "10px", margin: "8px 0 10px", padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
               <p style={{ margin: 0, fontSize: "12px", color: "var(--purple)", fontWeight: "500" }}>Mode invité · swipes sauvegardés localement</p>
               <button onClick={basculerModeConnexion} style={{ background: "none", border: "1px solid var(--purple)", color: "var(--purple)", borderRadius: "20px", padding: "4px 12px", fontSize: "12px", fontWeight: "600", cursor: "pointer", flexShrink: 0 }}>Se connecter</button>
             </div>
@@ -536,6 +527,26 @@ function App() {
             </div>
           )}
         </header>
+
+        {/* ── Bannière invité desktop ── */}
+        {isGuest && (
+          <div className="desktop-guest-banner">
+            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+              <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--purple)" }}>Mode invité</span>
+              <span style={{ fontSize: "12px", color: "var(--text-3)" }}>Crée un compte pour sauvegarder tes swipes et rejoindre tes amis.</span>
+            </div>
+            <button
+              onClick={basculerModeConnexion}
+              style={{
+                background: "var(--purple)", color: "#fff", border: "none",
+                borderRadius: "20px", padding: "7px 16px",
+                fontSize: "12px", fontWeight: "700", cursor: "pointer",
+                flexShrink: 0, whiteSpace: "nowrap",
+                boxShadow: "0 2px 10px rgba(29,99,205,0.3)",
+              }}
+            >Se connecter / S'inscrire</button>
+          </div>
+        )}
 
         {/* ── Contenu principal ── */}
         <main>
