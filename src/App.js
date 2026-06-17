@@ -22,7 +22,7 @@ function App() {
   const [loadingUserData, setLoadingUserData] = useState(false);
   const [isGuest, setIsGuest]         = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [loadingFilms, setLoadingFilms] = useState(false);
+  const [loadingFilms, setLoadingFilms] = useState(true);
   const [films, setFilms]             = useState([]);
   const [index, setIndex]             = useState(0);
   const [page, setPage]               = useState(1);
