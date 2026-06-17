@@ -158,6 +158,31 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
                   {/* Genres */}
                   <Section label="GENRES" value={details.genres} />
 
+                  {/* Bande-annonce */}
+                  {details.trailerKey && (
+                    <a
+                      href={`https://www.youtube.com/watch?v=${details.trailerKey}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        background: "#ff0000",
+                        color: "white",
+                        borderRadius: "12px",
+                        padding: "12px 18px",
+                        marginBottom: "20px",
+                        textDecoration: "none",
+                        fontWeight: "700",
+                        fontSize: "14px",
+                      }}
+                    >
+                      <span style={{ fontSize: "18px" }}>▶</span>
+                      Voir la bande-annonce
+                    </a>
+                  )}
+
                   {/* Synopsis */}
                   <div style={{ marginBottom: "20px" }}>
                     <Label>SYNOPSIS</Label>
@@ -264,14 +289,29 @@ function MovieCard({ film, onSwipe, isTop }) {
     setLoadingDetails(true);
     try {
       const key = process.env.REACT_APP_TMDB_KEY;
-      const [detailRes, creditsRes] = await Promise.all([
+      const [detailRes, creditsRes, videosRes] = await Promise.all([
         fetch(`https://api.themoviedb.org/3/movie/${film.id}?api_key=${key}&language=fr-FR`),
         fetch(`https://api.themoviedb.org/3/movie/${film.id}/credits?api_key=${key}&language=fr-FR`),
+        fetch(`https://api.themoviedb.org/3/movie/${film.id}/videos?api_key=${key}&language=fr-FR`),
       ]);
       const detailData  = await detailRes.json();
       const creditsData = await creditsRes.json();
+      const videosData  = await videosRes.json();
       const director = creditsData.crew?.find(p => p.job === "Director");
       const actors   = creditsData.cast?.slice(0, 5).map(a => a.name).join(", ");
+      // Priorité : bande-annonce officielle en français, sinon en anglais
+      const trailer =
+        videosData.results?.find(v => v.type === "Trailer" && v.site === "YouTube") ||
+        videosData.results?.find(v => v.site === "YouTube");
+      // Si rien en FR, refetch en EN
+      let trailerKey = trailer?.key || null;
+      if (!trailerKey) {
+        const enRes  = await fetch(`https://api.themoviedb.org/3/movie/${film.id}/videos?api_key=${key}&language=en-US`);
+        const enData = await enRes.json();
+        const enTrailer = enData.results?.find(v => v.type === "Trailer" && v.site === "YouTube")
+                       || enData.results?.find(v => v.site === "YouTube");
+        trailerKey = enTrailer?.key || null;
+      }
       setDetails({
         synopsis:    detailData.overview || "Aucun synopsis disponible.",
         genres:      detailData.genres?.map(g => g.name).join(", ") || "—",
@@ -280,6 +320,7 @@ function MovieCard({ film, onSwipe, isTop }) {
         annee:       detailData.release_date?.slice(0, 4) || "—",
         realisateur: director?.name || "—",
         acteurs:     actors || "—",
+        trailerKey,
       });
     } catch {
       setDetails({
