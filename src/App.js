@@ -538,7 +538,7 @@ function App() {
                     <div className="guest-connect-block">
                       <span style={{ fontSize: "28px" }}>👤</span>
                       <p style={{ margin: 0, fontSize: "14px", fontWeight: "700", color: "var(--text)" }}>Mode invité</p>
-                      <p style={{ margin: 0, fontSize: "12px", color: "var(--text-2)", lineHeight: 1.5, textAlign: "center" }}>Sauvegarde tes swipes et retrouve tes amis.</p>
+                      <p style={{ margin: 0, fontSize: "12px", color: "var(--text)", lineHeight: 1.5, textAlign: "center", opacity: 0.85 }}>Sauvegarde tes swipes et retrouve tes amis.</p>
                       <button
                         onClick={basculerModeConnexion}
                         style={{
