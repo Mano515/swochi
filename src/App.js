@@ -520,7 +520,21 @@ function App() {
         <main>
               {onglet === "swipe" && (
                 <div className="swipe-section">
-                  <div className="card-container">
+
+                  {/* Fond ambiant — poster flouté, desktop uniquement */}
+                  {filmActuel && (
+                    <div aria-hidden="true" style={{
+                      position: "absolute", inset: 0, zIndex: 0,
+                      backgroundImage: `url(https://image.tmdb.org/t/p/w500${filmActuel.poster_path})`,
+                      backgroundSize: "cover", backgroundPosition: "center",
+                      filter: "blur(60px) saturate(1.4)",
+                      opacity: 0.07,
+                      transform: "scale(1.15)",
+                      pointerEvents: "none",
+                    }} />
+                  )}
+
+                  <div className="card-container" style={{ zIndex: 1 }}>
                     {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
                     {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
 
@@ -551,29 +565,44 @@ function App() {
                   </div>
 
                   {filmActuel && (
-                    <div style={{
-                      position: "relative", width: "100%", maxWidth: "320px",
-                      marginTop: "22px", display: "flex", justifyContent: "center", alignItems: "center",
-                    }}>
-                      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                        <button onClick={() => handleSwipe("left")}  aria-label="Passer ce film" style={btnStyle("var(--red)")}>✕</button>
-                        <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu"        style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
-                        <button onClick={() => handleSwipe("right")} aria-label="À voir"         style={btnStyle("var(--green)")}>♥</button>
+                    <div style={{ zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "14px", marginTop: "16px", width: "100%" }}>
+                      {/* Titre du film */}
+                      <p style={{
+                        margin: 0, fontSize: "15px", fontWeight: "600",
+                        color: "var(--text-2)", letterSpacing: "-0.2px",
+                        maxWidth: "280px", textAlign: "center",
+                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                      }}>
+                        {filmActuel.title}
+                        {filmActuel.release_date && (
+                          <span style={{ color: "var(--text-4)", fontWeight: "400", marginLeft: "6px", fontSize: "13px" }}>
+                            {filmActuel.release_date.slice(0, 4)}
+                          </span>
+                        )}
+                      </p>
+
+                      {/* Boutons d'action */}
+                      <div style={{ position: "relative", width: "100%", maxWidth: "320px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                          <button onClick={() => handleSwipe("left")}  aria-label="Passer ce film" style={btnStyle("var(--red)")}>✕</button>
+                          <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu"        style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
+                          <button onClick={() => handleSwipe("right")} aria-label="À voir"         style={btnStyle("var(--green)")}>♥</button>
+                        </div>
+                        <button
+                          onClick={handleRetour}
+                          disabled={historique.length === 0}
+                          aria-label="Annuler le dernier swipe"
+                          style={{
+                            position: "absolute", right: 0,
+                            background: "transparent",
+                            border: "2px solid " + (historique.length > 0 ? "var(--amber)" : "var(--text-5)"),
+                            color: historique.length > 0 ? "var(--amber)" : "var(--text-5)",
+                            borderRadius: "50%", width: "36px", height: "36px",
+                            fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                          }}
+                        >↩</button>
                       </div>
-                      <button
-                        onClick={handleRetour}
-                        disabled={historique.length === 0}
-                        aria-label="Annuler le dernier swipe"
-                        style={{
-                          position: "absolute", right: 0,
-                          background: "transparent",
-                          border: "2px solid " + (historique.length > 0 ? "var(--amber)" : "var(--text-5)"),
-                          color: historique.length > 0 ? "var(--amber)" : "var(--text-5)",
-                          borderRadius: "50%", width: "36px", height: "36px",
-                          fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                        }}
-                      >↩</button>
                     </div>
                   )}
                 </div>

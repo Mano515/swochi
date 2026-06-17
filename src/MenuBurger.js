@@ -108,8 +108,8 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
           </div>
         )}
 
-        {/* Navigation */}
-        <nav aria-label="Navigation principale" style={{ flex: 1, padding: "16px 14px 12px" }}>
+        {/* Navigation — cachée sur desktop (tabs dans le header) */}
+        <nav aria-label="Navigation principale" className="menu-nav-mobile" style={{ padding: "16px 14px 0" }}>
           {ONGLETS.map(o => {
             const actif = onglet === o.key;
             return (
@@ -152,7 +152,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
 
 
           {/* Toggle thème */}
-          <div style={{ borderTop: "1px solid var(--divider)", marginTop: "8px", paddingTop: "8px" }}>
+          <div style={{ borderTop: "1px solid var(--divider)", marginTop: "12px", paddingTop: "8px" }}>
             <button
               onClick={toggleTheme}
               style={{
