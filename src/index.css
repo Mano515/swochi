@@ -258,7 +258,7 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
   .genres-sidebar::-webkit-scrollbar-track { background: transparent; }
   .genre-sidebar-item {
     background: none; border: none;
-    cursor: pointer; color: var(--text-3);
+    cursor: pointer; color: var(--text);
     font-size: 13px; font-weight: 500;
     padding: 8px 12px; border-radius: 10px; text-align: left;
     font-family: inherit; transition: background 0.15s, color 0.15s;
