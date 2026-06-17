@@ -536,16 +536,16 @@ function App() {
                   {/* Bloc connexion invité — desktop uniquement, coin haut-gauche */}
                   {isGuest && (
                     <div className="guest-connect-block">
-                      <span style={{ fontSize: "26px" }}>👤</span>
-                      <p style={{ margin: 0, fontSize: "12px", fontWeight: "700", color: "var(--text)" }}>Mode invité</p>
-                      <p style={{ margin: 0, fontSize: "11px", color: "var(--text-3)", lineHeight: 1.4, textAlign: "center" }}>Sauvegarde tes swipes et rejoins tes amis.</p>
+                      <span style={{ fontSize: "28px" }}>👤</span>
+                      <p style={{ margin: 0, fontSize: "14px", fontWeight: "700", color: "var(--text)" }}>Mode invité</p>
+                      <p style={{ margin: 0, fontSize: "12px", color: "var(--text-2)", lineHeight: 1.5, textAlign: "center" }}>Sauvegarde tes swipes et retrouve tes amis.</p>
                       <button
                         onClick={basculerModeConnexion}
                         style={{
                           marginTop: "4px", background: "var(--purple)", color: "#fff",
-                          border: "none", borderRadius: "20px", padding: "6px 14px",
-                          fontSize: "11px", fontWeight: "700", cursor: "pointer",
-                          boxShadow: "0 2px 8px rgba(29,99,205,0.35)",
+                          border: "none", borderRadius: "20px", padding: "9px 18px",
+                          fontSize: "13px", fontWeight: "700", cursor: "pointer",
+                          width: "100%", boxShadow: "0 2px 10px rgba(29,99,205,0.4)",
                         }}
                       >Se connecter</button>
                     </div>
