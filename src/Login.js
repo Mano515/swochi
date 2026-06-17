@@ -2,7 +2,7 @@ import { useState } from "react";
 import { auth } from "./firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
-function Login({ onLogin, onGuest }) {
+function Login({ onLogin, onGuest, onFermer, asPage }) {
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
@@ -32,28 +32,53 @@ function Login({ onLogin, onGuest }) {
     }
   }
 
+  const isModal = !!onFermer && !asPage;
+
+  const wrapper = isModal ? {
+    position: "fixed", inset: 0, zIndex: 1000,
+    background: "rgba(0,0,0,0.6)",
+    backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+    display: "flex", flexDirection: "column",
+    alignItems: "center", justifyContent: "center",
+    padding: "24px",
+    animation: "fonduIn 0.2s ease",
+  } : {
+    minHeight: "100vh", background: "var(--bg)",
+    display: "flex", flexDirection: "column",
+    alignItems: "center", justifyContent: "center",
+    color: "var(--text)", padding: "24px",
+  };
+
   return (
-    <div style={{
-      minHeight: "100vh", background: "var(--bg)",
-      display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center",
-      color: "var(--text)", padding: "24px",
-    }}>
-      {/* Logo */}
-      <div style={{ textAlign: "center", marginBottom: "36px" }}>
-        <h1 style={{ fontSize: "34px", letterSpacing: "3px", margin: "0 0 8px", color: "var(--text)" }}>
-          🎬 SWOCHI
-        </h1>
-        <p style={{ color: "var(--text-3)", margin: 0, fontSize: "14px" }}>Découvre ton prochain film</p>
-      </div>
+    <div style={wrapper} onClick={isModal ? (e => { if (e.target === e.currentTarget) onFermer(); }) : undefined}>
+      {/* Logo — masqué en modal */}
+      {!isModal && (
+        <div style={{ textAlign: "center", marginBottom: "36px" }}>
+          <h1 style={{ fontSize: "34px", letterSpacing: "3px", margin: "0 0 8px", color: "var(--text)" }}>
+            🎬 SWOCHI
+          </h1>
+          <p style={{ color: "var(--text-3)", margin: 0, fontSize: "14px" }}>Découvre ton prochain film</p>
+        </div>
+      )}
 
       {/* Carte formulaire */}
       <div style={{
         background: "var(--surface)", borderRadius: "22px",
         padding: "32px 28px", width: "100%", maxWidth: "340px",
         display: "flex", flexDirection: "column", gap: "16px",
-        boxShadow: "var(--shadow-md)", border: "1px solid var(--border)",
+        boxShadow: "var(--shadow-lg)", border: "1px solid var(--border)",
+        position: "relative",
       }}>
+        {isModal && (
+          <button onClick={onFermer} style={{
+            position: "absolute", top: "14px", right: "14px",
+            background: "var(--surface-2)", border: "1px solid var(--border)",
+            color: "var(--text-3)", borderRadius: "50%",
+            width: "30px", height: "30px", cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: "14px",
+          }}>✕</button>
+        )}
         <h2 style={{ margin: "0 0 4px", fontSize: "20px", fontWeight: "700", color: "var(--text)" }}>
           {isRegister ? "Créer un compte" : "Se connecter"}
         </h2>
@@ -133,21 +158,23 @@ function Login({ onLogin, onGuest }) {
         </button>
       </div>
 
-      {/* Mode invité */}
-      <div style={{ marginTop: "28px", textAlign: "center" }}>
-        <p style={{ color: "var(--text-4)", fontSize: "13px", marginBottom: "12px" }}>
-          Pas prêt à créer un compte ?
-        </p>
-        <button onClick={onGuest} style={{
-          background: "transparent",
-          border: "1px solid var(--border-2)",
-          color: "var(--text-3)", borderRadius: "50px",
-          padding: "11px 26px", fontSize: "14px",
-          cursor: "pointer",
-        }}>
-          Continuer sans compte →
-        </button>
-      </div>
+      {/* Mode invité — uniquement sur la page de démarrage */}
+      {!isModal && (
+        <div style={{ marginTop: "28px", textAlign: "center" }}>
+          <p style={{ color: "var(--text-4)", fontSize: "13px", marginBottom: "12px" }}>
+            Pas prêt à créer un compte ?
+          </p>
+          <button onClick={onGuest} style={{
+            background: "transparent",
+            border: "1px solid var(--border-2)",
+            color: "var(--text-3)", borderRadius: "50px",
+            padding: "11px 26px", fontSize: "14px",
+            cursor: "pointer",
+          }}>
+            Continuer sans compte →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

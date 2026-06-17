@@ -37,6 +37,7 @@ function App() {
   const [usernameError, setUsernameError] = useState("");
   const [menuOuvert, setMenuOuvert]   = useState(false);
   const [rechercheOuverte, setRechercheOuverte] = useState(false);
+  const [loginModalOuvert, setLoginModalOuvert] = useState(false);
   const [toast, setToast]             = useState(null);
   const [showGuestPrompt, setShowGuestPrompt] = useState(false);
   const swipesInvite = useRef(0);
@@ -279,7 +280,7 @@ function App() {
   }
 
   function basculerModeConnexion() {
-    setIsGuest(false);
+    setLoginModalOuvert(true);
     setMenuOuvert(false);
   }
 
@@ -287,7 +288,7 @@ function App() {
   if (loading || loadingUserData) return <SplashScreen />;
 
   if (!user && !isGuest) return (
-    <Login onLogin={() => {}} onGuest={() => setIsGuest(true)} />
+    <Login onLogin={() => {}} onGuest={() => setIsGuest(true)} asPage />
   );
 
   if (user && (username === "" || username === null)) return (
@@ -368,6 +369,14 @@ function App() {
           transform: "scale(1.15)",
           pointerEvents: "none",
         }} />
+      )}
+
+      {loginModalOuvert && (
+        <Login
+          onLogin={() => setLoginModalOuvert(false)}
+          onGuest={() => setLoginModalOuvert(false)}
+          onFermer={() => setLoginModalOuvert(false)}
+        />
       )}
 
       {rechercheOuverte && (
