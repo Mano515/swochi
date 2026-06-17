@@ -223,8 +223,10 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 10px; position: absolute; top: 16px; left: 16px; z-index: 10;
     width: 190px; padding: 20px 18px; border-radius: 18px;
-    background: var(--surface-2); border: 1.5px solid rgba(29,99,205,0.25);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.25);
   }
 
   main {
