@@ -313,7 +313,7 @@ export default function Recherche({ onFermer, listes, onAVoir, onPasInteresse, o
           <span style={{ color: "var(--text-3)", fontSize: "15px", flexShrink: 0 }}>🔍</span>
           <input
             ref={inputRef}
-            type="search"
+            type="text"
             placeholder="Titre, acteur, réalisateur…"
             value={query}
             onChange={e => setQuery(e.target.value)}

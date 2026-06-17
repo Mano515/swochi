@@ -485,7 +485,7 @@ function App() {
           <div className="header-row" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
               style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}>
-              <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "26px", width: "auto" }} />
+              <img src="/logo_swochi.svg" alt="Swochi" style={{ height: "34px", width: "auto" }} />
             </button>
             {/* Barre de recherche simulée */}
             <button

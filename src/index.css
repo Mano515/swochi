@@ -142,8 +142,8 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
     padding: 14px 12px 0; transition: background-color 0.25s ease; width: 100%;
   }
   .top-section .header-row { margin-bottom: 12px; }
-  .top-section .genres-row { margin-bottom: 4px; }
-  .swipe-section { flex: 1; justify-content: center; padding: 16px 12px 12px; }
+  .top-section .genres-row { margin-bottom: 0; padding-bottom: 12px; }
+  .swipe-section { flex: 1; justify-content: center; padding: 20px 12px 12px; }
   .card-container { width: min(78vw, 300px); height: min(calc(78vw * 1.5), 52svh); height: min(calc(78vw * 1.5), 52vh); }
   .desktop-nav { display: none !important; }
   .desktop-only { display: none !important; }
