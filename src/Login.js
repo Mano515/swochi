@@ -180,7 +180,7 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
   );
 }
 
-const labelStyle = { fontSize: "13px", color: "var(--text-3)", fontWeight: "500" };
+const labelStyle = { fontSize: "13px", color: "var(--text)", fontWeight: "500" };
 
 const inputStyle = {
   background: "var(--input-bg)", border: "1px solid var(--input-border)",
