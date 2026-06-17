@@ -2,32 +2,26 @@ import { useRef, useState, useEffect, useCallback } from "react";
 
 function GenreScroll({ genres, genreChoisi, onGenreChange }) {
   const scrollRef = useRef(null);
-  const [peutAllerGauche, setPeutAllerGauche] = useState(false);
-  const [peutAllerDroite, setPeutAllerDroite] = useState(true);
+  const [fadeLeft, setFadeLeft]   = useState(false);
+  const [fadeRight, setFadeRight] = useState(true);
 
-  // Drag-to-scroll
   const drag = useRef({ actif: false, startX: 0, scrollLeft: 0 });
 
-  const mettreAJourFleches = useCallback(() => {
+  const mettreAJourFade = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    setPeutAllerGauche(el.scrollLeft > 4);
-    setPeutAllerDroite(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
+    setFadeLeft(el.scrollLeft > 4);
+    setFadeRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
   }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    mettreAJourFleches();
-    el.addEventListener("scroll", mettreAJourFleches, { passive: true });
-    return () => el.removeEventListener("scroll", mettreAJourFleches);
-  }, [mettreAJourFleches, genres]);
+    mettreAJourFade();
+    el.addEventListener("scroll", mettreAJourFade, { passive: true });
+    return () => el.removeEventListener("scroll", mettreAJourFade);
+  }, [mettreAJourFade, genres]);
 
-  function scrollerVers(direction) {
-    scrollRef.current?.scrollBy({ left: direction * 160, behavior: "smooth" });
-  }
-
-  // Drag souris
   function onMouseDown(e) {
     drag.current = { actif: true, startX: e.pageX - scrollRef.current.offsetLeft, scrollLeft: scrollRef.current.scrollLeft };
     scrollRef.current.style.cursor = "grabbing";
@@ -43,29 +37,21 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
     if (scrollRef.current) scrollRef.current.style.cursor = "grab";
   }
 
-  const fleche = (direction, visible) => (
-    <button
-      onClick={() => scrollerVers(direction)}
-      aria-label={direction === -1 ? "Défiler vers la gauche" : "Défiler vers la droite"}
-      tabIndex={visible ? 0 : -1}
-      style={{
-        display: visible ? "flex" : "none",
-        alignItems: "center", justifyContent: "center",
-        background: "linear-gradient(" + (direction === -1 ? "to right" : "to left") + ", var(--bg) 55%, transparent)",
-        border: "none", color: "var(--text-2)", cursor: "pointer",
-        padding: "0 10px", fontSize: "20px",
-        position: "absolute", top: 0, bottom: 0,
-        [direction === -1 ? "left" : "right"]: 0,
-        zIndex: 2,
-      }}
-    >
-      {direction === -1 ? "‹" : "›"}
-    </button>
-  );
+  const fadeStyle = (side) => ({
+    position: "absolute", top: 0, bottom: 0,
+    [side]: 0,
+    width: "48px",
+    pointerEvents: "none",
+    zIndex: 2,
+    background: `linear-gradient(to ${side === "left" ? "right" : "left"}, var(--bg) 0%, transparent 100%)`,
+    opacity: side === "left" ? (fadeLeft ? 1 : 0) : (fadeRight ? 1 : 0),
+    transition: "opacity 0.2s ease",
+  });
 
   return (
-    <div style={{ position: "relative", width: "100%", marginBottom: "10px" }}>
-      {fleche(-1, peutAllerGauche)}
+    <div style={{ position: "relative", width: "100%" }}>
+      <div style={fadeStyle("left")} aria-hidden="true" />
+      <div style={fadeStyle("right")} aria-hidden="true" />
 
       <div
         ref={scrollRef}
@@ -80,9 +66,6 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
           display: "flex", gap: "6px",
           cursor: "grab",
           padding: "4px 0",
-          paddingLeft: peutAllerGauche ? "28px" : "0",
-          paddingRight: peutAllerDroite ? "28px" : "0",
-          transition: "padding 0.15s",
         }}
       >
         <button
@@ -101,8 +84,6 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
           </button>
         ))}
       </div>
-
-      {fleche(1, peutAllerDroite)}
     </div>
   );
 }
