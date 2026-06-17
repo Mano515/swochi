@@ -522,34 +522,50 @@ function App() {
                     }} />
                   )}
 
-                  <div className="card-container" style={{ zIndex: 1 }}>
-                    {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
-                    {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
-                    {!filmActuel && !loadingFilms && <EcranVide onRelancer={() => { setIndex(0); setFilms([]); chargerFilms(page, dejaSwiped, [], genreChoisi); }} />}
-                    {!filmActuel && loadingFilms && (
-                      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px" }}>
-                        <div style={{ width: "36px", height: "36px", border: "3px solid var(--border-2)", borderTopColor: "var(--purple)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-                        <p role="status" style={{ color: "var(--text-4)", fontSize: "13px", margin: 0 }}>Chargement…</p>
+                  {/* Zone centrale : carte + actions */}
+                  <div className="swipe-center">
+                    <div className="card-container" style={{ zIndex: 1 }}>
+                      {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
+                      {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
+                      {!filmActuel && !loadingFilms && <EcranVide onRelancer={() => { setIndex(0); setFilms([]); chargerFilms(page, dejaSwiped, [], genreChoisi); }} />}
+                      {!filmActuel && loadingFilms && (
+                        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px" }}>
+                          <div style={{ width: "36px", height: "36px", border: "3px solid var(--border-2)", borderTopColor: "var(--purple)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                          <p role="status" style={{ color: "var(--text-4)", fontSize: "13px", margin: 0 }}>Chargement…</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {filmActuel && (
+                      <div className="swipe-actions-mobile" style={{ zIndex: 1, marginTop: "16px", width: "100%" }}>
+                        <p style={{ margin: "0 0 12px", fontSize: "14px", fontWeight: "600", color: "var(--text-2)", textAlign: "center", maxWidth: "260px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                          {filmActuel.title}
+                          {filmActuel.release_date && <span style={{ color: "var(--text-4)", fontWeight: "400", marginLeft: "6px", fontSize: "12px" }}>{filmActuel.release_date.slice(0, 4)}</span>}
+                        </p>
+                        <div style={{ position: "relative", width: "100%", maxWidth: "320px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                          <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
+                            <button onClick={() => handleSwipe("left")}  aria-label="Passer"  style={btnStyle("var(--red)")}>✕</button>
+                            <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu" style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
+                            <button onClick={() => handleSwipe("right")} aria-label="À voir"  style={btnStyle("var(--green)")}>♥</button>
+                          </div>
+                          <button onClick={handleRetour} disabled={historique.length === 0} aria-label="Annuler" style={{ position: "absolute", right: 0, background: "transparent", border: "2px solid " + (historique.length > 0 ? "var(--amber)" : "var(--text-5)"), color: historique.length > 0 ? "var(--amber)" : "var(--text-5)", borderRadius: "50%", width: "36px", height: "36px", fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center" }}>↩</button>
+                        </div>
                       </div>
                     )}
                   </div>
 
-                  {filmActuel && (
-                    <div className="swipe-actions-mobile" style={{ zIndex: 1, marginTop: "16px", width: "100%" }}>
-                      <p style={{ margin: "0 0 12px", fontSize: "14px", fontWeight: "600", color: "var(--text-2)", textAlign: "center", maxWidth: "260px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                        {filmActuel.title}
-                        {filmActuel.release_date && <span style={{ color: "var(--text-4)", fontWeight: "400", marginLeft: "6px", fontSize: "12px" }}>{filmActuel.release_date.slice(0, 4)}</span>}
-                      </p>
-                      <div style={{ position: "relative", width: "100%", maxWidth: "320px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                        <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                          <button onClick={() => handleSwipe("left")}  aria-label="Passer"  style={btnStyle("var(--red)")}>✕</button>
-                          <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu" style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
-                          <button onClick={() => handleSwipe("right")} aria-label="À voir"  style={btnStyle("var(--green)")}>♥</button>
-                        </div>
-                        <button onClick={handleRetour} disabled={historique.length === 0} aria-label="Annuler" style={{ position: "absolute", right: 0, background: "transparent", border: "2px solid " + (historique.length > 0 ? "var(--amber)" : "var(--text-5)"), color: historique.length > 0 ? "var(--amber)" : "var(--text-5)", borderRadius: "50%", width: "36px", height: "36px", fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center" }}>↩</button>
-                      </div>
-                    </div>
-                  )}
+                  {/* Sidebar droite — genres (desktop uniquement) */}
+                  <aside className="genres-sidebar">
+                    {genres.map(g => (
+                      <button
+                        key={g.id}
+                        onClick={() => handleGenreChange(g.id)}
+                        className={"genre-sidebar-item" + (genreChoisi === g.id ? " active" : "")}
+                      >
+                        {g.name}
+                      </button>
+                    ))}
+                  </aside>
                 </div>
               )}
 
