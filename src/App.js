@@ -420,40 +420,71 @@ function App() {
         {/* ── Header ── */}
         <header className="top-section">
           <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+
+            {/* Logo */}
             <button
               onClick={() => setOnglet("swipe")}
               aria-label="Retour au swipe"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "24px", fontWeight: "700", letterSpacing: "3px", color: "var(--text)" }}
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "20px", fontWeight: "700", letterSpacing: "3px", color: "var(--text)", flexShrink: 0 }}
             >
               🎬 SWOCHI
             </button>
-            <div style={{ position: "absolute", right: 0, display: "flex", gap: "8px", alignItems: "center" }}>
+
+            {/* Nav desktop — cachée sur mobile via CSS */}
+            <nav className="desktop-nav" aria-label="Navigation principale">
+              {[
+                { key: "swipe",    label: "Découvrir" },
+                { key: "match",    label: "Amis"      },
+                { key: "mesfilms", label: "Mes films" },
+                { key: "profil",   label: "Profil"    },
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => setOnglet(key)}
+                  className={onglet === key ? "active" : ""}
+                  aria-current={onglet === key ? "page" : undefined}
+                >
+                  {label}
+                </button>
+              ))}
+            </nav>
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: "8px", alignItems: "center", position: "absolute", right: 0 }}
+                 className="mobile-only">
               <button
                 onClick={() => setRechercheOuverte(true)}
                 aria-label="Rechercher un film"
-                style={{
-                  background: "var(--surface-2)", border: "1px solid var(--border)",
-                  color: "var(--text-2)", borderRadius: "8px",
-                  padding: "9px 11px", cursor: "pointer",
-                  fontSize: "16px", lineHeight: 1,
-                }}
+                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "9px 11px", cursor: "pointer", fontSize: "15px", lineHeight: 1 }}
               >🔍</button>
               <button
                 onClick={() => setMenuOuvert(true)}
                 aria-label="Ouvrir le menu"
                 aria-expanded={menuOuvert}
-                aria-haspopup="dialog"
-                style={{
-                  background: "var(--surface-2)", border: "1px solid var(--border)",
-                  color: "var(--text-2)", borderRadius: "8px",
-                  padding: "9px 11px", cursor: "pointer",
-                  display: "flex", flexDirection: "column", gap: "5px",
-                  transition: "background 0.2s",
-                }}
+                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "9px 11px", cursor: "pointer", display: "flex", flexDirection: "column", gap: "5px" }}
               >
                 <span aria-hidden="true" style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
                 <span aria-hidden="true" style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
                 <span aria-hidden="true" style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+              </button>
+            </div>
+
+            {/* Actions desktop — à droite dans le flex row */}
+            <div className="desktop-only" style={{ display: "flex", gap: "8px", alignItems: "center", marginLeft: "auto" }}>
+              <button
+                onClick={() => setRechercheOuverte(true)}
+                aria-label="Rechercher un film"
+                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "8px 14px", cursor: "pointer", fontSize: "14px", display: "flex", alignItems: "center", gap: "6px", fontWeight: "500" }}
+              ><span>🔍</span><span style={{ color: "var(--text-3)", fontSize: "13px" }}>Rechercher</span></button>
+              <button
+                onClick={() => setMenuOuvert(true)}
+                aria-label="Ouvrir le menu"
+                aria-expanded={menuOuvert}
+                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "8px 12px", cursor: "pointer", display: "flex", flexDirection: "column", gap: "4px" }}
+              >
+                <span aria-hidden="true" style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+                <span aria-hidden="true" style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+                <span aria-hidden="true" style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
               </button>
             </div>
           </div>
@@ -461,7 +492,7 @@ function App() {
           {isGuest && (
             <div style={{
               background: "var(--purple-dim)", borderRadius: "10px",
-              marginBottom: "10px", padding: "8px 14px",
+              margin: "8px 0 10px", padding: "8px 14px",
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
             }}>
               <p style={{ margin: 0, fontSize: "12px", color: "var(--purple)", fontWeight: "500" }}>

@@ -264,14 +264,34 @@ export default function Recherche({ onFermer, listes, onAVoir, onPasInteresse, o
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.18 }}
+      transition={{ duration: 0.15 }}
       style={{
         position: "fixed", inset: 0, zIndex: 800,
+        background: "rgba(0,0,0,0.5)",
+        backdropFilter: "blur(4px)",
+        display: "flex", alignItems: "flex-start", justifyContent: "center",
+        padding: "0",
+      }}
+      onClick={onFermer}
+    >
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.18 }}
+      onClick={e => e.stopPropagation()}
+      style={{
+        width: "100%",
+        maxWidth: "600px",
+        height: "100%",
+        maxHeight: "100%",
         background: "var(--bg)",
-        display: "flex", flexDirection: "column",
+        display: "flex",
+        flexDirection: "column",
+        boxShadow: "0 8px 40px rgba(0,0,0,0.4)",
       }}
     >
       {/* Barre de recherche */}
@@ -359,6 +379,7 @@ export default function Recherche({ onFermer, listes, onAVoir, onPasInteresse, o
           </div>
         )}
       </div>
+    </motion.div>
     </motion.div>
   );
 }
