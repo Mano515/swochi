@@ -528,26 +528,6 @@ function App() {
           )}
         </header>
 
-        {/* ── Bannière invité desktop ── */}
-        {isGuest && (
-          <div className="desktop-guest-banner">
-            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-              <span style={{ fontSize: "13px", fontWeight: "700", color: "var(--purple)" }}>Mode invité</span>
-              <span style={{ fontSize: "12px", color: "var(--text-3)" }}>Crée un compte pour sauvegarder tes swipes et rejoindre tes amis.</span>
-            </div>
-            <button
-              onClick={basculerModeConnexion}
-              style={{
-                background: "var(--purple)", color: "#fff", border: "none",
-                borderRadius: "20px", padding: "7px 16px",
-                fontSize: "12px", fontWeight: "700", cursor: "pointer",
-                flexShrink: 0, whiteSpace: "nowrap",
-                boxShadow: "0 2px 10px rgba(29,99,205,0.3)",
-              }}
-            >Se connecter / S'inscrire</button>
-          </div>
-        )}
-
         {/* ── Contenu principal ── */}
         <main>
               {onglet === "swipe" && (
