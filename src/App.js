@@ -521,7 +521,7 @@ function App() {
               {onglet === "swipe" && (
                 <div className="swipe-section">
 
-                  {/* Fond ambiant — poster flouté, desktop uniquement */}
+                  {/* Fond ambiant — poster flouté */}
                   {filmActuel && (
                     <div aria-hidden="true" style={{
                       position: "absolute", inset: 0, zIndex: 0,
@@ -534,74 +534,101 @@ function App() {
                     }} />
                   )}
 
-                  <div className="card-container" style={{ zIndex: 1 }}>
-                    {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
-                    {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
+                  {/* Layout 2 colonnes desktop / colonne mobile */}
+                  <div className="swipe-layout">
 
-                    {/* Écran vide — plus de films */}
-                    {!filmActuel && !loadingFilms && <EcranVide onRelancer={() => {
-                      setIndex(0);
-                      setFilms([]);
-                      chargerFilms(page, dejaSwiped, [], genreChoisi);
-                    }} />}
+                    {/* ── Carte ── */}
+                    <div className="card-container" style={{ zIndex: 1 }}>
+                      {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
+                      {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
 
-                    {/* Chargement */}
-                    {!filmActuel && loadingFilms && (
-                      <div style={{
-                        position: "absolute", inset: 0,
-                        display: "flex", flexDirection: "column",
-                        alignItems: "center", justifyContent: "center", gap: "14px",
-                      }}>
-                        <div style={{
-                          width: "36px", height: "36px",
-                          border: "3px solid var(--border-2)",
-                          borderTopColor: "var(--purple)",
-                          borderRadius: "50%",
-                          animation: "spin 0.8s linear infinite",
-                        }} />
-                        <p role="status" style={{ color: "var(--text-4)", fontSize: "13px", margin: 0 }}>Chargement…</p>
+                      {!filmActuel && !loadingFilms && <EcranVide onRelancer={() => {
+                        setIndex(0); setFilms([]);
+                        chargerFilms(page, dejaSwiped, [], genreChoisi);
+                      }} />}
+
+                      {!filmActuel && loadingFilms && (
+                        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px" }}>
+                          <div style={{ width: "36px", height: "36px", border: "3px solid var(--border-2)", borderTopColor: "var(--purple)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                          <p role="status" style={{ color: "var(--text-4)", fontSize: "13px", margin: 0 }}>Chargement…</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* ── Sidebar desktop : infos + boutons ── */}
+                    {filmActuel && (
+                      <div className="swipe-sidebar" style={{ zIndex: 1 }}>
+                        {/* Titre */}
+                        <div>
+                          <h2 style={{ margin: "0 0 6px", fontSize: "22px", fontWeight: "800", color: "var(--text)", lineHeight: "1.2", letterSpacing: "-0.4px" }}>
+                            {filmActuel.title}
+                          </h2>
+                          <p style={{ margin: 0, fontSize: "13px", color: "var(--text-3)", display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+                            {filmActuel.release_date?.slice(0, 4)}
+                            {filmActuel.vote_average > 0 && (
+                              <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                                <span style={{ color: "var(--amber)" }}>★</span>
+                                {filmActuel.vote_average.toFixed(1)}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+
+                        {/* Synopsis */}
+                        {filmActuel.overview && (
+                          <p style={{ margin: 0, fontSize: "13px", lineHeight: "1.65", color: "var(--text-3)", display: "-webkit-box", WebkitLineClamp: 5, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                            {filmActuel.overview}
+                          </p>
+                        )}
+
+                        {/* Séparateur */}
+                        <div style={{ height: "1px", background: "var(--divider)" }} />
+
+                        {/* Boutons d'action desktop */}
+                        <div className="swipe-sidebar-actions" style={{ flexDirection: "column", gap: "10px", display: "flex" }}>
+                          <button onClick={() => handleSwipe("right")} style={btnSidebarStyle("var(--green)", "rgba(34,197,94,0.1)")}>
+                            <span>♥</span> À voir
+                          </button>
+                          <button onClick={() => handleSwipe("up")} style={btnSidebarStyle("var(--blue)", "rgba(59,130,246,0.1)")}>
+                            <span>👁</span> Déjà vu
+                          </button>
+                          <button onClick={() => handleSwipe("left")} style={btnSidebarStyle("var(--text-3)", "var(--surface-2)")}>
+                            <span>✕</span> Passer
+                          </button>
+                        </div>
+
+                        {/* Annuler */}
+                        <button
+                          onClick={handleRetour}
+                          disabled={historique.length === 0}
+                          style={{
+                            background: "none", border: "none", padding: "4px 0",
+                            color: historique.length > 0 ? "var(--amber)" : "var(--text-5)",
+                            fontSize: "13px", cursor: historique.length > 0 ? "pointer" : "default",
+                            display: "flex", alignItems: "center", gap: "6px",
+                            fontWeight: "500",
+                          }}
+                        >↩ Annuler le dernier swipe</button>
                       </div>
                     )}
                   </div>
 
+                  {/* ── Boutons mobile (sous la carte) ── */}
                   {filmActuel && (
-                    <div style={{ zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "14px", marginTop: "16px", width: "100%" }}>
-                      {/* Titre du film */}
-                      <p style={{
-                        margin: 0, fontSize: "15px", fontWeight: "600",
-                        color: "var(--text-2)", letterSpacing: "-0.2px",
-                        maxWidth: "280px", textAlign: "center",
-                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-                      }}>
+                    <div className="swipe-actions-mobile" style={{
+                      zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", marginTop: "16px", width: "100%",
+                    }}>
+                      <p style={{ margin: 0, fontSize: "14px", fontWeight: "600", color: "var(--text-2)", textAlign: "center", maxWidth: "260px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {filmActuel.title}
-                        {filmActuel.release_date && (
-                          <span style={{ color: "var(--text-4)", fontWeight: "400", marginLeft: "6px", fontSize: "13px" }}>
-                            {filmActuel.release_date.slice(0, 4)}
-                          </span>
-                        )}
+                        {filmActuel.release_date && <span style={{ color: "var(--text-4)", fontWeight: "400", marginLeft: "6px", fontSize: "12px" }}>{filmActuel.release_date.slice(0, 4)}</span>}
                       </p>
-
-                      {/* Boutons d'action */}
                       <div style={{ position: "relative", width: "100%", maxWidth: "320px", display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                          <button onClick={() => handleSwipe("left")}  aria-label="Passer ce film" style={btnStyle("var(--red)")}>✕</button>
-                          <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu"        style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
-                          <button onClick={() => handleSwipe("right")} aria-label="À voir"         style={btnStyle("var(--green)")}>♥</button>
+                          <button onClick={() => handleSwipe("left")}  aria-label="Passer"   style={btnStyle("var(--red)")}>✕</button>
+                          <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu"  style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
+                          <button onClick={() => handleSwipe("right")} aria-label="À voir"   style={btnStyle("var(--green)")}>♥</button>
                         </div>
-                        <button
-                          onClick={handleRetour}
-                          disabled={historique.length === 0}
-                          aria-label="Annuler le dernier swipe"
-                          style={{
-                            position: "absolute", right: 0,
-                            background: "transparent",
-                            border: "2px solid " + (historique.length > 0 ? "var(--amber)" : "var(--text-5)"),
-                            color: historique.length > 0 ? "var(--amber)" : "var(--text-5)",
-                            borderRadius: "50%", width: "36px", height: "36px",
-                            fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                          }}
-                        >↩</button>
+                        <button onClick={handleRetour} disabled={historique.length === 0} aria-label="Annuler" style={{ position: "absolute", right: 0, background: "transparent", border: "2px solid " + (historique.length > 0 ? "var(--amber)" : "var(--text-5)"), color: historique.length > 0 ? "var(--amber)" : "var(--text-5)", borderRadius: "50%", width: "36px", height: "36px", fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center" }}>↩</button>
                       </div>
                     </div>
                   )}
@@ -707,6 +734,18 @@ function btnStyle(color) {
     cursor: "pointer", flexShrink: 0,
     display: "flex", alignItems: "center", justifyContent: "center",
     transition: "transform 0.1s, background 0.15s",
+  };
+}
+
+function btnSidebarStyle(color, bg) {
+  return {
+    background: bg, border: `1.5px solid ${color}`,
+    color: color, borderRadius: "12px",
+    padding: "12px 18px", fontSize: "15px",
+    fontWeight: "600", cursor: "pointer",
+    display: "flex", alignItems: "center", gap: "10px",
+    transition: "opacity 0.15s, transform 0.1s",
+    width: "100%",
   };
 }
 

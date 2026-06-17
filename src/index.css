@@ -190,23 +190,51 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
     flex-direction: column;
   }
 
-  /* Swipe section remplit l'espace dispo */
+  /* Swipe section : conteneur flex, remplit la hauteur */
   .swipe-section {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 24px 16px 20px;
+    padding: 0;
     position: relative;
+    overflow: hidden;
   }
 
-  /* Carte : hauteur calculée pour ne jamais déborder */
-  .card-container {
-    /* 100vh - header(58px) - genre-bar(52px) - boutons(86px) - paddings(60px) */
-    height: clamp(300px, calc(100vh - 280px), 440px);
-    width: clamp(200px, calc((100vh - 280px) * 0.667), 293px);
+  /* Layout 2 colonnes : carte | info+boutons */
+  .swipe-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+    width: 100%;
+    height: 100%;
+    padding: 20px 48px;
+    box-sizing: border-box;
   }
+
+  /* Carte : hauteur = espace dispo, aspect-ratio 2:3 */
+  .card-container {
+    height: clamp(300px, calc(100vh - 145px), 480px);
+    width: clamp(200px, calc((100vh - 145px) * 0.667), 320px);
+    flex-shrink: 0;
+  }
+
+  /* Sidebar droite */
+  .swipe-sidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    min-width: 220px;
+    max-width: 300px;
+    flex: 1;
+  }
+
+  .swipe-sidebar-actions { display: flex !important; }
+  .swipe-actions-mobile  { display: none !important; }
 
   /* Onglets centré, scroll interne possible */
   .onglet-content {
@@ -322,6 +350,13 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
   position: relative;
   width: 300px;
   height: 450px;
+}
+
+/* Mobile : sidebar cachée, layout vertical */
+@media (max-width: 768px) {
+  .swipe-layout         { display: contents; }
+  .swipe-sidebar        { display: none !important; }
+  .swipe-sidebar-actions { display: none !important; }
 }
 
 /* ── Animations ──────────────────────────────────── */
