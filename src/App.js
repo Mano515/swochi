@@ -40,9 +40,10 @@ function App() {
   const [loginModalOuvert, setLoginModalOuvert] = useState(false);
   const [toast, setToast]             = useState(null);
   const [showGuestPrompt, setShowGuestPrompt] = useState(false);
-  const swipesInvite = useRef(0);
-  const fetchIdRef   = useRef(0);
-  const toastTimer   = useRef(null);
+  const swipesInvite   = useRef(0);
+  const fetchIdRef     = useRef(0);
+  const toastTimer     = useRef(null);
+  const premierChargementOk = useRef(false);
 
   function afficherToast(message, type = "error") {
     if (toastTimer.current) clearTimeout(toastTimer.current);
@@ -56,6 +57,7 @@ function App() {
       if (firebaseUser) {
         // Annuler immédiatement tout fetch invité en cours
         fetchIdRef.current += 1;
+        premierChargementOk.current = false;
         setFilms([]);
         setIndex(0);
         setLoadingFilms(true);
@@ -161,6 +163,7 @@ function App() {
 
       setFilms([...filmsExistants, ...nouveaux]);
       setPage(pageActuelle);
+      premierChargementOk.current = true;
     } catch (e) {
       console.error("Erreur chargement films:", e);
       afficherToast("Impossible de charger les films. Vérifiez votre connexion.");
@@ -566,7 +569,7 @@ function App() {
                     <div className="card-container" style={{ zIndex: 1 }}>
                       {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
                       {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
-                      {!filmActuel && !loadingFilms && <EcranVide onRelancer={() => { setIndex(0); setFilms([]); chargerFilms(page, dejaSwiped, [], genreChoisi); }} />}
+                      {!filmActuel && !loadingFilms && premierChargementOk.current && <EcranVide onRelancer={() => { setIndex(0); setFilms([]); chargerFilms(page, dejaSwiped, [], genreChoisi); }} />}
                       {!filmActuel && loadingFilms && (
                         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px" }}>
                           <div style={{ width: "36px", height: "36px", border: "3px solid var(--border-2)", borderTopColor: "var(--purple)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
