@@ -356,6 +356,19 @@ function App() {
   return (
     <div className="no-select app-shell">
 
+      {/* Fond ambiant global — poster flouté derrière tout */}
+      {filmActuel && (
+        <div aria-hidden="true" style={{
+          position: "fixed", inset: 0, zIndex: 0,
+          backgroundImage: `url(https://image.tmdb.org/t/p/w500${filmActuel.poster_path})`,
+          backgroundSize: "cover", backgroundPosition: "center",
+          filter: "blur(60px) saturate(1.4)",
+          opacity: 0.07,
+          transform: "scale(1.15)",
+          pointerEvents: "none",
+        }} />
+      )}
+
       {rechercheOuverte && (
         <Recherche
           onFermer={() => setRechercheOuverte(false)}
@@ -527,19 +540,6 @@ function App() {
         <main>
               {onglet === "swipe" && (
                 <div className="swipe-section">
-
-                  {/* Fond ambiant — poster flouté */}
-                  {filmActuel && (
-                    <div aria-hidden="true" style={{
-                      position: "absolute", inset: 0, zIndex: 0,
-                      backgroundImage: `url(https://image.tmdb.org/t/p/w500${filmActuel.poster_path})`,
-                      backgroundSize: "cover", backgroundPosition: "center",
-                      filter: "blur(60px) saturate(1.4)",
-                      opacity: 0.07,
-                      transform: "scale(1.15)",
-                      pointerEvents: "none",
-                    }} />
-                  )}
 
                   {/* Zone centrale : carte + actions */}
                   <div className="swipe-center">

@@ -34,6 +34,9 @@
   --red:         #ef4444;
   --blue:        #3b82f6;
   --amber:       #f59e0b;
+
+  --surface-glass:   rgba(26,26,26,0.72);
+  --surface2-glass:  rgba(34,34,34,0.72);
 }
 
 /* ── Thème Light ─────────────────────────────────── */
@@ -62,6 +65,9 @@
   --shadow-lg:   0 8px 32px rgba(0,0,0,0.12);
 
   --purple-dim:  rgba(29,99,205,0.09);
+
+  --surface-glass:   rgba(255,255,255,0.72);
+  --surface2-glass:  rgba(247,247,250,0.72);
 }
 
 /* ── Reset ───────────────────────────────────────── */
@@ -110,12 +116,14 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
 /* ── Layout global ───────────────────────────────── */
 .app-shell {
   min-height: 100vh;
-  background: var(--bg);
+  background: transparent;
   color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow-x: clip;
+  position: relative;
+  z-index: 1;
 }
 .app-shell main { width: 100%; }
 .desktop-wrapper {
@@ -138,8 +146,9 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
 @media (max-width: 768px) {
   .desktop-wrapper { display: contents; }
   .top-section {
-    position: sticky; top: 0; background: var(--bg); z-index: 10;
+    position: sticky; top: 0; background: var(--surface-glass); z-index: 10;
     padding: 14px 12px 0; transition: background-color 0.25s ease; width: 100%;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   }
   .top-section .header-row { margin-bottom: 12px; }
   .top-section .genres-row { margin-bottom: 0; padding-bottom: 12px; }
@@ -164,8 +173,9 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
   .sidebar {
     display: flex; flex-direction: column;
     width: 200px; flex-shrink: 0;
-    background: var(--surface); border-right: 1px solid var(--border);
+    background: var(--surface-glass); border-right: 1px solid var(--border);
     padding: 20px 12px; gap: 4px; z-index: 10;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     transition: background-color 0.25s ease;
   }
   .sidebar-logo {
@@ -194,7 +204,8 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
   /* Barre de genres — seul élément header visible */
   .top-section {
     width: 100%; max-width: 100%; padding: 0 24px;
-    background: var(--surface); border-bottom: 1px solid var(--border);
+    background: var(--surface-glass); border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     flex-shrink: 0; transition: background-color 0.25s ease;
   }
   .top-section .header-row { display: none !important; }
@@ -222,9 +233,10 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
   .genres-sidebar {
     display: flex; flex-direction: column;
     width: 150px; flex-shrink: 0;
-    background: var(--surface); border-left: 1px solid var(--border);
+    background: var(--surface-glass); border-left: 1px solid var(--border);
     padding: 16px 8px; gap: 2px;
     overflow-y: auto; scrollbar-width: none;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     transition: background-color 0.25s ease;
   }
   .genres-sidebar::-webkit-scrollbar { display: none; }
