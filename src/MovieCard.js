@@ -160,27 +160,30 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
 
                   {/* Bande-annonce */}
                   {details.trailerKey && (
-                    <a
-                      href={`https://www.youtube.com/watch?v=${details.trailerKey}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "10px",
-                        background: "#ff0000",
-                        color: "white",
+                    <div style={{ marginBottom: "20px" }}>
+                      <Label>BANDE-ANNONCE</Label>
+                      <div style={{
+                        position: "relative",
+                        paddingBottom: "56.25%",
                         borderRadius: "12px",
-                        padding: "12px 18px",
-                        marginBottom: "20px",
-                        textDecoration: "none",
-                        fontWeight: "700",
-                        fontSize: "14px",
-                      }}
-                    >
-                      <span style={{ fontSize: "18px" }}>▶</span>
-                      Voir la bande-annonce
-                    </a>
+                        overflow: "hidden",
+                        background: "#000",
+                      }}>
+                        <iframe
+                          src={`https://www.youtube.com/embed/${details.trailerKey}?rel=0&modestbranding=1`}
+                          title="Bande-annonce"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            width: "100%",
+                            height: "100%",
+                            border: "none",
+                          }}
+                        />
+                      </div>
+                    </div>
                   )}
 
                   {/* Synopsis */}
