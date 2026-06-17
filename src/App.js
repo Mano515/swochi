@@ -455,10 +455,17 @@ function App() {
         <div className="sidebar-bottom">
           <button
             onClick={() => setRechercheOuverte(true)}
-            className="sidebar-nav-item"
             aria-label="Rechercher un film"
+            style={{
+              display: "flex", alignItems: "center", gap: "8px",
+              width: "100%", padding: "10px 14px", borderRadius: "12px",
+              background: "var(--purple-dim)", border: "1.5px solid rgba(29,99,205,0.25)",
+              color: "var(--purple)", fontSize: "13px", fontWeight: "600",
+              cursor: "pointer", fontFamily: "inherit",
+              transition: "background 0.15s, border-color 0.15s",
+            }}
           >
-            <span style={{ fontSize: "16px" }}>🔍</span>
+            <span style={{ fontSize: "15px" }}>🔍</span>
             Rechercher
           </button>
           <button
@@ -475,21 +482,33 @@ function App() {
       <div className="desktop-wrapper">
         {/* ── Header mobile ── */}
         <header className="top-section">
-          <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+          <div className="header-row" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-              <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "28px", width: "auto" }} />
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}>
+              <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "26px", width: "auto" }} />
             </button>
-            <div style={{ position: "absolute", right: 0, display: "flex", gap: "8px", alignItems: "center" }}>
-              <button onClick={() => setRechercheOuverte(true)} aria-label="Rechercher"
-                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "9px 11px", cursor: "pointer", fontSize: "15px", lineHeight: 1 }}>🔍</button>
-              <button onClick={() => setMenuOuvert(true)} aria-label="Menu"
-                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "9px 11px", cursor: "pointer", display: "flex", flexDirection: "column", gap: "5px" }}>
-                <span style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
-                <span style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
-                <span style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
-              </button>
-            </div>
+            {/* Barre de recherche simulée */}
+            <button
+              onClick={() => setRechercheOuverte(true)}
+              aria-label="Rechercher un film"
+              style={{
+                flex: 1, display: "flex", alignItems: "center", gap: "8px",
+                background: "var(--surface-2)", border: "1.5px solid var(--border-2)",
+                borderRadius: "12px", padding: "9px 14px", cursor: "pointer",
+                color: "var(--text-3)", fontSize: "14px", fontFamily: "inherit",
+                transition: "border-color 0.15s, background 0.15s",
+                textAlign: "left",
+              }}
+            >
+              <span style={{ fontSize: "15px", flexShrink: 0 }}>🔍</span>
+              <span style={{ flex: 1 }}>Rechercher un film…</span>
+            </button>
+            <button onClick={() => setMenuOuvert(true)} aria-label="Menu"
+              style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "10px", padding: "9px 11px", cursor: "pointer", display: "flex", flexDirection: "column", gap: "5px", flexShrink: 0 }}>
+              <span style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+              <span style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+              <span style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+            </button>
           </div>
           {isGuest && (
             <div style={{ background: "var(--purple-dim)", borderRadius: "10px", margin: "8px 0 10px", padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
