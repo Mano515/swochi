@@ -416,99 +416,83 @@ function App() {
         onSeConnecter={basculerModeConnexion}
       />
 
+      {/* ── Sidebar desktop ── */}
+      <aside className="sidebar">
+        <button className="sidebar-logo" onClick={() => setOnglet("swipe")}>🎬 SWOCHI</button>
+
+        {isGuest && (
+          <div style={{ background: "var(--purple-dim)", borderRadius: "10px", padding: "10px 12px", marginBottom: "8px" }}>
+            <p style={{ margin: "0 0 6px", fontSize: "12px", color: "var(--purple)", fontWeight: "600" }}>Mode invité</p>
+            <button onClick={basculerModeConnexion} style={{ background: "none", border: "1px solid var(--purple)", color: "var(--purple)", borderRadius: "20px", padding: "3px 10px", fontSize: "11px", fontWeight: "600", cursor: "pointer", width: "100%" }}>
+              Se connecter
+            </button>
+          </div>
+        )}
+
+        {[
+          { key: "swipe",    emoji: "🍿", label: "Découvrir" },
+          { key: "match",    emoji: "🤝", label: "Amis"      },
+          { key: "mesfilms", emoji: "🎬", label: "Mes films" },
+          { key: "profil",   emoji: "👤", label: "Profil"    },
+        ].map(({ key, emoji, label }) => (
+          <button
+            key={key}
+            onClick={() => setOnglet(key)}
+            className={`sidebar-nav-item${onglet === key ? " active" : ""}`}
+            aria-current={onglet === key ? "page" : undefined}
+          >
+            <span style={{ fontSize: "16px" }}>{emoji}</span>
+            {label}
+          </button>
+        ))}
+
+        <div className="sidebar-divider" />
+
+        <div className="sidebar-bottom">
+          <button
+            onClick={() => setRechercheOuverte(true)}
+            className="sidebar-nav-item"
+            aria-label="Rechercher un film"
+          >
+            <span style={{ fontSize: "16px" }}>🔍</span>
+            Rechercher
+          </button>
+          <button
+            onClick={() => setMenuOuvert(true)}
+            className="sidebar-nav-item"
+            aria-label="Paramètres"
+          >
+            <span style={{ fontSize: "16px" }}>⚙️</span>
+            Paramètres
+          </button>
+        </div>
+      </aside>
+
       <div className="desktop-wrapper">
-        {/* ── Header ── */}
+        {/* ── Header mobile ── */}
         <header className="top-section">
           <div className="header-row" style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-
-            {/* Logo */}
-            <button
-              onClick={() => setOnglet("swipe")}
-              aria-label="Retour au swipe"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "20px", fontWeight: "700", letterSpacing: "3px", color: "var(--text)", flexShrink: 0 }}
-            >
+            <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
+              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "20px", fontWeight: "700", letterSpacing: "3px", color: "var(--text)" }}>
               🎬 SWOCHI
             </button>
-
-            {/* Nav desktop — cachée sur mobile via CSS */}
-            <nav className="desktop-nav" aria-label="Navigation principale">
-              {[
-                { key: "swipe",    label: "Découvrir" },
-                { key: "match",    label: "Amis"      },
-                { key: "mesfilms", label: "Mes films" },
-                { key: "profil",   label: "Profil"    },
-              ].map(({ key, label }) => (
-                <button
-                  key={key}
-                  onClick={() => setOnglet(key)}
-                  className={onglet === key ? "active" : ""}
-                  aria-current={onglet === key ? "page" : undefined}
-                >
-                  {label}
-                </button>
-              ))}
-            </nav>
-
-            {/* Actions */}
-            <div style={{ display: "flex", gap: "8px", alignItems: "center", position: "absolute", right: 0 }}
-                 className="mobile-only">
-              <button
-                onClick={() => setRechercheOuverte(true)}
-                aria-label="Rechercher un film"
-                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "9px 11px", cursor: "pointer", fontSize: "15px", lineHeight: 1 }}
-              >🔍</button>
-              <button
-                onClick={() => setMenuOuvert(true)}
-                aria-label="Ouvrir le menu"
-                aria-expanded={menuOuvert}
-                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "9px 11px", cursor: "pointer", display: "flex", flexDirection: "column", gap: "5px" }}
-              >
-                <span aria-hidden="true" style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
-                <span aria-hidden="true" style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
-                <span aria-hidden="true" style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
-              </button>
-            </div>
-
-            {/* Actions desktop — à droite dans le flex row */}
-            <div className="desktop-only" style={{ display: "flex", gap: "8px", alignItems: "center", marginLeft: "auto" }}>
-              <button
-                onClick={() => setRechercheOuverte(true)}
-                aria-label="Rechercher un film"
-                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "8px 14px", cursor: "pointer", fontSize: "14px", display: "flex", alignItems: "center", gap: "6px", fontWeight: "500" }}
-              ><span>🔍</span><span style={{ color: "var(--text-3)", fontSize: "13px" }}>Rechercher</span></button>
-              <button
-                onClick={() => setMenuOuvert(true)}
-                aria-label="Ouvrir le menu"
-                aria-expanded={menuOuvert}
-                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "8px 12px", cursor: "pointer", display: "flex", flexDirection: "column", gap: "4px" }}
-              >
-                <span aria-hidden="true" style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
-                <span aria-hidden="true" style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
-                <span aria-hidden="true" style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+            <div style={{ position: "absolute", right: 0, display: "flex", gap: "8px", alignItems: "center" }}>
+              <button onClick={() => setRechercheOuverte(true)} aria-label="Rechercher"
+                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "9px 11px", cursor: "pointer", fontSize: "15px", lineHeight: 1 }}>🔍</button>
+              <button onClick={() => setMenuOuvert(true)} aria-label="Menu"
+                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "8px", padding: "9px 11px", cursor: "pointer", display: "flex", flexDirection: "column", gap: "5px" }}>
+                <span style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+                <span style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
+                <span style={{ display: "block", width: "20px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
               </button>
             </div>
           </div>
-
           {isGuest && (
-            <div style={{
-              background: "var(--purple-dim)", borderRadius: "10px",
-              margin: "8px 0 10px", padding: "8px 14px",
-              display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
-            }}>
-              <p style={{ margin: 0, fontSize: "12px", color: "var(--purple)", fontWeight: "500" }}>
-                Mode invité · swipes sauvegardés localement
-              </p>
-              <button onClick={basculerModeConnexion} style={{
-                background: "none", border: "1px solid var(--purple)",
-                color: "var(--purple)", borderRadius: "20px",
-                padding: "4px 12px", fontSize: "12px",
-                fontWeight: "600", cursor: "pointer", flexShrink: 0,
-              }}>
-                Se connecter
-              </button>
+            <div style={{ background: "var(--purple-dim)", borderRadius: "10px", margin: "8px 0 10px", padding: "8px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+              <p style={{ margin: 0, fontSize: "12px", color: "var(--purple)", fontWeight: "500" }}>Mode invité · swipes sauvegardés localement</p>
+              <button onClick={basculerModeConnexion} style={{ background: "none", border: "1px solid var(--purple)", color: "var(--purple)", borderRadius: "20px", padding: "4px 12px", fontSize: "12px", fontWeight: "600", cursor: "pointer", flexShrink: 0 }}>Se connecter</button>
             </div>
           )}
-
           {onglet === "swipe" && (
             <div className="genres-row">
               <GenreScroll genres={genres} genreChoisi={genreChoisi} onGenreChange={handleGenreChange} />
@@ -534,99 +518,29 @@ function App() {
                     }} />
                   )}
 
-                  {/* Layout 2 colonnes desktop / colonne mobile */}
-                  <div className="swipe-layout">
-
-                    {/* ── Carte ── */}
-                    <div className="card-container" style={{ zIndex: 1 }}>
-                      {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
-                      {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
-
-                      {!filmActuel && !loadingFilms && <EcranVide onRelancer={() => {
-                        setIndex(0); setFilms([]);
-                        chargerFilms(page, dejaSwiped, [], genreChoisi);
-                      }} />}
-
-                      {!filmActuel && loadingFilms && (
-                        <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px" }}>
-                          <div style={{ width: "36px", height: "36px", border: "3px solid var(--border-2)", borderTopColor: "var(--purple)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-                          <p role="status" style={{ color: "var(--text-4)", fontSize: "13px", margin: 0 }}>Chargement…</p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* ── Sidebar desktop : infos + boutons ── */}
-                    {filmActuel && (
-                      <div className="swipe-sidebar" style={{ zIndex: 1 }}>
-                        {/* Titre */}
-                        <div>
-                          <h2 style={{ margin: "0 0 6px", fontSize: "22px", fontWeight: "800", color: "var(--text)", lineHeight: "1.2", letterSpacing: "-0.4px" }}>
-                            {filmActuel.title}
-                          </h2>
-                          <p style={{ margin: 0, fontSize: "13px", color: "var(--text-3)", display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
-                            {filmActuel.release_date?.slice(0, 4)}
-                            {filmActuel.vote_average > 0 && (
-                              <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                                <span style={{ color: "var(--amber)" }}>★</span>
-                                {filmActuel.vote_average.toFixed(1)}
-                              </span>
-                            )}
-                          </p>
-                        </div>
-
-                        {/* Synopsis */}
-                        {filmActuel.overview && (
-                          <p style={{ margin: 0, fontSize: "13px", lineHeight: "1.65", color: "var(--text-3)", display: "-webkit-box", WebkitLineClamp: 5, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                            {filmActuel.overview}
-                          </p>
-                        )}
-
-                        {/* Séparateur */}
-                        <div style={{ height: "1px", background: "var(--divider)" }} />
-
-                        {/* Boutons d'action desktop */}
-                        <div className="swipe-sidebar-actions" style={{ flexDirection: "column", gap: "10px", display: "flex" }}>
-                          <button onClick={() => handleSwipe("right")} style={btnSidebarStyle("var(--green)", "rgba(34,197,94,0.1)")}>
-                            <span>♥</span> À voir
-                          </button>
-                          <button onClick={() => handleSwipe("up")} style={btnSidebarStyle("var(--blue)", "rgba(59,130,246,0.1)")}>
-                            <span>👁</span> Déjà vu
-                          </button>
-                          <button onClick={() => handleSwipe("left")} style={btnSidebarStyle("var(--text-3)", "var(--surface-2)")}>
-                            <span>✕</span> Passer
-                          </button>
-                        </div>
-
-                        {/* Annuler */}
-                        <button
-                          onClick={handleRetour}
-                          disabled={historique.length === 0}
-                          style={{
-                            background: "none", border: "none", padding: "4px 0",
-                            color: historique.length > 0 ? "var(--amber)" : "var(--text-5)",
-                            fontSize: "13px", cursor: historique.length > 0 ? "pointer" : "default",
-                            display: "flex", alignItems: "center", gap: "6px",
-                            fontWeight: "500",
-                          }}
-                        >↩ Annuler le dernier swipe</button>
+                  <div className="card-container" style={{ zIndex: 1 }}>
+                    {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
+                    {filmActuel   && <MovieCard key={filmActuel.id} film={filmActuel} onSwipe={handleSwipe} isTop={true} />}
+                    {!filmActuel && !loadingFilms && <EcranVide onRelancer={() => { setIndex(0); setFilms([]); chargerFilms(page, dejaSwiped, [], genreChoisi); }} />}
+                    {!filmActuel && loadingFilms && (
+                      <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px" }}>
+                        <div style={{ width: "36px", height: "36px", border: "3px solid var(--border-2)", borderTopColor: "var(--purple)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                        <p role="status" style={{ color: "var(--text-4)", fontSize: "13px", margin: 0 }}>Chargement…</p>
                       </div>
                     )}
                   </div>
 
-                  {/* ── Boutons mobile (sous la carte) ── */}
                   {filmActuel && (
-                    <div className="swipe-actions-mobile" style={{
-                      zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", marginTop: "16px", width: "100%",
-                    }}>
-                      <p style={{ margin: 0, fontSize: "14px", fontWeight: "600", color: "var(--text-2)", textAlign: "center", maxWidth: "260px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <div className="swipe-actions-mobile" style={{ zIndex: 1, marginTop: "16px", width: "100%" }}>
+                      <p style={{ margin: "0 0 12px", fontSize: "14px", fontWeight: "600", color: "var(--text-2)", textAlign: "center", maxWidth: "260px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                         {filmActuel.title}
                         {filmActuel.release_date && <span style={{ color: "var(--text-4)", fontWeight: "400", marginLeft: "6px", fontSize: "12px" }}>{filmActuel.release_date.slice(0, 4)}</span>}
                       </p>
                       <div style={{ position: "relative", width: "100%", maxWidth: "320px", display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                          <button onClick={() => handleSwipe("left")}  aria-label="Passer"   style={btnStyle("var(--red)")}>✕</button>
-                          <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu"  style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
-                          <button onClick={() => handleSwipe("right")} aria-label="À voir"   style={btnStyle("var(--green)")}>♥</button>
+                          <button onClick={() => handleSwipe("left")}  aria-label="Passer"  style={btnStyle("var(--red)")}>✕</button>
+                          <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu" style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
+                          <button onClick={() => handleSwipe("right")} aria-label="À voir"  style={btnStyle("var(--green)")}>♥</button>
                         </div>
                         <button onClick={handleRetour} disabled={historique.length === 0} aria-label="Annuler" style={{ position: "absolute", right: 0, background: "transparent", border: "2px solid " + (historique.length > 0 ? "var(--amber)" : "var(--text-5)"), color: historique.length > 0 ? "var(--amber)" : "var(--text-5)", borderRadius: "50%", width: "36px", height: "36px", fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default", display: "flex", alignItems: "center", justifyContent: "center" }}>↩</button>
                       </div>

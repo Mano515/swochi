@@ -117,9 +117,7 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
   align-items: center;
   overflow-x: clip;
 }
-
 .app-shell main { width: 100%; }
-
 .desktop-wrapper {
   display: flex;
   flex-direction: column;
@@ -127,237 +125,120 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
   flex: 1;
   width: 100%;
 }
+.sidebar { display: none; }
 
-/* ── Mobile ──────────────────────────────────────── */
+/* ── Base ── */
+.onglet-content { width: 100%; box-sizing: border-box; padding: 12px 16px 24px; }
+.swipe-section { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 12px 16px 24px; }
+.card-container { position: relative; width: 300px; height: 450px; }
+
+/* ── Mobile ── */
 @media (max-width: 768px) {
   .desktop-wrapper { display: contents; }
-
   .top-section {
-    position: sticky;
-    top: 0;
-    background: var(--bg);
-    z-index: 10;
-    padding: 14px 12px 0;
-    transition: background-color 0.25s ease;
-    width: 100%;
+    position: sticky; top: 0; background: var(--bg); z-index: 10;
+    padding: 14px 12px 0; transition: background-color 0.25s ease; width: 100%;
   }
-
   .top-section .header-row { margin-bottom: 12px; }
   .top-section .genres-row { margin-bottom: 4px; }
-
-  .swipe-section {
-    flex: 1;
-    justify-content: center;
-    padding: 16px 12px 12px;
-  }
-
-  .card-container {
-    width: min(78vw, 300px);
-    height: min(calc(78vw * 1.5), 52svh);
-    height: min(calc(78vw * 1.5), 52vh);
-  }
-
-  .desktop-nav  { display: none !important; }
+  .swipe-section { flex: 1; justify-content: center; padding: 16px 12px 12px; }
+  .card-container { width: min(78vw, 300px); height: min(calc(78vw * 1.5), 52svh); height: min(calc(78vw * 1.5), 52vh); }
+  .desktop-nav { display: none !important; }
   .desktop-only { display: none !important; }
-}
-
-/* ── Desktop ─────────────────────────────────────── */
-@media (min-width: 769px) {
-  /* Pas de scroll page sur l'onglet swipe */
-  html, body, #root {
-    height: 100%;
-  }
-
-  .app-shell {
-    height: 100vh;
-    overflow: hidden;
-  }
-
-  .desktop-wrapper {
-    max-width: 1080px;
-    width: 100%;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-  }
-
-  main {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Swipe section : conteneur flex, remplit la hauteur */
-  .swipe-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Layout 2 colonnes : carte | info+boutons */
-  .swipe-layout {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 48px;
-    width: 100%;
-    height: 100%;
-    padding: 20px 48px;
-    box-sizing: border-box;
-  }
-
-  /* Carte : hauteur = espace dispo, aspect-ratio 2:3 */
-  .card-container {
-    height: clamp(300px, calc(100vh - 145px), 480px);
-    width: clamp(200px, calc((100vh - 145px) * 0.667), 320px);
-    flex-shrink: 0;
-  }
-
-  /* Sidebar droite */
-  .swipe-sidebar {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 20px;
-    min-width: 220px;
-    max-width: 300px;
-    flex: 1;
-  }
-
-  .swipe-sidebar-actions { display: flex !important; }
-  .swipe-actions-mobile  { display: none !important; }
-
-  /* Onglets centré, scroll interne possible */
-  .onglet-content {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 28px 36px 40px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  /* Header pleine largeur, sticky */
-  .top-section {
-    width: 100%;
-    max-width: 100%;
-    padding: 0 32px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-    transition: background-color 0.25s ease;
-  }
-
-  /* Header row : logo | nav | actions */
-  .top-section .header-row {
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between !important;
-    position: static !important;
-    padding: 12px 0;
-    margin-bottom: 0;
-    gap: 16px;
-  }
-
-  /* Genre bar en dessous */
-  .top-section .genres-row {
-    padding: 8px 0 10px;
-    margin-bottom: 0;
-    border-top: 1px solid var(--divider);
-  }
-
-  /* Tabs desktop */
-  .desktop-nav {
-    display: flex;
-    gap: 2px;
-    align-items: center;
-    flex: 1;
-    justify-content: center;
-  }
-
-  .desktop-nav button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 7px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-3);
-    transition: background 0.15s, color 0.15s;
-    white-space: nowrap;
-    font-family: inherit;
-  }
-
-  .desktop-nav button:hover {
-    background: var(--surface-2);
-    color: var(--text-2);
-  }
-
-  .desktop-nav button.active {
-    background: rgba(168, 85, 247, 0.14);
-    color: var(--purple);
-    font-weight: 700;
-  }
-
-  .mobile-only { display: none !important; }
-
-  /* Cacher la nav dans le burger sur desktop */
-  .menu-nav-mobile { display: none !important; }
-}
-
-/* ── Desktop large (≥1400px) ─────────────────────── */
-@media (min-width: 1400px) {
-  .desktop-wrapper { max-width: 1280px; }
-  .top-section { padding: 0 48px; }
-
-  .card-container {
-    height: clamp(360px, calc(100vh - 290px), 500px);
-    width: clamp(240px, calc((100vh - 290px) * 0.667), 333px);
-  }
-
-  .onglet-content {
-    max-width: 680px;
-    padding: 36px 48px 48px;
-  }
-}
-
-/* ── Base (mobile first) ─────────────────────────── */
-.onglet-content {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 12px 16px 24px;
-}
-
-.swipe-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 12px 16px 24px;
-}
-
-.card-container {
-  position: relative;
-  width: 300px;
-  height: 450px;
-}
-
-/* Mobile : sidebar cachée, layout vertical */
-@media (max-width: 768px) {
-  .swipe-layout         { display: contents; }
-  .swipe-sidebar        { display: none !important; }
+  .swipe-sidebar { display: none !important; }
   .swipe-sidebar-actions { display: none !important; }
 }
+
+/* ── Desktop ── */
+@media (min-width: 769px) {
+  html, body, #root { height: 100%; }
+
+  .app-shell {
+    height: 100vh; overflow: hidden;
+    flex-direction: row; align-items: stretch;
+  }
+
+  /* Sidebar gauche */
+  .sidebar {
+    display: flex; flex-direction: column;
+    width: 200px; flex-shrink: 0;
+    background: var(--surface); border-right: 1px solid var(--border);
+    padding: 20px 12px; gap: 4px; z-index: 10;
+    transition: background-color 0.25s ease;
+  }
+  .sidebar-logo {
+    font-size: 17px; font-weight: 800; letter-spacing: 3px; color: var(--text);
+    padding: 4px 10px 20px; cursor: pointer; background: none; border: none;
+    text-align: left; display: block; width: 100%; font-family: inherit;
+  }
+  .sidebar-nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 10px; border: none; background: none; cursor: pointer;
+    font-size: 14px; font-weight: 500; color: var(--text-3);
+    transition: background 0.15s, color 0.15s; text-align: left;
+    width: 100%; font-family: inherit;
+  }
+  .sidebar-nav-item:hover { background: var(--surface-2); color: var(--text); }
+  .sidebar-nav-item.active { background: rgba(168,85,247,0.14); color: var(--purple); font-weight: 700; }
+  .sidebar-divider { height: 1px; background: var(--divider); margin: 8px 0; }
+  .sidebar-bottom { margin-top: auto; display: flex; flex-direction: column; gap: 4px; }
+
+  /* Zone principale */
+  .desktop-wrapper {
+    flex: 1; min-width: 0; display: flex; flex-direction: column;
+    overflow: hidden; background: var(--bg);
+  }
+
+  /* Barre de genres — seul élément header visible */
+  .top-section {
+    width: 100%; max-width: 100%; padding: 0 24px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    flex-shrink: 0; transition: background-color 0.25s ease;
+  }
+  .top-section .header-row { display: none !important; }
+  .top-section .genres-row { padding: 10px 0; margin-bottom: 0; }
+
+  main {
+    flex: 1; min-height: 0;
+    overflow-y: auto; overflow-x: hidden;
+    display: flex; flex-direction: column;
+  }
+
+  .swipe-section {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 20px 24px; position: relative; overflow: hidden;
+  }
+
+  /* Carte : hauteur = 100vh - genres(52px) - boutons(90px) - paddings(56px) */
+  .card-container {
+    height: clamp(300px, calc(100vh - 210px), 460px);
+    width: clamp(200px, calc((100vh - 210px) * 0.667), 307px);
+  }
+
+  .onglet-content {
+    max-width: 580px; margin: 0 auto;
+    padding: 28px 32px 40px; width: 100%; box-sizing: border-box;
+  }
+
+  .mobile-only     { display: none !important; }
+  .desktop-nav     { display: none !important; }
+  .menu-nav-mobile { display: none !important; }
+  .swipe-sidebar   { display: none !important; }
+  .swipe-sidebar-actions { display: none !important; }
+  .swipe-actions-mobile  { display: flex !important; flex-direction: column; align-items: center; gap: 12px; margin-top: 16px; width: 100%; z-index: 1; }
+}
+
+/* ── Desktop large ≥1400px ── */
+@media (min-width: 1400px) {
+  .sidebar { width: 220px; }
+  .card-container {
+    height: clamp(360px, calc(100vh - 210px), 520px);
+    width: clamp(240px, calc((100vh - 210px) * 0.667), 347px);
+  }
+  .onglet-content { max-width: 660px; }
+}
+
 
 /* ── Animations ──────────────────────────────────── */
 @keyframes apparaitre {
