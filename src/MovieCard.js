@@ -23,9 +23,12 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
     }
   }
 
-  // Reset position each time sheet opens
+  // Slide in from bottom each time sheet opens
   useEffect(() => {
-    if (showDetails) sheetY.set(0);
+    if (showDetails) {
+      sheetY.set(800);
+      animate(sheetY, 0, { type: "spring", damping: 32, stiffness: 300 });
+    }
   }, [showDetails, sheetY]);
 
   const sheet = (
@@ -72,8 +75,6 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
               display: "flex",
               flexDirection: "column",
             }}
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 32, stiffness: 300 }}
             onDragEnd={handleDragEnd}
