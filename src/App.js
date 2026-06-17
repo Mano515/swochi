@@ -54,7 +54,8 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
-        // Reconnexion : vider les films invité et déclencher le splash immédiatement
+        // Annuler immédiatement tout fetch invité en cours
+        fetchIdRef.current += 1;
         setFilms([]);
         setIndex(0);
         setLoadingFilms(true);
