@@ -569,7 +569,7 @@ function App() {
         </header>
 
         {/* ── Contenu principal ── */}
-        <main>
+        <main key={onglet} style={{ animation: "tabFadeIn 0.18s ease" }}>
               {onglet === "swipe" && (
                 <div className="swipe-section">
 
