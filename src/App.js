@@ -475,7 +475,7 @@ function App() {
         <div className="sidebar-divider" />
 
         <div className="sidebar-bottom">
-          {onglet === "swipe" && <button
+          <button
             onClick={() => setRechercheOuverte(true)}
             aria-label="Rechercher un film"
             style={{
@@ -489,7 +489,7 @@ function App() {
           >
             <span style={{ fontSize: "15px" }}>🔍</span>
             Rechercher
-          </button>}
+          </button>
           <button
             onClick={toggleTheme}
             className="sidebar-nav-item"
@@ -515,27 +515,37 @@ function App() {
       <div className="desktop-wrapper">
         {/* ── Header mobile ── */}
         <header className="top-section">
-          <div className="header-row" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 0 0", flexShrink: 0 }}>
-              <img src="/logo_swochi.svg" alt="Swochi" style={{ height: "40px", width: "auto" }} />
-            </button>
-            {/* Barre de recherche simulée — uniquement sur l'onglet découvrir */}
-            {onglet === "swipe" && <button
-              onClick={() => setRechercheOuverte(true)}
-              aria-label="Rechercher un film"
-              style={{
-                flex: 1, display: "flex", alignItems: "center", gap: "8px",
-                background: "var(--surface-2)", border: "1.5px solid var(--border-2)",
-                borderRadius: "12px", padding: "9px 14px", cursor: "pointer",
-                color: "var(--text-3)", fontSize: "14px", fontFamily: "inherit",
-                transition: "border-color 0.15s, background 0.15s",
-                textAlign: "left",
-              }}
-            >
-              <span style={{ fontSize: "15px", flexShrink: 0 }}>🔍</span>
-              <span style={{ flex: 1 }}>Rechercher un film…</span>
-            </button>}
+          <div className="header-row" style={{ display: "flex", alignItems: "center", gap: "10px", position: "relative" }}>
+            {onglet === "swipe" ? (
+              /* Onglet découvrir : logo icon + barre de recherche + burger */
+              <>
+                <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
+                  style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 0 0", flexShrink: 0 }}>
+                  <img src="/logo_swochi.svg" alt="Swochi" style={{ height: "40px", width: "auto" }} />
+                </button>
+                <button
+                  onClick={() => setRechercheOuverte(true)}
+                  aria-label="Rechercher un film"
+                  style={{
+                    flex: 1, display: "flex", alignItems: "center", gap: "8px",
+                    background: "var(--surface-2)", border: "1.5px solid var(--border-2)",
+                    borderRadius: "12px", padding: "9px 14px", cursor: "pointer",
+                    color: "var(--text-3)", fontSize: "14px", fontFamily: "inherit",
+                    textAlign: "left",
+                  }}
+                >
+                  <span style={{ fontSize: "15px", flexShrink: 0 }}>🔍</span>
+                  <span style={{ flex: 1 }}>Rechercher un film…</span>
+                </button>
+              </>
+            ) : (
+              /* Autres onglets : logo + nom centré */
+              <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
+                style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 0 0", flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                <img src="/logo_swochi.svg" alt="" style={{ height: "28px", width: "auto" }} />
+                <span style={{ fontSize: "17px", fontWeight: "800", letterSpacing: "3px", color: "var(--text)" }}>SWOCHI</span>
+              </button>
+            )}
             <button onClick={() => setMenuOuvert(true)} aria-label="Menu"
               style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "10px", padding: "9px 11px", cursor: "pointer", display: "flex", flexDirection: "column", gap: "5px", flexShrink: 0 }}>
               <span style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
