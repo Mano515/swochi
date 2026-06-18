@@ -66,11 +66,13 @@ function App() {
         setLoadingUserData(true);
         setMenuOuvert(false);
       } else {
-        // Déconnexion : remettre à zéro l'état utilisateur
+        // Déconnexion : repasser en mode invité
+        setIsGuest(true);
         setUsername(null);
         setListes({ aVoir: [], pasInteresse: [], dejavu: [] });
         setDejaSwiped([]);
         setFilms([]);
+        setFilmsCherches(false);
         setIndex(0);
         setPage(1);
         setMenuOuvert(false);
