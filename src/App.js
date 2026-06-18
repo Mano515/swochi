@@ -542,7 +542,7 @@ function App() {
               /* Autres onglets : logo + nom centré */
               <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
                 style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <img src="/logo_swochi_nom.png" alt="Swochi" style={{ height: "32px", width: "auto" }} />
+                <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "32px", width: "auto" }} />
               </button>
             )}
             <button onClick={() => setMenuOuvert(true)} aria-label="Menu"
