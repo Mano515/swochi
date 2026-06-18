@@ -475,7 +475,7 @@ function App() {
         <div className="sidebar-divider" />
 
         <div className="sidebar-bottom">
-          <button
+          {onglet === "swipe" && <button
             onClick={() => setRechercheOuverte(true)}
             aria-label="Rechercher un film"
             style={{
@@ -489,7 +489,7 @@ function App() {
           >
             <span style={{ fontSize: "15px" }}>🔍</span>
             Rechercher
-          </button>
+          </button>}
           <button
             onClick={toggleTheme}
             className="sidebar-nav-item"
@@ -520,8 +520,8 @@ function App() {
               style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 0 0", flexShrink: 0 }}>
               <img src="/logo_swochi.svg" alt="Swochi" style={{ height: "40px", width: "auto" }} />
             </button>
-            {/* Barre de recherche simulée */}
-            <button
+            {/* Barre de recherche simulée — uniquement sur l'onglet découvrir */}
+            {onglet === "swipe" && <button
               onClick={() => setRechercheOuverte(true)}
               aria-label="Rechercher un film"
               style={{
@@ -535,7 +535,7 @@ function App() {
             >
               <span style={{ fontSize: "15px", flexShrink: 0 }}>🔍</span>
               <span style={{ flex: 1 }}>Rechercher un film…</span>
-            </button>
+            </button>}
             <button onClick={() => setMenuOuvert(true)} aria-label="Menu"
               style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "10px", padding: "9px 11px", cursor: "pointer", display: "flex", flexDirection: "column", gap: "5px", flexShrink: 0 }}>
               <span style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
