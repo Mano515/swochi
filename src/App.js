@@ -279,11 +279,14 @@ function App() {
   function handleSwipe(direction) {
     const film = films[index];
 
-    // Mettre à jour la liste correspondante
+    // Mettre à jour la liste correspondante (évite les doublons si le film a déjà été swipé)
     const newListes = { ...listes };
-    if (direction === "right") newListes.aVoir        = [...listes.aVoir, film];
-    if (direction === "left")  newListes.pasInteresse = [...listes.pasInteresse, film];
-    if (direction === "up")    newListes.dejavu        = [...listes.dejavu, film];
+    const dejaEnListe = Object.values(listes).flat().some(f => f.id === film.id);
+    if (!dejaEnListe) {
+      if (direction === "right") newListes.aVoir        = [...listes.aVoir, film];
+      if (direction === "left")  newListes.pasInteresse = [...listes.pasInteresse, film];
+      if (direction === "up")    newListes.dejavu        = [...listes.dejavu, film];
+    }
 
     const newSwiped = [...dejaSwiped, film.id];
     setListes(newListes);
@@ -571,7 +574,7 @@ function App() {
                   {filmActuel   && <MovieCard key={filmActuel.id}         film={filmActuel}  onSwipe={handleSwipe}  isTop={true} />}
                   {!filmActuel && loadingFilms  && <Spinner />}
                   {!filmActuel && !loadingFilms && filmsCherches && (
-                    <EcranVide onRelancer={() => { setIndex(0); setFilms([]); chargerFilms(page, dejaSwiped, [], genreChoisi); }} />
+                    <EcranVide onRelancer={() => { setIndex(0); setFilms([]); chargerFilms(1, [], [], genreChoisi); }} />
                   )}
                 </div>
 
@@ -695,6 +698,13 @@ function Spinner() {
 
 // Affiché quand il n'y a plus de films à swiper
 function EcranVide({ onRelancer }) {
+  const dejaTente = useRef(false);
+  // Auto-déclenche une fois au montage. Passe [] comme swipes → trouve toujours des films.
+  useEffect(() => {
+    if (dejaTente.current) return;
+    dejaTente.current = true;
+    onRelancer();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px", padding: "24px", textAlign: "center" }}>
       <div style={{ fontSize: "52px" }}>🎬</div>
