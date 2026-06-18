@@ -153,7 +153,8 @@ function App() {
         setUsername(snap.exists() ? (snap.data().username || "") : "");
 
         if (snap.exists() && snap.data().username) {
-          chargerFilms(1, idsDejaSwiped, [], "");
+          const pageRestauree = parseInt(localStorage.getItem("swochi_page") || "1", 10);
+          chargerFilms(pageRestauree, idsDejaSwiped, [], "");
           if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
         }
 
@@ -178,7 +179,8 @@ function App() {
     setFilms([]);
     setHistorique([]);
     swipesInvite.current = 0;
-    chargerFilms(1, savedSwiped, [], "");
+    const pageRestauree = parseInt(localStorage.getItem("swochi_page") || "1", 10);
+    chargerFilms(pageRestauree, savedSwiped, [], "");
     if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
   }, [isGuest, loading, user]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -216,6 +218,8 @@ function App() {
       setFilms([...filmsExistants, ...nouveaux]);
       setPage(pageCourante);
       setFilmsCherches(true);
+      // Mémoriser la page atteinte pour reprendre au bon endroit au prochain rechargement
+      localStorage.setItem("swochi_page", String(pageCourante));
     } catch (e) {
       console.error("Erreur chargement films:", e);
       afficherToast("Impossible de charger les films. Vérifiez votre connexion.");
@@ -279,14 +283,11 @@ function App() {
   function handleSwipe(direction) {
     const film = films[index];
 
-    // Mettre à jour la liste correspondante (évite les doublons si le film a déjà été swipé)
+    // Mettre à jour la liste correspondante
     const newListes = { ...listes };
-    const dejaEnListe = Object.values(listes).flat().some(f => f.id === film.id);
-    if (!dejaEnListe) {
-      if (direction === "right") newListes.aVoir        = [...listes.aVoir, film];
-      if (direction === "left")  newListes.pasInteresse = [...listes.pasInteresse, film];
-      if (direction === "up")    newListes.dejavu        = [...listes.dejavu, film];
-    }
+    if (direction === "right") newListes.aVoir        = [...listes.aVoir, film];
+    if (direction === "left")  newListes.pasInteresse = [...listes.pasInteresse, film];
+    if (direction === "up")    newListes.dejavu        = [...listes.dejavu, film];
 
     const newSwiped = [...dejaSwiped, film.id];
     setListes(newListes);
@@ -574,7 +575,7 @@ function App() {
                   {filmActuel   && <MovieCard key={filmActuel.id}         film={filmActuel}  onSwipe={handleSwipe}  isTop={true} />}
                   {!filmActuel && loadingFilms  && <Spinner />}
                   {!filmActuel && !loadingFilms && filmsCherches && (
-                    <EcranVide onRelancer={() => { setIndex(0); setFilms([]); chargerFilms(1, [], [], genreChoisi); }} />
+                    <EcranVide onRelancer={() => { setIndex(0); setFilms([]); localStorage.removeItem("swochi_page"); chargerFilms(1, dejaSwiped, [], genreChoisi); }} />
                   )}
                 </div>
 
@@ -698,13 +699,6 @@ function Spinner() {
 
 // Affiché quand il n'y a plus de films à swiper
 function EcranVide({ onRelancer }) {
-  const dejaTente = useRef(false);
-  // Auto-déclenche une fois au montage. Passe [] comme swipes → trouve toujours des films.
-  useEffect(() => {
-    if (dejaTente.current) return;
-    dejaTente.current = true;
-    onRelancer();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px", padding: "24px", textAlign: "center" }}>
       <div style={{ fontSize: "52px" }}>🎬</div>
