@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useTheme } from "./ThemeContext";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, updateDoc, getDoc, runTransaction } from "firebase/firestore";
@@ -17,6 +18,7 @@ import Recherche from "./Recherche";
 // ─── App ─────────────────────────────────────────────────────────────────────
 
 function App() {
+  const { theme, toggleTheme } = useTheme();
   const [user, setUser]               = useState(null);
   const [loading, setLoading]         = useState(true);
   const [loadingUserData, setLoadingUserData] = useState(false);
@@ -487,12 +489,12 @@ function App() {
             Rechercher
           </button>
           <button
-            onClick={() => setMenuOuvert(true)}
+            onClick={toggleTheme}
             className="sidebar-nav-item"
-            aria-label="Paramètres"
+            aria-label="Changer le thème"
           >
-            <span style={{ fontSize: "16px" }}>⚙️</span>
-            Paramètres
+            <span style={{ fontSize: "16px" }}>{theme === "dark" ? "☀️" : "🌙"}</span>
+            {theme === "dark" ? "Mode clair" : "Mode sombre"}
           </button>
         </div>
       </aside>
@@ -502,8 +504,8 @@ function App() {
         <header className="top-section">
           <div className="header-row" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
-              style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0 }}>
-              <img src="/logo_swochi.svg" alt="Swochi" style={{ height: "34px", width: "auto" }} />
+              style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 0 0", flexShrink: 0 }}>
+              <img src="/logo_swochi.svg" alt="Swochi" style={{ height: "40px", width: "auto" }} />
             </button>
             {/* Barre de recherche simulée */}
             <button
@@ -598,6 +600,10 @@ function App() {
 
                   {/* Sidebar droite — genres (desktop uniquement) */}
                   <aside className="genres-sidebar">
+                    <button
+                      onClick={() => handleGenreChange("")}
+                      className={"genre-sidebar-item" + (genreChoisi === "" ? " active" : "")}
+                    >Tous</button>
                     {genres.map(g => (
                       <button
                         key={g.id}
