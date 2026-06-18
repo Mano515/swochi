@@ -121,7 +121,8 @@ function App() {
   // ── Mode invité — restaure depuis localStorage ─────────────────────────────
   useEffect(() => {
     if (!isGuest) return;
-    if (loading) return; // attendre que Firebase ait tranché
+    if (loading) return;  // attendre que Firebase ait tranché
+    if (user) return;     // Firebase a confirmé un compte → pas de mode invité
     const savedListes  = JSON.parse(localStorage.getItem("swochi_guest_listes") || "null")
       || { aVoir: [], pasInteresse: [], dejavu: [] };
     const savedSwiped  = JSON.parse(localStorage.getItem("swochi_guest_swiped") || "[]");
@@ -133,7 +134,7 @@ function App() {
     swipesInvite.current = 0;
     chargerFilms(1, savedSwiped, [], "");
     if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
-  }, [isGuest, loading]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isGuest, loading, user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Chargement des films ───────────────────────────────────────────────────
   async function fetchPage(numPage, genre) {
