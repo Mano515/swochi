@@ -193,32 +193,57 @@ function App() {
     return data.results ?? [];
   }
 
-  // Charge les films en sautant ceux déjà swipés. Annulable via fetchIdRef.
+  // Récupère les recommandations TMDB basées sur un film aimé
+  async function fetchRecommandations(filmId) {
+    const url = `https://api.themoviedb.org/3/movie/${filmId}/recommendations?api_key=${TMDB_KEY}&language=fr-FR&page=1`;
+    const data = await fetch(url).then(r => r.json());
+    return data.results ?? [];
+  }
+
+  // Charge les films. Si l'utilisateur a des films aimés et aucun filtre de genre,
+  // on commence par les recommandations TMDB basées sur ses goûts, puis on complète
+  // avec le catalogue général si nécessaire.
   async function chargerFilms(pageDebut, swipes, filmsExistants, genre) {
     fetchIdRef.current += 1;
     const monId = fetchIdRef.current;
     setLoadingFilms(true);
 
     try {
-      let nouveaux    = [];
+      let nouveaux     = [];
       let pageCourante = pageDebut;
-      let tentatives   = 0;
-      const MAX = 8; // cherche jusqu'à 24 pages si tout est déjà vu
 
+      // ── Étape 1 : recommandations personnalisées ──────────────────────────
+      // Seulement si l'utilisateur a des films aimés et qu'aucun genre n'est filtré
+      const filmsAimes = listes.aVoir;
+      if (filmsAimes.length >= 2 && !genre) {
+        // On prend les 5 derniers films aimés (goûts les plus récents)
+        const echantillon = filmsAimes.slice(-5).reverse();
+        const resultats   = await Promise.all(echantillon.map(f => fetchRecommandations(f.id)));
+        if (monId !== fetchIdRef.current) return;
+
+        // Déduplication + filtre films déjà vus
+        const vus = new Set(swipes);
+        for (const film of resultats.flat()) {
+          if (!vus.has(film.id)) { vus.add(film.id); nouveaux.push(film); }
+        }
+      }
+
+      // ── Étape 2 : catalogue général pour compléter ────────────────────────
+      let tentatives = 0;
+      const MAX = 8;
       while (nouveaux.length < 6 && tentatives < MAX && pageCourante <= 490) {
         const pages = await Promise.all(
           [pageCourante, pageCourante + 1, pageCourante + 2].map(n => fetchPage(n, genre))
         );
-        nouveaux = [...nouveaux, ...pages.flat().filter(f => !swipes.includes(f.id))];
+        nouveaux = [...nouveaux, ...pages.flat().filter(f => !swipes.includes(f.id) && !nouveaux.some(n => n.id === f.id))];
         pageCourante += 3;
         tentatives++;
-        if (monId !== fetchIdRef.current) return; // annulé par un fetch plus récent
+        if (monId !== fetchIdRef.current) return;
       }
 
       setFilms([...filmsExistants, ...nouveaux]);
       setPage(pageCourante);
       setFilmsCherches(true);
-      // Mémoriser la page atteinte pour reprendre au bon endroit au prochain rechargement
       localStorage.setItem("swochi_page", String(pageCourante));
     } catch (e) {
       console.error("Erreur chargement films:", e);
