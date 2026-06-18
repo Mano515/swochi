@@ -695,8 +695,6 @@ function Spinner() {
 
 // Affiché quand il n'y a plus de films à swiper
 function EcranVide({ onRelancer }) {
-  // Déclenche automatiquement le rechargement une fois au montage
-  useEffect(() => { onRelancer(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px", padding: "24px", textAlign: "center" }}>
       <div style={{ fontSize: "52px" }}>🎬</div>
