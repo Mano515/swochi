@@ -541,7 +541,7 @@ function App() {
             ) : (
               /* Autres onglets : logo + nom centré */
               <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
-                style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                style={{ background: "none", border: "none", cursor: "pointer", padding: 0, position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
                 <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "32px", width: "auto" }} />
               </button>
             )}
