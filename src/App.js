@@ -539,11 +539,14 @@ function App() {
                 </button>
               </>
             ) : (
-              /* Autres onglets : logo + nom centré */
-              <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
-                style={{ background: "none", border: "none", cursor: "pointer", padding: 0, position: "absolute", left: "50%", transform: "translateX(-50%)" }}>
-                <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "32px", width: "auto" }} />
-              </button>
+              /* Autres onglets : logo + nom centré absolument, spacer pour pousser le burger à droite */
+              <>
+                <button onClick={() => setOnglet("swipe")} aria-label="Retour au swipe"
+                  style={{ background: "none", border: "none", cursor: "pointer", padding: 0, position: "absolute", left: "50%", transform: "translateX(-50%) translateY(4px)" }}>
+                  <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "38px", width: "auto" }} />
+                </button>
+                <div style={{ flex: 1 }} />
+              </>
             )}
             <button onClick={() => setMenuOuvert(true)} aria-label="Menu"
               style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--text-2)", borderRadius: "10px", padding: "9px 11px", cursor: "pointer", display: "flex", flexDirection: "column", gap: "5px", flexShrink: 0 }}>
