@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useTheme } from "./ThemeContext";
 import { auth, db } from "./firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, updateDoc, getDoc, runTransaction } from "firebase/firestore";
 import MovieCard from "./MovieCard";
 import Login from "./Login";
@@ -496,6 +496,17 @@ function App() {
             <span style={{ fontSize: "16px" }}>{theme === "dark" ? "☀️" : "🌙"}</span>
             {theme === "dark" ? "Mode clair" : "Mode sombre"}
           </button>
+          {!isGuest && (
+            <button
+              onClick={() => signOut(auth)}
+              className="sidebar-nav-item"
+              aria-label="Se déconnecter"
+              style={{ color: "var(--red)" }}
+            >
+              <span style={{ fontSize: "15px" }}>↩</span>
+              Se déconnecter
+            </button>
+          )}
         </div>
       </aside>
 
