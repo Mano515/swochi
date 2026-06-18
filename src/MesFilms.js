@@ -1,9 +1,9 @@
 import { useState } from "react";
 
 const ONGLETS = [
-  { key: "aVoir",        label: "❤️ À voir",  color: "#22c55e" },
-  { key: "dejavu",       label: "👁 Déjà vu", color: "#3b82f6" },
-  { key: "pasInteresse", label: "✕ Skip",     color: "#ef4444" },
+  { key: "aVoir",        label: "À voir",   icon: "♥" },
+  { key: "dejavu",       label: "Déjà vu",  icon: "✓" },
+  { key: "pasInteresse", label: "Ignorés",  icon: "✕" },
 ];
 
 function FilmDetail({ film, ongletActif, onDeplacer, onSupprimer, onFermer }) {
@@ -70,14 +70,15 @@ function FilmDetail({ film, ongletActif, onDeplacer, onSupprimer, onFermer }) {
               key={o.key}
               onClick={() => { onDeplacer(film, ongletActif, o.key); onFermer(); }}
               style={{
-                background: "transparent",
-                border: `1.5px solid ${o.color}`,
-                color: o.color, borderRadius: "12px",
+                background: "var(--surface-2)",
+                border: "1px solid var(--border)",
+                color: "var(--text)", borderRadius: "12px",
                 padding: "11px 16px", fontSize: "14px", fontWeight: "600",
                 cursor: "pointer", textAlign: "left",
-                display: "flex", alignItems: "center", gap: "8px",
+                display: "flex", alignItems: "center", gap: "10px",
               }}
             >
+              <span style={{ fontSize: "16px" }}>{o.icon}</span>
               <span>{o.label}</span>
             </button>
           ))}
@@ -135,27 +136,54 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
         </div>
       )}
 
-      {/* Sous-onglets */}
-      <div role="tablist" aria-label="Mes listes de films" style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
-        {ONGLETS.map(o => (
-          <button
-            key={o.key}
-            role="tab"
-            aria-selected={ongletActif === o.key}
-            onClick={() => { setOngletActif(o.key); setRecherche(""); }}
-            style={{
-              flex: 1,
-              background: ongletActif === o.key ? o.color : "var(--surface)",
-              color: ongletActif === o.key ? "white" : "var(--text-3)",
-              border: `1px solid ${ongletActif === o.key ? o.color : "var(--border)"}`,
-              borderRadius: "50px", padding: "9px 6px",
-              fontSize: "12px", fontWeight: "600", cursor: "pointer",
-              transition: "all 0.15s",
-            }}
-          >
-            {o.label} <span style={{ opacity: 0.75 }}>({listes[o.key].length})</span>
-          </button>
-        ))}
+      {/* Segment control */}
+      <div
+        role="tablist"
+        aria-label="Mes listes de films"
+        style={{
+          display: "flex",
+          background: "var(--surface-2)",
+          borderRadius: "14px",
+          padding: "4px",
+          marginBottom: "20px",
+          gap: "2px",
+        }}
+      >
+        {ONGLETS.map(o => {
+          const actif = ongletActif === o.key;
+          return (
+            <button
+              key={o.key}
+              role="tab"
+              aria-selected={actif}
+              onClick={() => { setOngletActif(o.key); setRecherche(""); }}
+              style={{
+                flex: 1,
+                background: actif ? "var(--surface)" : "transparent",
+                color: actif ? "var(--text)" : "var(--text-3)",
+                border: "none",
+                borderRadius: "10px",
+                padding: "9px 4px",
+                fontSize: "12px",
+                fontWeight: actif ? "700" : "500",
+                cursor: "pointer",
+                transition: "all 0.18s ease",
+                boxShadow: actif ? "var(--shadow-sm)" : "none",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "2px",
+                lineHeight: 1.2,
+              }}
+            >
+              <span style={{ fontSize: "13px", opacity: actif ? 1 : 0.5 }}>{o.icon}</span>
+              <span>{o.label}</span>
+              <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "400" }}>
+                {listes[o.key].length}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Barre de recherche */}
