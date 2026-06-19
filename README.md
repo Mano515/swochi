@@ -1,16 +1,40 @@
-# 🎬 Swochi
+# Swochi
 
-**Swochi** est une application de swipe de films — pensée pour ne plus jamais passer 20 minutes à chercher quoi regarder avec ses amis.
+<p align="center">
+  <img src="public/logo_swochi_nom.svg" alt="Swochi" height="52" />
+</p>
 
-> Swipez des films, construisez vos listes, trouvez ce que vous avez en commun.
+<p align="center">
+  <strong>Swochi</strong> est une application de swipe de films — pensée pour ne plus jamais passer 20 minutes à chercher quoi regarder avec ses amis.
+</p>
 
-🔗 **[Essayer l'app](https://swochi.vercel.app)**
+<p align="center">
+  Swipez des films, construisez vos listes, trouvez ce que vous avez en commun.
+</p>
+
+<p align="center">
+  🔗 <strong><a href="https://swochi.vercel.app">Essayer l'app</a></strong>
+</p>
 
 ---
 
 ## Aperçu
 
 Swochi fonctionne comme un Tinder pour les films. Vous swipez les affiches une par une, vous les ajoutez à vos listes, et vous comparez ensuite avec vos amis pour trouver un film à regarder ensemble.
+
+### Desktop
+
+<p align="center">
+  <img src="public/screenshots/swipe-desktop.png" alt="Swipe — desktop" width="49%" />
+  <img src="public/screenshots/mes-films-desktop.png" alt="Mes films — desktop" width="49%" />
+</p>
+
+### Mobile
+
+<p align="center">
+  <img src="public/screenshots/swipe-mobile.png" alt="Swipe — mobile" width="23%" />
+  <img src="public/screenshots/mes-films-mobile.png" alt="Mes films — mobile" width="23%" />
+</p>
 
 ---
 
