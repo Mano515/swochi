@@ -18,7 +18,7 @@ Swochi fonctionne comme un Tinder pour les films. Vous swipez les affiches une p
 
 ### 🎴 Swipe de films
 - Faites glisser l'affiche vers la **droite** pour mettre un film dans "À voir"
-- Vers la **gauche** pour le passer (Skip)
+- Vers la **gauche** pour le passer (Ignoré)
 - Vers le **haut** si vous l'avez déjà vu
 - Utilisez les boutons ✕ / 👁 / ♥ si vous préférez cliquer
 - Bouton ↩ pour annuler le dernier swipe
@@ -27,23 +27,28 @@ Swochi fonctionne comme un Tinder pour les films. Vous swipez les affiches une p
 - Appuyez sur la partie basse de l'affiche pour voir le synopsis, le genre, la durée, la note, le réalisateur et les acteurs principaux
 
 ### 🎭 Filtres par genre
-- Filtrez les films par genre (Action, Comédie, Horreur…) via la barre de catégories
-- Glissez la barre ou utilisez les flèches pour naviguer entre les genres
+- Filtrez les films par genre (Action, Comédie, Horreur…) via la barre de catégories ou la sidebar desktop
+- Les genres non sélectionnés restent accessibles en scrollant
+
+### 🔎 Recherche
+- Recherchez n'importe quel film par titre et ajoutez-le directement à une de vos listes
+- Accessible depuis la barre de recherche (mobile) ou le bouton dans la sidebar (desktop)
 
 ### 📂 Mes Films
-- Retrouvez tous vos films classés en trois listes : **À voir**, **Déjà vu**, **Skip**
+- Retrouvez tous vos films classés en trois listes : **À voir**, **Déjà vu**, **Ignorés**
+- Affiches en grille — tapez sur une affiche pour voir les détails et changer le film de liste
 - Recherchez un film par titre dans vos listes
-- Déplacez un film d'une liste à une autre ou supprimez-le via le menu **···**
 
 ### 🤝 Match
 - Entrez le pseudo d'un ami pour voir les films que vous avez tous les deux mis en "À voir"
 - Tirez un film au sort parmi vos matchs avec le bouton 🎲
-- Relancez le tirage pour en choisir un autre
 - Partagez votre pseudo à vos amis via le bouton **Partager**
 
 ### 👤 Profil
-- Consultez vos statistiques : nombre de films swipés, à voir, déjà vus, skippés
-- Accessible depuis le menu burger en haut à droite
+- Consultez vos statistiques : nombre de films swipés, à voir, déjà vus, ignorés
+
+### 🌙 Thème
+- Bascule entre mode sombre et mode clair depuis la sidebar desktop
 
 ---
 
@@ -51,11 +56,11 @@ Swochi fonctionne comme un Tinder pour les films. Vous swipez les affiches une p
 
 Swochi adapte les films suggérés à votre profil :
 
-- **Nouveau compte** — les premiers films proposés sont des incontournables (notes élevées, très votés)
-- **Utilisateur actif** — une partie des suggestions est basée sur les films que vous avez aimés (recommandations TMDB)
+- **Nouveau compte** — les films proposés sont des incontournables triés par popularité
+- **Utilisateur actif (≥ 2 films aimés)** — les suggestions sont d'abord basées sur les recommandations TMDB de vos derniers films likés, puis complétées par le catalogue général
 - **Filtre genre actif** — les films du genre choisi, triés par popularité
 
-Les films déjà swipés ne réapparaissent jamais, même après un changement de catégorie.
+Les films déjà swipés ne réapparaissent jamais. La position dans le catalogue est mémorisée entre les sessions pour ne pas repasser par les mêmes pages.
 
 ---
 
@@ -67,7 +72,7 @@ Les films déjà swipés ne réapparaissent jamais, même après un changement d
 | **Firebase Auth** | Connexion email et Google |
 | **Firestore** | Stockage des listes et profils |
 | **Firebase App Check** | Protection contre les abus |
-| **TMDB API** | Données films (affiches, synopsis, casting...) |
+| **TMDB API** | Données films (affiches, synopsis, casting, recommandations…) |
 | **Framer Motion** | Animations de swipe |
 | **Vercel** | Hébergement |
 
