@@ -115,6 +115,14 @@ export const IconeRecherche = (p) => (
   </Svg>
 );
 
+// Information — remarque contextuelle
+export const IconeInfo = (p) => (
+  <Svg {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 16.5v-5M12 7.8h.01" />
+  </Svg>
+);
+
 // Table de correspondance utilisée par les deux menus
 export const ICONES_NAV = {
   swipe:    IconeDecouvrir,

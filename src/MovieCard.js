@@ -378,7 +378,7 @@ const MovieCard = forwardRef(function MovieCard({ film, onSwipe, isTop }, ref) {
         }}
       >
         <img
-          src={`https://image.tmdb.org/t/p/w500${film.poster_path}`}
+          src={`https://image.tmdb.org/t/p/w780${film.poster_path}`}
           alt=""
           style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }}
         />

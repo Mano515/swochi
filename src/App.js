@@ -81,6 +81,18 @@ function App() {
     toastTimer.current = setTimeout(() => setToast(null), 4000);
   }
 
+  // Précharge les affiches suivantes. Sans ça, chaque nouvelle carte affiche
+  // un rectangle vide le temps du téléchargement — c'est ce qui donnait
+  // l'impression que l'app "rame" alors qu'elle attend simplement le réseau.
+  useEffect(() => {
+    for (let i = index; i < Math.min(index + 4, films.length); i++) {
+      const affiche = films[i]?.poster_path;
+      if (!affiche) continue;
+      const img = new Image();
+      img.src = `https://image.tmdb.org/t/p/w780${affiche}`;
+    }
+  }, [films, index]);
+
   // Bouton d'action : on rejoue l'animation de la carte plutôt que de la
   // faire disparaître d'un coup. Repli si la carte n'est pas encore montée.
   function declencher(direction) {
@@ -430,7 +442,7 @@ function App() {
   const filmSuivant = films[index + 1];
 
   return (
-    <div className="no-select app-shell">
+    <div className={`no-select app-shell${onglet === "swipe" ? " app-shell--swipe" : ""}`}>
 
       {/* Fond ambiant : poster du film courant, très flouté */}
       {filmActuel && (
@@ -541,14 +553,14 @@ function App() {
                 {/* Logo seul à gauche + barre de recherche */}
                 <button onClick={() => setOnglet("swipe")} aria-label="Accueil"
                   style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 0 0", flexShrink: 0 }}>
-                  <img src="/logo_swochi.svg" alt="Swochi" style={{ height: "40px" }} />
+                  <img src="/logo_swochi.svg" alt="Swochi" style={{ height: "30px" }} />
                 </button>
                 <button onClick={() => setRechercheOuverte(true)} aria-label="Rechercher un film"
                   style={{
                     flex: 1, display: "flex", alignItems: "center", gap: "8px",
                     background: "var(--surface-2)", border: "1.5px solid var(--border-2)",
-                    borderRadius: "12px", padding: "9px 14px", cursor: "pointer",
-                    color: "var(--text-3)", fontSize: "14px", fontFamily: "inherit",
+                    borderRadius: "11px", padding: "7px 13px", cursor: "pointer",
+                    color: "var(--text-3)", fontSize: "13.5px", fontFamily: "inherit",
                   }}>
                   <IconeRecherche taille={16} />
                   <span style={{ flex: 1 }}>Rechercher un film…</span>

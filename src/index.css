@@ -149,15 +149,39 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
   .desktop-wrapper { display: contents; }
   .top-section {
     position: sticky; top: 0; background: transparent; z-index: 10;
-    padding: 14px 12px 0; transition: background-color 0.25s ease; width: 100%;
+    padding: 8px 12px 0; transition: background-color 0.25s ease; width: 100%;
   }
-  .top-section .header-row { margin-bottom: 12px; }
-  .top-section .genres-row { margin-bottom: 0; padding-bottom: 12px; }
+  .top-section .header-row { margin-bottom: 8px; }
+  .top-section .genres-row { margin-bottom: 0; padding-bottom: 8px; }
   .swipe-section { flex: 1; justify-content: center; padding: 10px 12px 8px; }
   .card-container {
-    width: min(92vw, 430px);
-    height: min(calc(92vw * 1.5), calc(100vh - 250px));
-    height: min(calc(92vw * 1.5), calc(100svh - 250px));
+    width: min(95vw, 440px);
+    height: min(calc(95vw * 1.55), 60vh);
+  }
+
+  /* Onglet Découvrir : il doit tenir dans un écran, jamais déborder.
+     La carte absorbe la place restante — plus de constante à maintenir,
+     et la bannière invité ne pousse plus les boutons sous la barre
+     de navigation quand elle apparaît. */
+  .app-shell--swipe {
+    height: 100vh;
+    height: 100svh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .app-shell--swipe main {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .app-shell--swipe .swipe-section { flex: 1; min-height: 0; }
+  .app-shell--swipe .swipe-center  { flex: 1; min-height: 0; width: 100%; }
+  .app-shell--swipe .card-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    height: auto;
+    margin: 0 auto;
   }
   .desktop-nav { display: none !important; }
   .desktop-only { display: none !important; }
@@ -362,7 +386,7 @@ code {
 
 @media (max-width: 768px) {
   .top-section {
-    padding-top: calc(14px + env(safe-area-inset-top));
+    padding-top: calc(8px + env(safe-area-inset-top));
   }
   .swipe-section { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
   .onglet-content { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }

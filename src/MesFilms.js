@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IconeRecherche, IconeInfo } from "./Icones";
 
 const ONGLETS = [
   { key: "aVoir",        label: "À voir",   icon: "♥" },
@@ -131,7 +132,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
           display: "flex", alignItems: "center", gap: "10px",
           marginBottom: "16px", fontSize: "13px", color: "var(--text-3)",
         }}>
-          <span>💾</span>
+          <IconeInfo taille={17} />
           <span>Tes films ne sont sauvegardés que pour cette session.</span>
         </div>
       )}
@@ -187,18 +188,26 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
       </div>
 
       {/* Barre de recherche */}
+      <div style={{ position: "relative", display: "flex", alignItems: "center", marginBottom: "16px" }}>
+      <span style={{
+        position: "absolute", left: "13px", display: "flex",
+        color: "var(--text-3)", pointerEvents: "none",
+      }}>
+        <IconeRecherche taille={16} />
+      </span>
       <input
         type="text"
-        placeholder="🔍 Rechercher..."
+        placeholder="Rechercher…"
         value={recherche}
         onChange={e => setRecherche(e.target.value)}
         style={{
           background: "var(--input-bg)", border: "1px solid var(--input-border)",
-          borderRadius: "10px", padding: "11px 14px",
+          borderRadius: "10px", padding: "11px 14px 11px 38px",
           color: "var(--text)", fontSize: "16px", outline: "none",
-          width: "100%", marginBottom: "16px", boxSizing: "border-box",
+          width: "100%", boxSizing: "border-box",
         }}
       />
+      </div>
 
       {/* Grille d'affiches */}
       {films.length === 0 ? (

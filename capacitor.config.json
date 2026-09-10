@@ -3,7 +3,7 @@
   "appName": "Swochi",
   "webDir": "build",
   "android": {
-    "adjustMarginsForEdgeToEdge": "force",
+    "adjustMarginsForEdgeToEdge": "disable",
     "backgroundColor": "#0d0d0d"
   },
   "plugins": {
@@ -15,7 +15,7 @@
       "showSpinner": false
     },
     "StatusBar": {
-      "overlaysWebView": false,
+      "overlaysWebView": true,
       "style": "DARK",
       "backgroundColor": "#0d0d0d"
     },
