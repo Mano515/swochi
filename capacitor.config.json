@@ -4,12 +4,12 @@
   "webDir": "build",
   "android": {
     "adjustMarginsForEdgeToEdge": "disable",
-    "backgroundColor": "#0d0d0d"
+    "backgroundColor": "#15181d"
   },
   "plugins": {
     "SplashScreen": {
       "launchAutoHide": false,
-      "backgroundColor": "#0d0d0d",
+      "backgroundColor": "#15181d",
       "androidSplashResourceName": "splash",
       "androidScaleType": "CENTER_CROP",
       "showSpinner": false
@@ -17,7 +17,7 @@
     "StatusBar": {
       "overlaysWebView": true,
       "style": "DARK",
-      "backgroundColor": "#0d0d0d"
+      "backgroundColor": "#15181d"
     },
     "Keyboard": {
       "resize": "native",

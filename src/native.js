@@ -16,7 +16,7 @@ import { Haptics, ImpactStyle } from "@capacitor/haptics";
 export const estNatif = Capacitor.isNativePlatform();
 
 // Couleurs des barres système — alignées sur --bg dans index.css
-const COULEUR_BARRE = { dark: "#0d0d0d", light: "#f2f2f7" };
+const COULEUR_BARRE = { dark: "#15181d", light: "#f2f2f7" };
 
 /** Aligne la barre de statut (fond + icônes) sur le thème courant. */
 export async function synchroniserBarreStatut(theme) {

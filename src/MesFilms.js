@@ -161,7 +161,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
               style={{
                 flex: 1,
                 background: actif ? "var(--surface)" : "transparent",
-                color: actif ? "var(--text)" : "var(--text-3)",
+                color: actif ? "var(--text)" : "var(--text-2)",
                 border: "none",
                 borderRadius: "10px",
                 padding: "9px 4px",
@@ -177,9 +177,9 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
                 lineHeight: 1.2,
               }}
             >
-              <span style={{ fontSize: "var(--t-sm)", opacity: actif ? 1 : 0.5 }}>{o.icon}</span>
+              <span style={{ fontSize: "var(--t-sm)", opacity: actif ? 1 : 0.85 }}>{o.icon}</span>
               <span>{o.label}</span>
-              <span style={{ fontSize: "var(--t-xs)", opacity: 0.6, fontWeight: "400" }}>
+              <span style={{ fontSize: "var(--t-xs)", opacity: 0.9, fontWeight: "400" }}>
                 {listes[o.key].length}
               </span>
             </button>

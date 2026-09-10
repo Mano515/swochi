@@ -34,24 +34,38 @@
 
 /* ── Thème Dark (défaut) ─────────────────────────── */
 :root {
-  --bg:          #0d0d0d;
-  --surface:     #1a1a1a;
-  --surface-2:   #222222;
-  --surface-3:   #2a2a2a;
-  --drawer:      #131313;
+  /* ── Fonds ─────────────────────────────────────────
+     Remontés depuis #0d0d0d : ce quasi-noir écrasait
+     tout contraste et donnait un rendu de trou noir
+     plutôt que de sombre. Léger cast froid, accordé
+     au bleu de la marque.
+  ─────────────────────────────────────────────────── */
+  --bg:          #15181d;
+  --surface:     #1e222a;
+  --surface-2:   #262b34;
+  --surface-3:   #2f3540;
+  --drawer:      #191d23;
 
-  --border:      rgba(255,255,255,0.07);
-  --border-2:    rgba(255,255,255,0.12);
-  --divider:     rgba(255,255,255,0.05);
+  --border:      rgba(255,255,255,0.10);
+  --border-2:    rgba(255,255,255,0.18);
+  --divider:     rgba(255,255,255,0.08);
 
-  --text:        #f0f0f0;
-  --text-2:      #ababab;
-  --text-3:      #6a6a6a;
-  --text-4:      #424242;
-  --text-5:      #2a2a2a;
+  /* ── Textes ────────────────────────────────────────
+     Tous blancs. La hiérarchie passe par le poids et
+     la taille, jamais par un gris : du gris sur du
+     sombre, ça ne se lit pas. L'ancienne rampe
+     descendait à #424242 sur #0d0d0d, soit 1,9:1.
+     --text-5 n'est plus jamais du texte : uniquement
+     des bordures d'éléments désactivés.
+  ─────────────────────────────────────────────────── */
+  --text:        #ffffff;
+  --text-2:      rgba(255,255,255,0.93);
+  --text-3:      rgba(255,255,255,0.80);
+  --text-4:      rgba(255,255,255,0.62);
+  --text-5:      rgba(255,255,255,0.30);
 
-  --input-bg:    #232323;
-  --input-border: rgba(255,255,255,0.09);
+  --input-bg:    #262b34;
+  --input-border: rgba(255,255,255,0.16);
 
   --shadow-sm:   0 1px 4px rgba(0,0,0,0.5);
   --shadow-md:   0 4px 16px rgba(0,0,0,0.6);
@@ -64,8 +78,8 @@
   --blue:        #3b82f6;
   --amber:       #f59e0b;
 
-  --surface-glass:   rgba(26,26,26,0.72);
-  --surface2-glass:  rgba(34,34,34,0.72);
+  --surface-glass:   rgba(30,34,42,0.78);
+  --surface2-glass:  rgba(38,43,52,0.78);
 
   /* ── Typographie ──────────────────────────────────
      Échelle de ratio ~1.2. Le corps de texte monte à

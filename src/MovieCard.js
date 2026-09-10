@@ -496,7 +496,7 @@ const MovieCard = forwardRef(function MovieCard({ film, onSwipe, isTop }, ref) {
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "7px" }}>
             {film.release_date && (
-              <span style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--t-sm)", fontWeight: "600" }}>
+              <span style={{ color: "rgba(255,255,255,0.95)", fontSize: "var(--t-sm)", fontWeight: "600" }}>
                 {film.release_date.slice(0, 4)}
               </span>
             )}

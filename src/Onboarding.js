@@ -84,7 +84,7 @@ function Onboarding({ onTerminer }) {
         </h2>
 
         {/* Description */}
-        <p style={{ color: "rgba(255,255,255,0.55)", fontSize: "var(--t-md)", lineHeight: "1.65", textAlign: "center", margin: "0 0 28px" }}>
+        <p style={{ color: "rgba(255,255,255,0.92)", fontSize: "var(--t-md)", lineHeight: "1.65", textAlign: "center", margin: "0 0 28px" }}>
           {e.description}
         </p>
 
@@ -100,7 +100,7 @@ function Onboarding({ onTerminer }) {
                 flex: 1,
               }}>
                 <span style={{ fontSize: "var(--t-xl)", color: h.couleur, fontWeight: "bold" }}>{h.icone}</span>
-                <span style={{ fontSize: "var(--t-xs)", color: "rgba(255,255,255,0.5)" }}>{h.label}</span>
+                <span style={{ fontSize: "var(--t-xs)", color: "rgba(255,255,255,0.92)" }}>{h.label}</span>
               </div>
             ))}
           </div>
@@ -127,7 +127,7 @@ function Onboarding({ onTerminer }) {
             <button onClick={passer} style={{
               flex: 1,
               background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)",
-              color: "rgba(255,255,255,0.5)", borderRadius: "50px",
+              color: "rgba(255,255,255,0.92)", borderRadius: "50px",
               padding: "14px", fontSize: "var(--t-md)",
               cursor: "pointer",
             }}>
@@ -147,7 +147,7 @@ function Onboarding({ onTerminer }) {
         </div>
 
         {/* Compteur */}
-        <p style={{ color: "rgba(255,255,255,0.2)", fontSize: "var(--t-xs)", textAlign: "center", marginTop: "20px" }}>
+        <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "var(--t-xs)", textAlign: "center", marginTop: "20px" }}>
           {etape + 1} / {ETAPES.length}
         </p>
       </div>
