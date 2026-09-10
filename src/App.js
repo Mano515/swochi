@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import Logo from "./Logo";
 import { useTheme } from "./ThemeContext";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -494,7 +495,7 @@ function App() {
       {/* ── Sidebar desktop ── */}
       <aside className="sidebar">
         <button className="sidebar-logo" onClick={() => setOnglet("swipe")} aria-label="Accueil">
-          <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ width: "130px", height: "auto" }} />
+          <Logo hauteur={30} />
         </button>
 
         {NAV_ITEMS.map(({ key, label }) => {
@@ -571,7 +572,7 @@ function App() {
                 {/* Logo + nom centré sur l'écran */}
                 <button onClick={() => setOnglet("swipe")} aria-label="Accueil"
                   style={{ background: "none", border: "none", cursor: "pointer", padding: 0, position: "absolute", left: "50%", transform: "translateX(-50%) translateY(4px)" }}>
-                  <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "38px" }} />
+                  <Logo hauteur={30} />
                 </button>
                 <div style={{ flex: 1 }} />
               </>
@@ -789,7 +790,7 @@ function PromptInvite({ onSeConnecter, onFermer }) {
 function EcranPseudo({ usernameInput, setUsernameInput, usernameError, onConfirmer }) {
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "var(--text)", padding: "20px" }}>
-      <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "36px", marginBottom: "6px" }} />
+      <span style={{ marginBottom: "6px" }}><Logo hauteur={32} /></span>
       <p style={{ color: "var(--text-3)", marginBottom: "32px", fontSize: "var(--t-sm)" }}>Dernière étape ✨</p>
       <div style={{
         background: "var(--surface)", borderRadius: "20px", padding: "32px",

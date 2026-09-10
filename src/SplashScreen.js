@@ -1,3 +1,5 @@
+import Logo from "./Logo";
+
 function SplashScreen() {
   return (
     <div style={{
@@ -9,11 +11,7 @@ function SplashScreen() {
       zIndex: 9999,
       animation: "fonduIn 0.3s ease",
     }}>
-      <img
-        src="/logo_swochi_nom.svg"
-        alt="Swochi"
-        style={{ width: "200px", height: "auto" }}
-      />
+      <Logo hauteur={54} />
 
       <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
         {[0, 1, 2].map(i => (
