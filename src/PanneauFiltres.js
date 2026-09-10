@@ -70,7 +70,7 @@ function PanneauFiltres({ filtres, genres, onAppliquer, onFermer }) {
      appliqués fiche par fiche, on ne saurait pas combien de titres passent
      sans les télécharger tous. La taille du vivier est déjà sur la pastille. */
   const resume = aDesPrix(brouillon)
-    ? "Voir les films primés"
+    ? "Voir les primés"
     : compte  ? "Recherche…"
     : total === null ? "Appliquer"
     : total === 0 ? "Aucun film"

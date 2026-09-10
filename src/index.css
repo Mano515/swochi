@@ -730,6 +730,10 @@ h1, h2, h3 {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  /* Un titre de section arrivant sous l'en-tête était tranché net en deux ;
+     ce dégradé de 14 px le laisse s'effacer au lieu d'être guillotiné. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14px);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14px);
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   padding: 0 var(--gutter);
@@ -968,6 +972,10 @@ h1, h2, h3 {
   font-weight: 700;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  /* Un libellé qui passe à la ligne casse la pilule : on le tronque plutôt. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   box-shadow: 0 4px 16px rgba(59,130,246,0.38);
   transition: transform 0.12s, filter 0.15s;
 }
