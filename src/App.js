@@ -17,6 +17,11 @@ import SplashScreen from "./SplashScreen";
 import Recherche    from "./Recherche";
 import { useBoutonRetour, vibrer } from "./native";
 import { ICONES_NAV, IconeSoleil, IconeLune, IconeCroix, IconeOeil, IconeCoeur, IconeRetour, IconeRecherche } from "./Icones";
+import PanneauFiltres, { BoutonFiltres } from "./PanneauFiltres";
+import {
+  FILTRES_DEFAUT, aDesPrix, aucunFiltre, chargerPrimes, ecrireFiltres,
+  lireFiltres, memesFiltres, nbFiltresActifs, urlDiscover,
+} from "./filtres";
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
@@ -49,7 +54,7 @@ function App() {
   const [loadingFilms, setLoadingFilms]   = useState(true);
   const [filmsCherches, setFilmsCherches] = useState(false);      // true dès le 1er chargement réussi
   const [genres, setGenres]               = useState([]);
-  const [genreChoisi, setGenreChoisi]     = useState("");
+  const [filtres, setFiltres]             = useState(lireFiltres);
   const [historique, setHistorique]       = useState([]);
   const [dejaSwiped, setDejaSwiped]       = useState([]);
 
@@ -63,6 +68,7 @@ function App() {
   const [onglet, setOnglet]               = useState("swipe");
   const [menuOuvert, setMenuOuvert]       = useState(false);
   const [rechercheOuverte, setRechercheOuverte] = useState(false);
+  const [filtresOuverts, setFiltresOuverts]     = useState(false);
   const [loginModalOuvert, setLoginModalOuvert] = useState(false);
   const [showOnboarding, setShowOnboarding]     = useState(false);
   const [showGuestPrompt, setShowGuestPrompt]   = useState(false);
@@ -111,6 +117,7 @@ function App() {
   useBoutonRetour(() => {
     if (menuOuvert)         { setMenuOuvert(false);       return true; }
     if (rechercheOuverte)   { setRechercheOuverte(false); return true; }
+    if (filtresOuverts)     { setFiltresOuverts(false);   return true; }
     if (loginModalOuvert)   { setLoginModalOuvert(false); return true; }
     if (showGuestPrompt)    { setShowGuestPrompt(false);  return true; }
     if (onglet !== "swipe") { setOnglet("swipe");         return true; }
@@ -188,7 +195,7 @@ function App() {
 
         if (snap.exists() && snap.data().username) {
           const pageRestauree = parseInt(localStorage.getItem("swochi_page") || "1", 10);
-          chargerFilms(pageRestauree, idsDejaSwiped, [], "");
+          chargerFilms(pageRestauree, idsDejaSwiped, [], filtres);
           if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
         }
 
@@ -214,16 +221,14 @@ function App() {
     setHistorique([]);
     swipesInvite.current = 0;
     const pageRestauree = parseInt(localStorage.getItem("swochi_page") || "1", 10);
-    chargerFilms(pageRestauree, savedSwiped, [], "");
+    chargerFilms(pageRestauree, savedSwiped, [], filtres);
     if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
   }, [isGuest, loading, user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Chargement des films ─────────────────────────────────────────────────────
 
-  async function fetchPage(numPage, genre) {
-    const genreParam = genre ? `&with_genres=${genre}` : "";
-    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_KEY}&language=fr-FR&sort_by=popularity.desc&vote_count.gte=100&page=${numPage}${genreParam}`;
-    const data = await fetch(url).then(r => r.json());
+  async function fetchPage(numPage, f) {
+    const data = await fetch(urlDiscover(f, numPage, TMDB_KEY)).then(r => r.json());
     return data.results ?? [];
   }
 
@@ -234,10 +239,13 @@ function App() {
     return data.results ?? [];
   }
 
-  // Charge les films. Si l'utilisateur a des films aimés et aucun filtre de genre,
-  // on commence par les recommandations TMDB basées sur ses goûts, puis on complète
-  // avec le catalogue général si nécessaire.
-  async function chargerFilms(pageDebut, swipes, filmsExistants, genre) {
+  // Charge les films selon les filtres actifs. Trois régimes :
+  //   • un filtre « récompenses » → on parcourt le palmarès figé (voir filtres.js) ;
+  //   • aucun filtre du tout      → recommandations TMDB d'après les films aimés,
+  //                                 complétées par le catalogue ;
+  //   • filtres posés             → catalogue seul, sinon les recommandations
+  //                                 ramèneraient des films hors critères.
+  async function chargerFilms(pageDebut, swipes, filmsExistants, f) {
     fetchIdRef.current += 1;
     const monId = fetchIdRef.current;
     setLoadingFilms(true);
@@ -246,33 +254,48 @@ function App() {
       let nouveaux     = [];
       let pageCourante = pageDebut;
 
-      // ── Étape 1 : recommandations personnalisées ──────────────────────────
-      // Seulement si l'utilisateur a des films aimés et qu'aucun genre n'est filtré
-      const filmsAimes = listes.aVoir;
-      if (filmsAimes.length >= 2 && !genre) {
-        // On prend les 5 derniers films aimés (goûts les plus récents)
-        const echantillon = filmsAimes.slice(-5).reverse();
-        const resultats   = await Promise.all(echantillon.map(f => fetchRecommandations(f.id)));
-        if (monId !== fetchIdRef.current) return;
-
-        // Déduplication + filtre films déjà vus
-        const vus = new Set(swipes);
-        for (const film of resultats.flat()) {
-          if (!vus.has(film.id)) { vus.add(film.id); nouveaux.push(film); }
+      if (aDesPrix(f)) {
+        // ── Palmarès ────────────────────────────────────────────────────────
+        // Vivier de 174 titres : on avance par lots jusqu'à en avoir assez
+        // qui passent les autres critères, ou jusqu'à l'épuiser.
+        let epuise = false, tentatives = 0;
+        while (nouveaux.length < 6 && !epuise && tentatives < 8) {
+          const lot = await chargerPrimes(f, pageCourante, TMDB_KEY, swipes);
+          if (monId !== fetchIdRef.current) return;
+          nouveaux = [...nouveaux, ...lot.films.filter(x => !nouveaux.some(n => n.id === x.id))];
+          epuise   = lot.epuise;
+          pageCourante += 1;
+          tentatives   += 1;
         }
-      }
+      } else {
+        // ── Étape 1 : recommandations personnalisées ──────────────────────────
+        // Seulement si l'utilisateur a des films aimés et qu'aucun filtre n'est posé
+        const filmsAimes = listes.aVoir;
+        if (filmsAimes.length >= 2 && aucunFiltre(f)) {
+          // On prend les 5 derniers films aimés (goûts les plus récents)
+          const echantillon = filmsAimes.slice(-5).reverse();
+          const resultats   = await Promise.all(echantillon.map(x => fetchRecommandations(x.id)));
+          if (monId !== fetchIdRef.current) return;
 
-      // ── Étape 2 : catalogue général pour compléter ────────────────────────
-      let tentatives = 0;
-      const MAX = 8;
-      while (nouveaux.length < 6 && tentatives < MAX && pageCourante <= 490) {
-        const pages = await Promise.all(
-          [pageCourante, pageCourante + 1, pageCourante + 2].map(n => fetchPage(n, genre))
-        );
-        nouveaux = [...nouveaux, ...pages.flat().filter(f => !swipes.includes(f.id) && !nouveaux.some(n => n.id === f.id))];
-        pageCourante += 3;
-        tentatives++;
-        if (monId !== fetchIdRef.current) return;
+          // Déduplication + filtre films déjà vus
+          const vus = new Set(swipes);
+          for (const film of resultats.flat()) {
+            if (!vus.has(film.id)) { vus.add(film.id); nouveaux.push(film); }
+          }
+        }
+
+        // ── Étape 2 : catalogue général pour compléter ────────────────────────
+        let tentatives = 0;
+        const MAX = 8;
+        while (nouveaux.length < 6 && tentatives < MAX && pageCourante <= 490) {
+          const pages = await Promise.all(
+            [pageCourante, pageCourante + 1, pageCourante + 2].map(n => fetchPage(n, f))
+          );
+          nouveaux = [...nouveaux, ...pages.flat().filter(x => !swipes.includes(x.id) && !nouveaux.some(n => n.id === x.id))];
+          pageCourante += 3;
+          tentatives++;
+          if (monId !== fetchIdRef.current) return;
+        }
       }
 
       setFilms([...filmsExistants, ...nouveaux]);
@@ -330,7 +353,7 @@ function App() {
         });
       });
       setUsername(pseudo);
-      chargerFilms(1, [], [], "");
+      chargerFilms(1, [], [], filtres);
       if (!localStorage.getItem("swochi_onboarded")) setShowOnboarding(true);
     } catch (e) {
       setUsernameError(e.message || "Une erreur est survenue, réessayez.");
@@ -364,7 +387,8 @@ function App() {
     // Charger plus de films en avance quand il en reste peu
     const nextIndex = index + 1;
     if (nextIndex >= films.length - 15 && !loadingFilms) {
-      chargerFilms(page + 1, newSwiped, [...films], genreChoisi);
+      // `page` pointe déjà sur la prochaine page non lue : y ajouter 1 en sautait une.
+      chargerFilms(page, newSwiped, [...films], filtres);
     }
   }
 
@@ -414,12 +438,32 @@ function App() {
     sauvegarderListes(newListes, newSwiped);
   }
 
-  function handleGenreChange(genre) {
-    setGenreChoisi(genre);
+  // ── Filtres ─────────────────────────────────────────────────────────────────
+
+  // Repart de zéro : les filtres changent le vivier, pas l'ordre d'une liste
+  // déjà chargée. Rien à faire si les critères sont identiques.
+  function appliquerFiltres(nouveaux) {
+    setFiltresOuverts(false);
+    if (memesFiltres(nouveaux, filtres)) return;
+    setFiltres(nouveaux);
+    ecrireFiltres(nouveaux);
     setIndex(0);
     setPage(1);
     setFilms([]);
-    chargerFilms(1, dejaSwiped, [], genre);
+    setHistorique([]);
+    localStorage.removeItem("swochi_page");
+    chargerFilms(1, dejaSwiped, [], nouveaux);
+  }
+
+  // Bandeau de genres : une pastille bascule le genre sans ouvrir le panneau.
+  function basculerGenre(id) {
+    const liste = filtres.genres;
+    appliquerFiltres({
+      ...filtres,
+      genres: id === "" ? []
+            : liste.includes(id) ? liste.filter(g => g !== id)
+            : [...liste, id],
+    });
   }
 
   // ── Écrans spéciaux (avant le rendu principal) ───────────────────────────────
@@ -472,6 +516,14 @@ function App() {
           onAVoir={f => ajouterFilmDansListe(f, "aVoir")}
           onPasInteresse={f => ajouterFilmDansListe(f, "pasInteresse")}
           onDejaVu={f => ajouterFilmDansListe(f, "dejavu")}
+        />
+      )}
+      {filtresOuverts && (
+        <PanneauFiltres
+          filtres={filtres}
+          genres={genres}
+          onAppliquer={appliquerFiltres}
+          onFermer={() => setFiltresOuverts(false)}
         />
       )}
       {showOnboarding && <Onboarding onTerminer={() => setShowOnboarding(false)} />}
@@ -602,7 +654,7 @@ function App() {
           {/* Genres (uniquement sur l'onglet découvrir) */}
           {onglet === "swipe" && (
             <div className="genres-row">
-              <GenreScroll genres={genres} genreChoisi={genreChoisi} onGenreChange={handleGenreChange} />
+              <GenreScroll genres={genres} genresChoisis={filtres.genres} onBasculer={basculerGenre} />
             </div>
           )}
         </header>
@@ -637,7 +689,11 @@ function App() {
                   {filmActuel   && <MovieCard key={filmActuel.id} ref={carteRef} film={filmActuel}  onSwipe={handleSwipe}  isTop={true} />}
                   {!filmActuel && loadingFilms  && <Spinner />}
                   {!filmActuel && !loadingFilms && filmsCherches && (
-                    <EcranVide onRelancer={() => { setIndex(0); setFilms([]); localStorage.removeItem("swochi_page"); chargerFilms(1, dejaSwiped, [], genreChoisi); }} />
+                    <EcranVide
+                      nbFiltres={nbFiltresActifs(filtres)}
+                      onEffacerFiltres={() => appliquerFiltres(FILTRES_DEFAUT)}
+                      onRelancer={() => { setIndex(0); setFilms([]); localStorage.removeItem("swochi_page"); chargerFilms(1, dejaSwiped, [], filtres); }}
+                    />
                   )}
                 </div>
 
@@ -645,6 +701,7 @@ function App() {
                 {filmActuel && (
                   <div className="swipe-actions-mobile" style={{ zIndex: 1, marginTop: "14px", width: "100%" }}>
                     <div className="actions-row">
+                      <BoutonFiltres nb={nbFiltresActifs(filtres)} onClick={() => setFiltresOuverts(true)} />
                       <button onClick={() => declencher("left")}  aria-label="Passer"  className="action-btn action-btn--pass"><IconeCroix taille={26} /></button>
                       <button onClick={() => declencher("up")}    aria-label="Déjà vu" className="action-btn action-btn--seen"><IconeOeil taille={21} /></button>
                       <button onClick={() => declencher("right")} aria-label="À voir"  className="action-btn action-btn--like"><IconeCoeur taille={30} /></button>
@@ -661,14 +718,15 @@ function App() {
 
               {/* Genres (desktop, sidebar droite) */}
               <aside className="genres-sidebar">
-                <button onClick={() => handleGenreChange("")} className={`genre-sidebar-item${genreChoisi === "" ? " active" : ""}`}>
+                <button onClick={() => basculerGenre("")} className={`genre-sidebar-item${filtres.genres.length === 0 ? " active" : ""}`}>
                   Tous
                 </button>
                 {genres.map(g => (
                   <button
                     key={g.id}
-                    onClick={() => handleGenreChange(g.id)}
-                    className={`genre-sidebar-item${genreChoisi === g.id ? " active" : ""}`}
+                    onClick={() => basculerGenre(String(g.id))}
+                    aria-pressed={filtres.genres.includes(String(g.id))}
+                    className={`genre-sidebar-item${filtres.genres.includes(String(g.id)) ? " active" : ""}`}
                   >
                     {g.name}
                   </button>
@@ -738,21 +796,28 @@ function Spinner() {
   );
 }
 
-// Affiché quand il n'y a plus de films à swiper
-function EcranVide({ onRelancer }) {
+// Affiché quand il n'y a plus de films à swiper. Avec des filtres posés, le
+// vivier est souvent vide parce qu'ils sont trop serrés, pas parce qu'on a
+// tout vu : proposer « Recharger » enverrait alors dans le mur.
+function EcranVide({ onRelancer, nbFiltres, onEffacerFiltres }) {
+  const filtre = nbFiltres > 0;
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px", padding: "24px", textAlign: "center" }}>
-      <div style={{ fontSize: "52px" }}>🎬</div>
-      <p style={{ margin: 0, fontSize: "var(--t-md)", fontWeight: "700", color: "var(--text)" }}>Tu as tout vu !</p>
-      <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-3)", lineHeight: 1.6 }}>
-        Impressionnant. Essaie un autre genre ou recharge pour découvrir de nouveaux films.
+      <div style={{ fontSize: "52px" }}>{filtre ? "🎯" : "🎬"}</div>
+      <p style={{ margin: 0, fontSize: "var(--t-md)", fontWeight: "700", color: "var(--text)" }}>
+        {filtre ? "Plus rien avec ces filtres" : "Tu as tout vu !"}
       </p>
-      <button onClick={onRelancer} style={{
+      <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-3)", lineHeight: 1.6 }}>
+        {filtre
+          ? `${nbFiltres} critère${nbFiltres > 1 ? "s" : ""} en cours. Élargis-les pour retrouver des films à découvrir.`
+          : "Impressionnant. Essaie un autre genre ou recharge pour découvrir de nouveaux films."}
+      </p>
+      <button onClick={filtre ? onEffacerFiltres : onRelancer} style={{
         marginTop: "4px", background: "var(--purple)", color: "white",
         border: "none", borderRadius: "50px", padding: "12px 28px",
         fontSize: "var(--t-sm)", fontWeight: "700", cursor: "pointer",
         boxShadow: "0 4px 16px rgba(29,99,205,0.35)",
-      }}>Recharger</button>
+      }}>{filtre ? "Effacer les filtres" : "Recharger"}</button>
     </div>
   );
 }

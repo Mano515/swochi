@@ -571,3 +571,439 @@ h1, h2, h3 {
   letter-spacing: -0.022em;
   line-height: 1.15;
 }
+
+/* ══════════════════════════════════════════════════
+   FILTRES
+   Bouton dans la rangée d'actions + feuille remontante.
+══════════════════════════════════════════════════ */
+
+/* ── Bouton de la rangée d'actions ─────────────────
+   Neutre au repos : il ouvre un réglage, il ne juge
+   pas un film. Il ne prend la couleur d'accent que
+   lorsqu'un filtre est réellement posé, pour qu'on
+   voie d'un coup d'œil que le flux est restreint.
+──────────────────────────────────────────────────── */
+.action-btn--filtres {
+  position: relative;
+  width: var(--touch);
+  height: var(--touch);
+  background: var(--surface-2);
+  color: var(--text-2);
+  box-shadow: inset 0 0 0 2px var(--border-2), 0 2px 8px rgba(0,0,0,0.25);
+}
+.action-btn--filtres-actif {
+  background: var(--purple);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(59,130,246,0.45);
+}
+
+.action-btn-badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: var(--r-pill);
+  background: var(--amber);
+  color: #1a1200;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 20px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--bg);
+}
+
+/* Cinq boutons dans la rangée : l'écart se resserre plutôt que les cibles.
+   À 360 px de large, un écart fixe de 12 px faisait déborder la rangée. */
+.actions-row { gap: clamp(6px, 2.5vw, 14px); }
+
+@media (max-width: 380px) {
+  .action-btn--pass    { width: 58px; height: 58px; }
+  .action-btn--seen    { width: 50px; height: 50px; }
+  .action-btn--like    { width: 68px; height: 68px; }
+  .action-btn--undo,
+  .action-btn--filtres { width: 44px; height: 44px; }
+}
+
+/* ── Feuille remontante ────────────────────────────
+   Elle vient du bas parce qu'on la manipule au pouce.
+   La hauteur est plafonnée pour laisser voir la carte
+   derrière : on filtre un flux, on ne le quitte pas.
+──────────────────────────────────────────────────── */
+.feuille-fond {
+  position: fixed;
+  inset: 0;
+  z-index: 600;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: fonduIn 0.18s ease-out;
+}
+
+.feuille {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 560px;
+  max-height: 88svh;
+  background: var(--drawer);
+  border-top: 1px solid var(--border);
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  box-shadow: var(--shadow-lg);
+  animation: feuilleMonte 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  overflow: hidden;
+}
+
+@keyframes feuilleMonte {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+/* ── En-tête ── */
+.feuille-tete {
+  flex-shrink: 0;
+  padding: var(--s-2) var(--gutter) var(--s-3);
+  border-bottom: 1px solid var(--divider);
+}
+
+.feuille-poignee {
+  width: 40px;
+  height: 4px;
+  margin: 0 auto var(--s-3);
+  border-radius: var(--r-pill);
+  background: var(--border-2);
+}
+
+.feuille-titre-ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.feuille-titre {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0;
+  font-size: var(--t-xl);
+  font-weight: 800;
+  color: var(--text);
+}
+
+.feuille-compteur {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: var(--r-pill);
+  background: var(--purple);
+  color: #fff;
+  font-size: var(--t-xs);
+  font-weight: 800;
+  line-height: 24px;
+  text-align: center;
+}
+
+.feuille-fermer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch);
+  height: var(--touch);
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s, background 0.15s;
+}
+.feuille-fermer:active { transform: scale(0.9); background: var(--surface-3); }
+
+/* ── Corps ── */
+.feuille-corps {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 var(--gutter);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-2) transparent;
+}
+.feuille-corps::-webkit-scrollbar { width: 6px; }
+.feuille-corps::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 3px; }
+
+.feuille-section { padding: var(--s-5) 0; border-bottom: 1px solid var(--divider); }
+.feuille-section:last-of-type { border-bottom: none; }
+
+.feuille-section-tete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-3);
+}
+
+.feuille-section-titre {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0;
+  font-size: var(--t-md);
+  font-weight: 700;
+  color: var(--text);
+}
+
+.feuille-section-compte {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--r-pill);
+  background: var(--purple-dim);
+  color: var(--purple);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 20px;
+  text-align: center;
+}
+
+/* La valeur courante se lit à droite du titre : on sait ce qu'on a réglé
+   sans avoir à déchiffrer la position d'une poignée. */
+.feuille-section-valeur {
+  flex-shrink: 0;
+  font-size: var(--t-sm);
+  font-weight: 700;
+  color: var(--purple);
+  font-variant-numeric: tabular-nums;
+}
+
+.feuille-section-aide,
+.feuille-note {
+  margin: calc(-1 * var(--s-1)) 0 var(--s-3);
+  font-size: var(--t-xs);
+  line-height: 1.5;
+  color: var(--text-3);
+}
+.feuille-note {
+  margin: var(--s-3) 0 0;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+}
+
+/* ── Pastilles ── */
+.pastilles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 10px 15px;
+  border: 1.5px solid transparent;
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-family: inherit;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.16s, color 0.16s, border-color 0.16s, transform 0.1s;
+}
+.pastille:active { transform: scale(0.94); }
+
+.pastille--active {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 2px 10px rgba(59,130,246,0.32);
+}
+
+.pastille--petite { min-height: 36px; padding: 8px 13px; font-size: var(--t-xs); }
+
+.pastille-nb {
+  padding: 2px 6px;
+  border-radius: var(--r-pill);
+  background: rgba(255,255,255,0.14);
+  font-size: 11px;
+  font-weight: 800;
+}
+.pastille--active .pastille-nb { background: rgba(255,255,255,0.26); }
+
+/* ── Curseurs ──────────────────────────────────────
+   <input type="range"> natif, seule la piste est
+   repeinte : le navigateur garde la gestion du
+   toucher, du clavier et du lecteur d'écran.
+──────────────────────────────────────────────────── */
+.curseur { position: relative; height: 40px; }
+
+.curseur-rail {
+  position: absolute;
+  top: 50%;
+  left: 13px;
+  right: 13px;
+  height: 6px;
+  transform: translateY(-50%);
+}
+
+.curseur-piste {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+}
+
+.curseur-plage {
+  position: absolute;
+  top: 0;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: var(--purple);
+}
+
+.curseur-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: none;   /* seule la poignée reçoit les appuis */
+}
+
+.curseur-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  pointer-events: auto;
+  width: 26px;
+  height: 26px;
+  border: 3px solid var(--purple);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+  cursor: grab;
+}
+.curseur-input::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.12); }
+
+.curseur-input::-moz-range-thumb {
+  pointer-events: auto;
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--purple);
+  border-radius: 50%;
+  background: #fff;
+  cursor: grab;
+}
+.curseur-input::-moz-range-track { background: transparent; }
+
+.curseur-input:focus { outline: none; }
+.curseur-input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--purple-dim); }
+
+.curseur-bornes {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  font-size: var(--t-xs);
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Pied ──────────────────────────────────────────
+   Collant : le compteur de résultats doit rester
+   visible pendant qu'on fait défiler les critères.
+──────────────────────────────────────────────────── */
+.feuille-pied {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--gutter) calc(var(--s-3) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--divider);
+  background: var(--drawer);
+}
+
+.feuille-reset {
+  flex-shrink: 0;
+  min-height: var(--touch);
+  padding: 0 var(--s-4);
+  border: 1.5px solid var(--border-2);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.feuille-reset:disabled { color: var(--text-5); border-color: var(--text-5); cursor: default; }
+
+.feuille-valider {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: var(--touch);
+  padding: 0 var(--s-4);
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--purple);
+  color: #fff;
+  font-family: inherit;
+  font-size: var(--t-md);
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 16px rgba(59,130,246,0.38);
+  transition: transform 0.12s, filter 0.15s;
+}
+.feuille-valider:active { transform: scale(0.97); }
+.feuille-valider:disabled {
+  background: var(--surface-3);
+  color: var(--text-3);
+  box-shadow: none;
+  cursor: default;
+}
+
+/* Pastille discrète : il reste des modifications non appliquées. */
+.feuille-point {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+/* Sur grand écran la feuille devient une boîte centrée : accrochée en bas,
+   elle laisserait une bande de vide au-dessus du pied. */
+@media (min-width: 769px) {
+  .feuille-fond { align-items: center; padding: var(--s-6); }
+  .feuille {
+    max-height: 82vh;
+    border: 1px solid var(--border);
+    border-radius: var(--r-xl);
+    animation: slideUp 0.22s ease-out;
+  }
+  .feuille-poignee { display: none; }
+  .feuille-pied { padding-bottom: var(--s-3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feuille, .feuille-fond { animation: none; }
+}

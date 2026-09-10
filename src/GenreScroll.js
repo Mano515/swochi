@@ -1,6 +1,9 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 
-function GenreScroll({ genres, genreChoisi, onGenreChange }) {
+/* Bandeau de genres. Multi-sélection depuis l'arrivée du panneau de filtres :
+   il donne le même résultat qu'une pastille « Genres » du panneau, en un
+   seul appui et sans quitter la carte. */
+function GenreScroll({ genres, genresChoisis, onBasculer }) {
   const scrollRef = useRef(null);
   const [fadeLeft, setFadeLeft]   = useState(false);
   const [fadeRight, setFadeRight] = useState(true);
@@ -69,20 +72,23 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
         }}
       >
         <button
-          onClick={() => onGenreChange("")}
-          aria-pressed={genreChoisi === ""}
-          style={{ ...genreStyle(genreChoisi === ""), flexShrink: 0 }}
+          onClick={() => onBasculer("")}
+          aria-pressed={genresChoisis.length === 0}
+          style={{ ...genreStyle(genresChoisis.length === 0), flexShrink: 0 }}
         >Tous</button>
-        {genres.map(g => (
-          <button
-            key={g.id}
-            onClick={() => onGenreChange(String(g.id))}
-            aria-pressed={genreChoisi === String(g.id)}
-            style={{ ...genreStyle(genreChoisi === String(g.id)), flexShrink: 0 }}
-          >
-            {g.name}
-          </button>
-        ))}
+        {genres.map(g => {
+          const actif = genresChoisis.includes(String(g.id));
+          return (
+            <button
+              key={g.id}
+              onClick={() => onBasculer(String(g.id))}
+              aria-pressed={actif}
+              style={{ ...genreStyle(actif), flexShrink: 0 }}
+            >
+              {g.name}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

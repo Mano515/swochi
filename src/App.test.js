@@ -6,7 +6,11 @@ jest.mock('./firebase', () => ({
 }));
 
 jest.mock('firebase/auth', () => ({
-  onAuthStateChanged: jest.fn(),
+  // App attend une fonction de désabonnement en retour : sans elle,
+  // le démontage lève « unsubscribe is not a function ». Fonction simple et
+  // non jest.fn() : `resetMocks`, activé par défaut chez CRA, effacerait
+  // l'implémentation d'un mock avant chaque test.
+  onAuthStateChanged: () => () => {},
   signOut: jest.fn(),
   GoogleAuthProvider: jest.fn(),
   signInWithPopup: jest.fn(),
