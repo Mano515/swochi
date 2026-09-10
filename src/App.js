@@ -14,17 +14,18 @@ import Onboarding   from "./Onboarding";
 import ErrorBoundary from "./ErrorBoundary";
 import SplashScreen from "./SplashScreen";
 import Recherche    from "./Recherche";
-import { useBoutonRetour } from "./native";
+import { useBoutonRetour, vibrer } from "./native";
+import { ICONES_NAV, IconeSoleil, IconeLune, IconeCroix, IconeOeil, IconeCoeur, IconeRetour, IconeRecherche } from "./Icones";
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
 const TMDB_KEY = process.env.REACT_APP_TMDB_KEY;
 
 const NAV_ITEMS = [
-  { key: "swipe",    emoji: "🍿", label: "Découvrir" },
-  { key: "match",    emoji: "🤝", label: "Amis"      },
-  { key: "mesfilms", emoji: "🎬", label: "Mes films" },
-  { key: "profil",   emoji: "👤", label: "Profil"    },
+  { key: "swipe", label: "Découvrir" },
+  { key: "match", label: "Amis"      },
+  { key: "mesfilms", label: "Mes films" },
+  { key: "profil", label: "Profil"    },
 ];
 
 const LISTES_VIDES = { aVoir: [], pasInteresse: [], dejavu: [] };
@@ -70,6 +71,7 @@ function App() {
   const fetchIdRef   = useRef(0);   // annule les fetchs obsolètes
   const swipesInvite = useRef(0);   // compte les swipes en mode invité
   const toastTimer   = useRef(null);
+  const carteRef     = useRef(null);   // pilote l'animation de la carte du dessus
 
   // ── Utilitaires ─────────────────────────────────────────────────────────────
 
@@ -77,6 +79,13 @@ function App() {
     if (toastTimer.current) clearTimeout(toastTimer.current);
     setToast({ message, type });
     toastTimer.current = setTimeout(() => setToast(null), 4000);
+  }
+
+  // Bouton d'action : on rejoue l'animation de la carte plutôt que de la
+  // faire disparaître d'un coup. Repli si la carte n'est pas encore montée.
+  function declencher(direction) {
+    if (carteRef.current) carteRef.current.flyOut(direction);
+    else handleSwipe(direction);
   }
 
   function ouvrirConnexion() {
@@ -476,17 +485,20 @@ function App() {
           <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ width: "130px", height: "auto" }} />
         </button>
 
-        {NAV_ITEMS.map(({ key, emoji, label }) => (
+        {NAV_ITEMS.map(({ key, label }) => {
+          const Icone = ICONES_NAV[key];
+          return (
           <button
             key={key}
             onClick={() => setOnglet(key)}
             className={`sidebar-nav-item${onglet === key ? " active" : ""}`}
             aria-current={onglet === key ? "page" : undefined}
           >
-            <span style={{ fontSize: "16px" }}>{emoji}</span>
+            {Icone && <Icone taille={18} />}
             {label}
           </button>
-        ))}
+          );
+        })}
 
         <div className="sidebar-divider" />
 
@@ -502,11 +514,11 @@ function App() {
               cursor: "pointer", fontFamily: "inherit",
             }}
           >
-            <span style={{ fontSize: "15px" }}>🔍</span>
+            <IconeRecherche taille={16} />
             Rechercher
           </button>
           <button onClick={toggleTheme} className="sidebar-nav-item" aria-label="Changer le thème">
-            <span style={{ fontSize: "16px" }}>{theme === "dark" ? "☀️" : "🌙"}</span>
+            {theme === "dark" ? <IconeSoleil taille={18} /> : <IconeLune taille={18} />}
             {theme === "dark" ? "Mode clair" : "Mode sombre"}
           </button>
           {!isGuest && (
@@ -538,7 +550,7 @@ function App() {
                     borderRadius: "12px", padding: "9px 14px", cursor: "pointer",
                     color: "var(--text-3)", fontSize: "14px", fontFamily: "inherit",
                   }}>
-                  <span style={{ fontSize: "15px" }}>🔍</span>
+                  <IconeRecherche taille={16} />
                   <span style={{ flex: 1 }}>Rechercher un film…</span>
                 </button>
               </>
@@ -609,7 +621,7 @@ function App() {
               <div className="swipe-center">
                 <div className="card-container" style={{ zIndex: 1 }}>
                   {filmSuivant && <MovieCard key={filmSuivant.id + "-bg"} film={filmSuivant} onSwipe={() => {}} isTop={false} />}
-                  {filmActuel   && <MovieCard key={filmActuel.id}         film={filmActuel}  onSwipe={handleSwipe}  isTop={true} />}
+                  {filmActuel   && <MovieCard key={filmActuel.id} ref={carteRef} film={filmActuel}  onSwipe={handleSwipe}  isTop={true} />}
                   {!filmActuel && loadingFilms  && <Spinner />}
                   {!filmActuel && !loadingFilms && filmsCherches && (
                     <EcranVide onRelancer={() => { setIndex(0); setFilms([]); localStorage.removeItem("swochi_page"); chargerFilms(1, dejaSwiped, [], genreChoisi); }} />
@@ -618,39 +630,17 @@ function App() {
 
                 {/* Boutons d'action sous la carte (mobile) */}
                 {filmActuel && (
-                  <div className="swipe-actions-mobile" style={{ zIndex: 1, marginTop: "16px", width: "100%" }}>
-                    <p style={{
-                      margin: "0 0 12px", fontSize: "14px", fontWeight: "600", color: "var(--text-2)",
-                      textAlign: "center", maxWidth: "260px", whiteSpace: "nowrap",
-                      overflow: "hidden", textOverflow: "ellipsis",
-                    }}>
-                      {filmActuel.title}
-                      {filmActuel.release_date && (
-                        <span style={{ color: "var(--text-4)", fontWeight: "400", marginLeft: "6px", fontSize: "12px" }}>
-                          {filmActuel.release_date.slice(0, 4)}
-                        </span>
-                      )}
-                    </p>
-                    <div style={{ position: "relative", width: "100%", maxWidth: "320px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-                        <button onClick={() => handleSwipe("left")}  aria-label="Passer"  style={btnStyle("var(--red)")}>✕</button>
-                        <button onClick={() => handleSwipe("up")}    aria-label="Déjà vu" style={{ ...btnStyle("var(--blue)"), width: "48px", height: "48px", fontSize: "18px" }}>👁</button>
-                        <button onClick={() => handleSwipe("right")} aria-label="À voir"  style={btnStyle("var(--green)")}>♥</button>
-                      </div>
+                  <div className="swipe-actions-mobile" style={{ zIndex: 1, marginTop: "14px", width: "100%" }}>
+                    <div className="actions-row">
+                      <button onClick={() => declencher("left")}  aria-label="Passer"  className="action-btn action-btn--pass"><IconeCroix taille={26} /></button>
+                      <button onClick={() => declencher("up")}    aria-label="Déjà vu" className="action-btn action-btn--seen"><IconeOeil taille={21} /></button>
+                      <button onClick={() => declencher("right")} aria-label="À voir"  className="action-btn action-btn--like"><IconeCoeur taille={30} /></button>
                       <button
-                        onClick={handleRetour}
+                        onClick={() => { vibrer("leger"); handleRetour(); }}
                         disabled={historique.length === 0}
                         aria-label="Annuler le dernier swipe"
-                        style={{
-                          position: "absolute", right: 0,
-                          background: "transparent",
-                          border: `2px solid ${historique.length > 0 ? "var(--amber)" : "var(--text-5)"}`,
-                          color: historique.length > 0 ? "var(--amber)" : "var(--text-5)",
-                          borderRadius: "50%", width: "36px", height: "36px",
-                          fontSize: "15px", cursor: historique.length > 0 ? "pointer" : "default",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                        }}
-                      >↩</button>
+                        className="action-btn action-btn--undo"
+                      ><IconeRetour taille={18} /></button>
                     </div>
                   </div>
                 )}

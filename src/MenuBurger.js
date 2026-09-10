@@ -2,12 +2,13 @@ import { useEffect, useRef } from "react";
 import { auth } from "./firebase";
 import { signOut } from "firebase/auth";
 import { useTheme } from "./ThemeContext";
+import { ICONES_NAV, IconeSoleil, IconeLune } from "./Icones";
 
 const ONGLETS_COMPLET = [
-  { key: "swipe",    emoji: "🍿", label: "Découvrir" },
-  { key: "match",    emoji: "🤝", label: "Amis"      },
-  { key: "mesfilms", emoji: "🎬", label: "Mes films" },
-  { key: "profil",   emoji: "👤", label: "Profil"    },
+  { key: "swipe", label: "Découvrir" },
+  { key: "match", label: "Amis"      },
+  { key: "mesfilms", label: "Mes films" },
+  { key: "profil", label: "Profil"    },
 ];
 
 const FOCUSABLES = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -130,9 +131,11 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
                 }}
               >
                 <span style={{
-                  fontSize: "22px", lineHeight: 1,
-                  width: "28px", textAlign: "center", flexShrink: 0,
-                }}>{o.emoji}</span>
+                  width: "28px", display: "flex",
+                  alignItems: "center", justifyContent: "center", flexShrink: 0,
+                }}>
+                  {(() => { const I = ICONES_NAV[o.key]; return I ? <I taille={21} /> : null; })()}
+                </span>
                 <span style={{
                   fontSize: "17px",
                   fontWeight: actif ? "700" : "500",
@@ -166,7 +169,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
               }}
             >
               <span style={{ fontSize: "22px", lineHeight: 1, width: "28px", textAlign: "center", flexShrink: 0 }}>
-                {theme === "dark" ? "☀️" : "🌙"}
+                {theme === "dark" ? <IconeSoleil taille={20} /> : <IconeLune taille={20} />}
               </span>
               <span style={{ fontSize: "17px", fontWeight: "500" }}>
                 {theme === "dark" ? "Mode clair" : "Mode sombre"}

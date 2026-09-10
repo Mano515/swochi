@@ -11,6 +11,7 @@ import { Capacitor } from "@capacitor/core";
 import { App as AppNatif } from "@capacitor/app";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { StatusBar, Style } from "@capacitor/status-bar";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
 
 export const estNatif = Capacitor.isNativePlatform();
 
@@ -62,4 +63,29 @@ export function useBoutonRetour(resoudre) {
 
     return () => { monte = false; listener?.remove(); };
   }, []);
+}
+
+/* ── Retour haptique ──────────────────────────────────────────────────────────
+   Le geste de swipe est le cœur de l'app : sans vibration, il reste "derrière
+   la vitre". Les appels sont volontairement non attendus (fire-and-forget) —
+   une vibration ne doit jamais retarder une animation.
+   Sur le web, ces fonctions ne font rien.
+────────────────────────────────────────────────────────────────────────────── */
+
+const STYLES = {
+  leger:  ImpactStyle.Light,
+  moyen:  ImpactStyle.Medium,
+  fort:   ImpactStyle.Heavy,
+};
+
+/** Petite secousse — survol d'un seuil, appui sur un bouton. */
+export function vibrer(intensite = "leger") {
+  if (!estNatif) return;
+  Haptics.impact({ style: STYLES[intensite] || STYLES.leger }).catch(() => {});
+}
+
+/** Motif court — swipe validé. */
+export function vibrerSucces() {
+  if (!estNatif) return;
+  Haptics.vibrate({ duration: 18 }).catch(() => {});
 }

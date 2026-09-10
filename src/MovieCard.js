@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { createPortal } from "react-dom";
-import { motion, useMotionValue, useTransform, animate, AnimatePresence } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate, AnimatePresence, useMotionValueEvent } from "framer-motion";
+import { vibrer, vibrerSucces } from "./native";
 
 function formatDuree(minutes) {
   const h   = Math.floor(minutes / 60);
@@ -235,21 +236,44 @@ function Section({ label, value }) {
 }
 
 /* ── MovieCard ──────────────────────────────────────────── */
-function MovieCard({ film, onSwipe, isTop }) {
+const MovieCard = forwardRef(function MovieCard({ film, onSwipe, isTop }, ref) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const rotate        = useTransform(x, [-200, 200], [-25, 25]);
+  const rotate        = useTransform(x, [-220, 220], [-16, 16]);
   const opacity       = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
-  const labelOpacityLeft  = useTransform(x, [-60, -20, 0],  [1, 0, 0]);
-  const labelOpacityRight = useTransform(x, [0, 20, 60],   [0, 0, 1]);
-  const labelOpacityUp    = useTransform(y, [-60, -20, 0], [1, 0, 0]);
-  const labelScaleLeft    = useTransform(x, [-120, -20], [1.15, 0.8]);
-  const labelScaleRight   = useTransform(x, [20, 120],   [0.8, 1.15]);
-  const labelScaleUp      = useTransform(y, [-120, -20], [1.15, 0.8]);
+  const labelOpacityLeft  = useTransform(x, [-60, -12, 0],  [1, 0, 0]);
+  const labelOpacityRight = useTransform(x, [0, 12, 60],   [0, 0, 1]);
+  const labelOpacityUp    = useTransform(y, [-60, -12, 0], [1, 0, 0]);
+  const labelScaleLeft    = useTransform(x, [-90, -12], [1.05, 0.8]);
+  const labelScaleRight   = useTransform(x, [12, 90],   [0.8, 1.05]);
+  const labelScaleUp      = useTransform(y, [-90, -12], [1.05, 0.8]);
+
+  // Assombrit légèrement l'affiche pendant le drag pour faire ressortir le tampon.
+  const voileOpacity = useTransform(
+    [x, y],
+    ([vx, vy]) => Math.min(Math.max(Math.abs(vx), Math.abs(vy)) / 180, 0.55)
+  );
+
+  // Vibration au franchissement du seuil de validation : on sait au doigt,
+  // sans regarder, que lâcher maintenant validera le swipe.
+  const seuilX = useRef(false);
+  const seuilY = useRef(false);
+  useMotionValueEvent(x, "change", v => {
+    const franchi = Math.abs(v) > 60;
+    if (franchi !== seuilX.current) { seuilX.current = franchi; if (franchi) vibrer("leger"); }
+  });
+  useMotionValueEvent(y, "change", v => {
+    const franchi = v < -60;
+    if (franchi !== seuilY.current) { seuilY.current = franchi; if (franchi) vibrer("leger"); }
+  });
 
   const [showDetails, setShowDetails]       = useState(false);
   const [details, setDetails]               = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
+
+  // Les boutons d'action déclenchent la même animation que le geste :
+  // sans ça, la carte disparaissait sèchement au clic.
+  useImperativeHandle(ref, () => ({ flyOut }));
 
   const cardRef  = useRef(null);
   const closeRef = useRef(null);
@@ -274,9 +298,10 @@ function MovieCard({ film, onSwipe, isTop }) {
       left:  { x: -600, y: 0    },
       up:    { x: 0,    y: -600 },
     };
-    animate(x, targets[direction].x, { duration: 0.3 });
-    animate(y, targets[direction].y, { duration: 0.3 });
-    setTimeout(() => onSwipe(direction), 300);
+    vibrerSucces();
+    animate(x, targets[direction].x, { type: "spring", damping: 22, stiffness: 180 });
+    animate(y, targets[direction].y, { type: "spring", damping: 22, stiffness: 180 });
+    setTimeout(() => onSwipe(direction), 260);
   }
 
   function handleKeyDown(e) {
@@ -336,15 +361,20 @@ function MovieCard({ film, onSwipe, isTop }) {
     setLoadingDetails(false);
   }
 
+  // Carte suivante : visible sous la carte du dessus pour donner l'impression
+  // d'une pile physique — on sait qu'il y a "quelque chose après".
   if (!isTop) {
     return (
       <motion.div
         aria-hidden="true"
+        initial={{ scale: 0.90, y: 34 }}
+        animate={{ scale: 0.94, y: 28 }}
+        transition={{ type: "spring", damping: 26, stiffness: 220 }}
         style={{
           position: "absolute", inset: 0,
-          borderRadius: "16px", overflow: "hidden",
-          boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
-          scale: 0.95, top: 10, zIndex: 0,
+          borderRadius: "24px", overflow: "hidden",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.45)",
+          zIndex: 0,
         }}
       >
         <img
@@ -352,11 +382,30 @@ function MovieCard({ film, onSwipe, isTop }) {
           alt=""
           style={{ width: "100%", height: "100%", display: "block", objectFit: "cover" }}
         />
+        {/* Assombrie : elle doit rester en retrait de la carte active */}
+        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)" }} />
       </motion.div>
     );
   }
 
   const panneauId = `details-${film.id}`;
+
+  // Tampon de swipe : inclinés et plaqués dans un coin, ils se lisent d'un
+  // coup d'œil périphérique pendant que le pouce tient la carte.
+  const tampon = {
+    position: "absolute",
+    padding: "11px 20px",
+    borderRadius: "14px",
+    border: "3px solid rgba(255,255,255,0.9)",
+    color: "#fff",
+    fontWeight: "900",
+    fontSize: "clamp(21px, 6.4vw, 32px)",
+    letterSpacing: "1.5px",
+    textTransform: "uppercase",
+    whiteSpace: "nowrap",
+    pointerEvents: "none",
+    textShadow: "0 2px 8px rgba(0,0,0,0.45)",
+  };
 
   return (
     <motion.div
@@ -368,91 +417,56 @@ function MovieCard({ film, onSwipe, isTop }) {
       style={{
         x, y, rotate, opacity,
         position: "absolute", inset: 0,
-        borderRadius: "16px", overflow: "hidden",
+        borderRadius: "24px", overflow: "hidden",
         cursor: showDetails ? "default" : "grab",
-        boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+        boxShadow: "0 24px 70px rgba(0,0,0,0.65), 0 2px 8px rgba(0,0,0,0.4)",
         zIndex: 1,
         outline: "none",
       }}
+      initial={{ scale: 0.94 }}
+      animate={{ scale: 1 }}
+      transition={{ type: "spring", damping: 24, stiffness: 260 }}
       drag={!showDetails}
       dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+      dragElastic={1}
       onDragEnd={handleDragEnd}
       whileTap={{ cursor: showDetails ? "default" : "grabbing" }}
     >
       <img
-        src={`https://image.tmdb.org/t/p/w500${film.poster_path}`}
+        src={`https://image.tmdb.org/t/p/w780${film.poster_path}`}
         alt={`Affiche du film : ${film.title}`}
         style={{ width: "100%", height: "100%", display: "block", objectFit: "cover", pointerEvents: "none" }}
       />
 
-      {/* Labels swipe — centrés, grands, stylés */}
+      {/* Voile : l'affiche s'assombrit à mesure du drag, le tampon ressort */}
       <motion.div aria-hidden="true" style={{
-        opacity: labelOpacityLeft,
-        scale: labelScaleLeft,
-        position: "absolute",
-        top: "50%", left: "50%",
-        x: "-50%", y: "-50%",
-        background: "rgba(239,68,68,0.18)",
-        border: "3px solid #ef4444",
-        backdropFilter: "blur(8px)",
-        color: "#ff6b6b",
-        borderRadius: "20px",
-        padding: "14px 28px",
-        fontWeight: "800",
-        fontSize: "28px",
-        letterSpacing: "2px",
-        textTransform: "uppercase",
-        boxShadow: "0 0 32px rgba(239,68,68,0.35), inset 0 0 20px rgba(239,68,68,0.08)",
-        textShadow: "0 0 20px rgba(239,68,68,0.6)",
-        whiteSpace: "nowrap",
-        pointerEvents: "none",
-      }}>✕ Skip</motion.div>
+        position: "absolute", inset: 0, background: "#000",
+        opacity: voileOpacity, pointerEvents: "none",
+      }} />
 
       <motion.div aria-hidden="true" style={{
-        opacity: labelOpacityRight,
-        scale: labelScaleRight,
-        position: "absolute",
-        top: "50%", left: "50%",
-        x: "-50%", y: "-50%",
-        background: "rgba(34,197,94,0.18)",
-        border: "3px solid #22c55e",
-        backdropFilter: "blur(8px)",
-        color: "#4ade80",
-        borderRadius: "20px",
-        padding: "14px 28px",
-        fontWeight: "800",
-        fontSize: "28px",
-        letterSpacing: "2px",
-        textTransform: "uppercase",
-        boxShadow: "0 0 32px rgba(34,197,94,0.35), inset 0 0 20px rgba(34,197,94,0.08)",
-        textShadow: "0 0 20px rgba(34,197,94,0.6)",
-        whiteSpace: "nowrap",
-        pointerEvents: "none",
-      }}>♥ À voir</motion.div>
+        ...tampon, top: "7%", right: "6%", rotate: 14,
+        opacity: labelOpacityLeft, scale: labelScaleLeft,
+        background: "#ef4444",
+        boxShadow: "0 8px 30px rgba(239,68,68,0.6), 0 0 0 1px rgba(0,0,0,0.15)",
+      }}>Passer</motion.div>
 
       <motion.div aria-hidden="true" style={{
-        opacity: labelOpacityUp,
-        scale: labelScaleUp,
-        position: "absolute",
-        top: "50%", left: "50%",
-        x: "-50%", y: "-50%",
-        background: "rgba(59,130,246,0.18)",
-        border: "3px solid #3b82f6",
-        backdropFilter: "blur(8px)",
-        color: "#60a5fa",
-        borderRadius: "20px",
-        padding: "14px 28px",
-        fontWeight: "800",
-        fontSize: "28px",
-        letterSpacing: "2px",
-        textTransform: "uppercase",
-        boxShadow: "0 0 32px rgba(59,130,246,0.35), inset 0 0 20px rgba(59,130,246,0.08)",
-        textShadow: "0 0 20px rgba(59,130,246,0.6)",
-        whiteSpace: "nowrap",
-        pointerEvents: "none",
-      }}>✓ Déjà vu</motion.div>
+        ...tampon, top: "7%", left: "6%", rotate: -14,
+        opacity: labelOpacityRight, scale: labelScaleRight,
+        background: "#18b957",
+        boxShadow: "0 8px 30px rgba(34,197,94,0.6), 0 0 0 1px rgba(0,0,0,0.15)",
+      }}>À voir</motion.div>
 
-      {/* Bandeau bas — juste l'année + le bouton Infos */}
+      <motion.div aria-hidden="true" style={{
+        ...tampon, bottom: "24%", left: "50%", x: "-50%", rotate: -4,
+        opacity: labelOpacityUp, scale: labelScaleUp,
+        background: "#2f7ff0",
+        boxShadow: "0 8px 30px rgba(59,130,246,0.6), 0 0 0 1px rgba(0,0,0,0.15)",
+      }}>Déjà vu</motion.div>
+
+      {/* Bandeau bas — titre et méta posés sur l'affiche plutôt qu'en légende
+          sous la carte : ça rend la hauteur au visuel et ça fait "produit". */}
       <div
         role="button"
         tabIndex={-1}
@@ -463,24 +477,49 @@ function MovieCard({ film, onSwipe, isTop }) {
         onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openDetails(); } }}
         style={{
           position: "absolute", bottom: 0, left: 0, right: 0,
-          background: "linear-gradient(transparent, rgba(0,0,0,0.72))",
+          background: "linear-gradient(transparent, rgba(0,0,0,0.55) 42%, rgba(0,0,0,0.93))",
           cursor: "pointer",
-          padding: "32px 14px 12px",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
+          padding: "68px 18px 18px",
+          display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "12px",
         }}
       >
-        <span style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px" }}>
-          {film.release_date?.slice(0, 4)}
-        </span>
+        <div style={{ minWidth: 0 }}>
+          <p style={{
+            margin: 0, color: "#fff",
+            fontSize: "clamp(19px, 5.6vw, 26px)", fontWeight: "800",
+            lineHeight: 1.15, letterSpacing: "-0.3px",
+            textShadow: "0 2px 14px rgba(0,0,0,0.65)",
+            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}>
+            {film.title}
+          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "7px" }}>
+            {film.release_date && (
+              <span style={{ color: "rgba(255,255,255,0.78)", fontSize: "13px", fontWeight: "600" }}>
+                {film.release_date.slice(0, 4)}
+              </span>
+            )}
+            {film.vote_average > 0 && (
+              <span style={{
+                display: "inline-flex", alignItems: "center", gap: "4px",
+                color: "#ffc63d", fontSize: "13px", fontWeight: "700",
+              }}>
+                ★ {film.vote_average.toFixed(1)}
+              </span>
+            )}
+          </div>
+        </div>
+
         <span style={{
-          background: "rgba(255,255,255,0.15)",
-          border: "1px solid rgba(255,255,255,0.35)",
-          backdropFilter: "blur(8px)",
+          flexShrink: 0,
+          background: "rgba(255,255,255,0.16)",
+          border: "1px solid rgba(255,255,255,0.3)",
+          backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
           color: "white", borderRadius: "20px",
-          padding: "5px 13px", fontSize: "12px",
-          fontWeight: "600",
+          padding: "8px 15px", fontSize: "13px", fontWeight: "700",
         }}>
-          ℹ︎ Infos
+          Infos
         </span>
       </div>
 
@@ -496,6 +535,6 @@ function MovieCard({ film, onSwipe, isTop }) {
       />
     </motion.div>
   );
-}
+});
 
 export default MovieCard;
