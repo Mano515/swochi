@@ -587,8 +587,8 @@ function App() {
               margin: "8px 0 10px", padding: "8px 14px",
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
             }}>
-              <p style={{ margin: 0, fontSize: "var(--t-xs)", color: "var(--purple)", fontWeight: "500" }}>
-                Mode invité · sauvegarde locale
+              <p style={{ margin: 0, fontSize: "var(--t-xs)", color: "var(--purple)", fontWeight: "500", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                Invité · sauvegarde locale
               </p>
               <button onClick={ouvrirConnexion} style={{
                 background: "none", border: "1px solid var(--purple)", color: "var(--purple)",
