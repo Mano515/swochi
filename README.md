@@ -151,9 +151,65 @@ L'app est disponible sur http://localhost:3000
 
 ---
 
+## Application Android
+
+L'app Android est la même base React, empaquetée avec **Capacitor 7** dans une
+coquille native. Une seule source de vérité : tout ce qui est corrigé sur le web
+part aussi dans l'app.
+
+### Adaptations natives
+
+| Élément | Traitement |
+|---|---|
+| Barre de statut | Fond et icônes synchronisés sur le thème dark / light |
+| Zones sûres | Encoche et barre de navigation gérées via `env(safe-area-inset-*)` |
+| Bouton retour | Ferme le panneau ouvert → revient sur Découvrir → quitte l'app |
+| Splash | Splash natif masqué à la première image peinte, sans flash blanc |
+| Connexion Google | Sélecteur de compte natif (la popup web ne marche pas en WebView) |
+| Clavier | Redimensionnement natif de la vue |
+
+### Prérequis
+
+- JDK 21
+- Android SDK (platform 35, build-tools 35, platform-tools)
+- `JAVA_HOME` et `ANDROID_HOME` définis
+
+### Configuration Firebase
+
+L'application Android doit être déclarée dans la console Firebase avec le
+package `com.swochi.app` et l'empreinte SHA-1 du keystore utilisé. Le fichier
+`google-services.json` téléchargé se place dans `android/app/`. Il n'est pas
+versionné : la CI le restaure depuis le secret `GOOGLE_SERVICES_JSON`.
+
+Le domaine `localhost` doit également être autorisé sur la clé reCAPTCHA, car
+la WebView sert la page depuis `https://localhost`.
+
+### Compiler
+
+```bash
+npm run build
+npx cap sync android
+cd android && ./gradlew assembleDebug
+```
+
+L'APK est produit dans `android/app/build/outputs/apk/debug/app-debug.apk`.
+
+### Installer sur un téléphone
+
+Débogage USB activé, téléphone branché :
+
+```bash
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+---
+
 ## Déploiement
 
-L'app est déployée automatiquement sur **Vercel** à chaque merge sur `main`.
+L'app web est déployée automatiquement sur **Vercel** à chaque merge sur `main`.
+
+L'APK Android est construit par GitHub Actions à chaque push sur `main`
+(`.github/workflows/android.yml`) et récupérable dans les artefacts du run.
 
 ---
 

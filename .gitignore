@@ -29,3 +29,12 @@ serviceAccount.json
 scripts/serviceAccount.json
 firebase-debug.log
 C*UsersManuAppDataLocalTempstars.json
+
+# Firebase Android — téléchargé depuis la console, injecté en CI via un secret
+android/app/google-services.json
+
+# Capacitor — APK signés produits localement
+*.keystore.properties
+
+# Outillage Claude Code (worktrees, réglages locaux)
+.claude/

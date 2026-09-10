@@ -69,6 +69,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
           borderLeft: "1px solid var(--border)",
           zIndex: 101,
           display: "flex", flexDirection: "column",
+          paddingBottom: "env(safe-area-inset-bottom)",
           transform: ouvert ? "translateX(0)" : "translateX(100%)",
           transition: "transform 0.28s cubic-bezier(0.4,0,0.2,1)",
           boxShadow: ouvert ? "var(--shadow-lg)" : "none",
@@ -76,7 +77,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
       >
         {/* En-tête */}
         <div style={{
-          padding: "18px 18px 14px",
+          padding: "calc(18px + env(safe-area-inset-top)) 18px 14px",
           borderBottom: "1px solid var(--divider)",
           display: "flex", alignItems: "center", justifyContent: "flex-end",
         }}>

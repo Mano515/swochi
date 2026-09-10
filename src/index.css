@@ -344,3 +344,24 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+/* ── Zones sûres — app native Android ──────────────
+   Sur le web env(safe-area-inset-*) vaut 0 : aucune
+   incidence sur la version Vercel. Sur téléphone,
+   évite que le contenu passe sous la barre de statut
+   ou sous la barre de navigation gestuelle.
+──────────────────────────────────────────────────── */
+.app-shell {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+@media (max-width: 768px) {
+  .top-section {
+    padding-top: calc(14px + env(safe-area-inset-top));
+  }
+  .swipe-section,
+  .onglet-content {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+}

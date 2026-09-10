@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { synchroniserBarreStatut } from "./native";
 
 const ThemeContext = createContext({ theme: "dark", toggleTheme: () => {} });
 
@@ -10,6 +11,7 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("swochi_theme", theme);
+    synchroniserBarreStatut(theme);   // app native uniquement
   }, [theme]);
 
   const toggleTheme = () => setTheme(t => (t === "dark" ? "light" : "dark"));

@@ -17,11 +17,19 @@ const app = initializeApp(firebaseConfig);
 // App Check — actif uniquement si la clé est définie
 // (en développement local, on peut laisser REACT_APP_RECAPTCHA_KEY vide
 //  et activer le mode debug via la console Firebase)
+// Dans l'app Android, la page est servie depuis https://localhost : ce domaine
+// doit figurer dans les domaines autorisés de la clé reCAPTCHA, sinon
+// l'initialisation échoue. On l'isole pour ne pas bloquer le démarrage —
+// l'application reste protégée côté serveur par les règles Firestore.
 if (process.env.REACT_APP_RECAPTCHA_KEY) {
-  initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(process.env.REACT_APP_RECAPTCHA_KEY),
-    isTokenAutoRefreshEnabled: true,
-  });
+  try {
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(process.env.REACT_APP_RECAPTCHA_KEY),
+      isTokenAutoRefreshEnabled: true,
+    });
+  } catch (e) {
+    console.warn("App Check non initialisé :", e?.message);
+  }
 }
 
 export const auth = getAuth(app);

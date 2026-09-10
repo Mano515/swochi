@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { auth } from "./firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithCredential } from "firebase/auth";
+import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
+import { estNatif } from "./native";
 
 function Login({ onLogin, onGuest, onFermer, asPage }) {
   const [email, setEmail]       = useState("");
@@ -9,11 +11,23 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
   const [error, setError]       = useState("");
 
   async function handleGoogle() {
+    setError("");
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      if (estNatif) {
+        // Android : sélecteur de compte Google natif. La popup web ne
+        // fonctionne pas dans une WebView, d'où le plugin.
+        const { credential } = await FirebaseAuthentication.signInWithGoogle();
+        if (!credential?.idToken) throw new Error("aucun jeton reçu");
+        // On rejoue la session sur le SDK web : c'est lui qui alimente
+        // onAuthStateChanged et les règles Firestore.
+        await signInWithCredential(auth, GoogleAuthProvider.credential(credential.idToken));
+      } else {
+        await signInWithPopup(auth, new GoogleAuthProvider());
+      }
       onLogin();
     } catch (e) {
+      // Fermeture du sélecteur par l'utilisateur : ce n'est pas une erreur.
+      if (/cancel|annul|closed by user/i.test(e?.message || "")) return;
       setError("Erreur Google : " + e.message);
     }
   }

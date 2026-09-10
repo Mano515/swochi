@@ -14,6 +14,7 @@ import Onboarding   from "./Onboarding";
 import ErrorBoundary from "./ErrorBoundary";
 import SplashScreen from "./SplashScreen";
 import Recherche    from "./Recherche";
+import { useBoutonRetour } from "./native";
 
 // ─── Constantes ──────────────────────────────────────────────────────────────
 
@@ -82,6 +83,17 @@ function App() {
     setLoginModalOuvert(true);
     setMenuOuvert(false);
   }
+
+  // Bouton retour Android : on ferme d'abord ce qui est ouvert, puis on
+  // revient sur Découvrir. Si rien à fermer, false → Android quitte l'app.
+  useBoutonRetour(() => {
+    if (menuOuvert)         { setMenuOuvert(false);       return true; }
+    if (rechercheOuverte)   { setRechercheOuverte(false); return true; }
+    if (loginModalOuvert)   { setLoginModalOuvert(false); return true; }
+    if (showGuestPrompt)    { setShowGuestPrompt(false);  return true; }
+    if (onglet !== "swipe") { setOnglet("swipe");         return true; }
+    return false;
+  });
 
   // ── Firebase Auth ────────────────────────────────────────────────────────────
   // Écoute les changements de session (connexion, déconnexion, rechargement).
@@ -695,7 +707,8 @@ function App() {
           aria-live="assertive"
           onClick={() => setToast(null)}
           style={{
-            position: "fixed", bottom: "24px", left: "50%", transform: "translateX(-50%)",
+            position: "fixed", bottom: "calc(24px + env(safe-area-inset-bottom))",
+            left: "50%", transform: "translateX(-50%)",
             background: toast.type === "error" ? "var(--red)" : "var(--green)",
             color: "white", borderRadius: "14px", padding: "12px 22px",
             fontSize: "14px", fontWeight: "500", boxShadow: "var(--shadow-lg)",
