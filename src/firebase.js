@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import { Capacitor } from "@capacitor/core";
 
 const firebaseConfig = {
   apiKey:            process.env.REACT_APP_FIREBASE_API_KEY,
@@ -17,11 +18,18 @@ const app = initializeApp(firebaseConfig);
 // App Check — actif uniquement si la clé est définie
 // (en développement local, on peut laisser REACT_APP_RECAPTCHA_KEY vide
 //  et activer le mode debug via la console Firebase)
-// Dans l'app Android, la page est servie depuis https://localhost : ce domaine
-// doit figurer dans les domaines autorisés de la clé reCAPTCHA, sinon
-// l'initialisation échoue. On l'isole pour ne pas bloquer le démarrage —
-// l'application reste protégée côté serveur par les règles Firestore.
-if (process.env.REACT_APP_RECAPTCHA_KEY) {
+// App Check — web uniquement.
+//
+// reCAPTCHA v3 atteste une origine web. Dans la WebView Android, la page est
+// servie depuis https://localhost : reCAPTCHA refuse cette origine (400), et
+// le SDK enchaîne les tentatives puis throttle. Vérifié sur l'appareil.
+// Autoriser « localhost » côté reCAPTCHA serait pire : n'importe quelle page
+// locale pourrait alors obtenir un jeton valide.
+//
+// L'app native reste protégée par les règles Firestore. Si App Check devait un
+// jour être *appliqué* (il ne l'est pas aujourd'hui sur ce projet), il faudrait
+// un fournisseur natif Play Integrity, pas reCAPTCHA.
+if (process.env.REACT_APP_RECAPTCHA_KEY && !Capacitor.isNativePlatform()) {
   try {
     initializeAppCheck(app, {
       provider: new ReCaptchaV3Provider(process.env.REACT_APP_RECAPTCHA_KEY),
