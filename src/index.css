@@ -41,6 +41,7 @@
      au bleu de la marque.
   ─────────────────────────────────────────────────── */
   --bg:          #15181d;
+  --bg-rvb:      21 24 29;
   --surface:     #1e222a;
   --surface-2:   #262b34;
   --surface-3:   #2f3540;
@@ -147,6 +148,7 @@
 /* ── Thème Light ─────────────────────────────────── */
 [data-theme="light"] {
   --bg:          #f2f2f7;
+  --bg-rvb:      242 242 247;
   --surface:     #ffffff;
   --surface-2:   #f7f7fa;
   --surface-3:   #ececec;
@@ -265,8 +267,12 @@ input, button, select, textarea { font-size: var(--t-md); font-family: inherit; 
 @media (max-width: 768px) {
   .desktop-wrapper { display: contents; }
   .top-section {
-    position: sticky; top: 0; background: transparent; z-index: 10;
-    padding: var(--s-2) var(--gutter) 0; transition: background-color 0.25s ease; width: 100%;
+    position: sticky; top: 0; z-index: 10; width: 100%;
+    padding: var(--s-2) var(--gutter) 0;
+    background: rgb(var(--bg-rvb) / 0.86);
+    backdrop-filter: blur(16px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    transition: background-color 0.25s ease;
   }
   .top-section .header-row { margin-bottom: 8px; }
   /* La rangée déborde la marge pour que les puces filent jusqu'au bord :
