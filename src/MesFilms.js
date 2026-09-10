@@ -39,16 +39,16 @@ function FilmDetail({ film, ongletActif, onDeplacer, onSupprimer, onFermer }) {
             style={{ width: "90px", borderRadius: "12px", objectFit: "cover", flexShrink: 0, boxShadow: "var(--shadow-md)" }}
           />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h2 style={{ margin: "0 0 6px", fontSize: "18px", fontWeight: "700", color: "var(--text)", lineHeight: 1.3 }}>
+            <h2 style={{ margin: "0 0 6px", fontSize: "var(--t-lg)", fontWeight: "700", color: "var(--text)", lineHeight: 1.3 }}>
               {film.title}
             </h2>
             {film.release_date && (
-              <p style={{ margin: "0 0 6px", fontSize: "13px", color: "var(--text-3)" }}>
+              <p style={{ margin: "0 0 6px", fontSize: "var(--t-sm)", color: "var(--text-3)" }}>
                 {film.release_date.slice(0, 4)}
               </p>
             )}
             {film.vote_average > 0 && (
-              <p style={{ margin: 0, fontSize: "13px", color: "var(--text-2)" }}>
+              <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-2)" }}>
                 ⭐ {film.vote_average.toFixed(1)} / 10
               </p>
             )}
@@ -56,13 +56,13 @@ function FilmDetail({ film, ongletActif, onDeplacer, onSupprimer, onFermer }) {
         </div>
 
         {film.overview && (
-          <p style={{ margin: "0 0 24px", fontSize: "14px", color: "var(--text-2)", lineHeight: 1.6 }}>
+          <p style={{ margin: "0 0 24px", fontSize: "var(--t-sm)", color: "var(--text-2)", lineHeight: 1.6 }}>
             {film.overview}
           </p>
         )}
 
         {/* Déplacer vers */}
-        <p style={{ margin: "0 0 10px", fontSize: "12px", fontWeight: "600", color: "var(--text-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+        <p style={{ margin: "0 0 10px", fontSize: "var(--t-xs)", fontWeight: "600", color: "var(--text-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
           Déplacer vers
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
@@ -74,12 +74,12 @@ function FilmDetail({ film, ongletActif, onDeplacer, onSupprimer, onFermer }) {
                 background: "var(--surface-2)",
                 border: "1px solid var(--border)",
                 color: "var(--text)", borderRadius: "12px",
-                padding: "11px 16px", fontSize: "14px", fontWeight: "600",
+                padding: "11px 16px", fontSize: "var(--t-sm)", fontWeight: "600",
                 cursor: "pointer", textAlign: "left",
                 display: "flex", alignItems: "center", gap: "10px",
               }}
             >
-              <span style={{ fontSize: "16px" }}>{o.icon}</span>
+              <span style={{ fontSize: "var(--t-md)" }}>{o.icon}</span>
               <span>{o.label}</span>
             </button>
           ))}
@@ -91,7 +91,7 @@ function FilmDetail({ film, ongletActif, onDeplacer, onSupprimer, onFermer }) {
             background: "transparent",
             border: "1px solid var(--border-2)",
             color: "var(--text-3)", borderRadius: "12px",
-            padding: "11px 16px", fontSize: "14px",
+            padding: "11px 16px", fontSize: "var(--t-sm)",
             cursor: "pointer", width: "100%",
           }}
         >
@@ -130,7 +130,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
           background: "var(--surface-2)", border: "1px solid var(--border)",
           borderRadius: "12px", padding: "11px 14px",
           display: "flex", alignItems: "center", gap: "10px",
-          marginBottom: "16px", fontSize: "13px", color: "var(--text-3)",
+          marginBottom: "16px", fontSize: "var(--t-sm)", color: "var(--text-3)",
         }}>
           <IconeInfo taille={17} />
           <span>Tes films ne sont sauvegardés que pour cette session.</span>
@@ -165,7 +165,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
                 border: "none",
                 borderRadius: "10px",
                 padding: "9px 4px",
-                fontSize: "12px",
+                fontSize: "var(--t-xs)",
                 fontWeight: actif ? "700" : "500",
                 cursor: "pointer",
                 transition: "all 0.18s ease",
@@ -177,9 +177,9 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
                 lineHeight: 1.2,
               }}
             >
-              <span style={{ fontSize: "13px", opacity: actif ? 1 : 0.5 }}>{o.icon}</span>
+              <span style={{ fontSize: "var(--t-sm)", opacity: actif ? 1 : 0.5 }}>{o.icon}</span>
               <span>{o.label}</span>
-              <span style={{ fontSize: "10px", opacity: 0.6, fontWeight: "400" }}>
+              <span style={{ fontSize: "var(--t-xs)", opacity: 0.6, fontWeight: "400" }}>
                 {listes[o.key].length}
               </span>
             </button>
@@ -203,7 +203,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
         style={{
           background: "var(--input-bg)", border: "1px solid var(--input-border)",
           borderRadius: "10px", padding: "11px 14px 11px 38px",
-          color: "var(--text)", fontSize: "16px", outline: "none",
+          color: "var(--text)", fontSize: "var(--t-md)", outline: "none",
           width: "100%", boxSizing: "border-box",
         }}
       />
@@ -211,7 +211,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
 
       {/* Grille d'affiches */}
       {films.length === 0 ? (
-        <p style={{ color: "var(--text-3)", textAlign: "center", fontSize: "14px", paddingTop: "24px" }}>
+        <p style={{ color: "var(--text-3)", textAlign: "center", fontSize: "var(--t-sm)", paddingTop: "24px" }}>
           {recherche ? "Aucun résultat" : "Aucun film dans cette liste"}
         </p>
       ) : (
@@ -244,7 +244,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
                 onMouseLeave={e => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "var(--shadow-md)"; }}
               />
               <span style={{
-                fontSize: "12px", fontWeight: "500", color: "var(--text-2)",
+                fontSize: "var(--t-xs)", fontWeight: "500", color: "var(--text-2)",
                 lineHeight: 1.3, display: "-webkit-box",
                 WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
               }}>

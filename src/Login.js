@@ -68,10 +68,10 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
       {/* Logo — masqué en modal */}
       {!isModal && (
         <div style={{ textAlign: "center", marginBottom: "36px" }}>
-          <h1 style={{ fontSize: "34px", letterSpacing: "3px", margin: "0 0 8px", color: "var(--text)" }}>
+          <h1 style={{ fontSize: "var(--t-3xl)", letterSpacing: "3px", margin: "0 0 8px", color: "var(--text)" }}>
             🎬 SWOCHI
           </h1>
-          <p style={{ color: "var(--text-3)", margin: 0, fontSize: "14px" }}>Découvre ton prochain film</p>
+          <p style={{ color: "var(--text-3)", margin: 0, fontSize: "var(--t-sm)" }}>Découvre ton prochain film</p>
         </div>
       )}
 
@@ -90,10 +90,10 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
             color: "var(--text-3)", borderRadius: "50%",
             width: "30px", height: "30px", cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "14px",
+            fontSize: "var(--t-sm)",
           }}>✕</button>
         )}
-        <h2 style={{ margin: "0 0 4px", fontSize: "20px", fontWeight: "700", color: "var(--text)" }}>
+        <h2 style={{ margin: "0 0 4px", fontSize: "var(--t-xl)", fontWeight: "700", color: "var(--text)" }}>
           {isRegister ? "Créer un compte" : "Se connecter"}
         </h2>
 
@@ -128,13 +128,13 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
         </div>
 
         {error && (
-          <p role="alert" style={{ color: "#ef4444", fontSize: "13px", margin: 0 }}>{error}</p>
+          <p role="alert" style={{ color: "#ef4444", fontSize: "var(--t-sm)", margin: 0 }}>{error}</p>
         )}
 
         <button onClick={handleSubmit} style={{
           background: "var(--purple)", color: "white",
           border: "none", borderRadius: "50px",
-          padding: "15px", fontSize: "16px",
+          padding: "15px", fontSize: "var(--t-md)",
           fontWeight: "700", cursor: "pointer",
           boxShadow: "0 4px 14px rgba(29,99,205,0.35)",
           marginTop: "2px",
@@ -144,14 +144,14 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <div style={{ flex: 1, height: "1px", background: "var(--divider)" }} />
-          <span style={{ color: "var(--text-4)", fontSize: "12px" }}>ou</span>
+          <span style={{ color: "var(--text-4)", fontSize: "var(--t-xs)" }}>ou</span>
           <div style={{ flex: 1, height: "1px", background: "var(--divider)" }} />
         </div>
 
         <button onClick={handleGoogle} style={{
           background: "#ffffff", color: "#1a1a1a",
           border: "1px solid rgba(0,0,0,0.12)", borderRadius: "50px",
-          padding: "13px", fontSize: "15px",
+          padding: "13px", fontSize: "var(--t-md)",
           fontWeight: "600", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
           boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
@@ -164,7 +164,7 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
           onClick={() => setIsRegister(r => !r)}
           style={{
             background: "none", border: "1px solid var(--border-2)",
-            color: "var(--text-2)", fontSize: "13px", borderRadius: "50px",
+            color: "var(--text-2)", fontSize: "var(--t-sm)", borderRadius: "50px",
             textAlign: "center", cursor: "pointer",
             padding: "10px 0", fontWeight: "500",
           }}
@@ -176,14 +176,14 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
       {/* Mode invité — uniquement sur la page de démarrage */}
       {!isModal && (
         <div style={{ marginTop: "28px", textAlign: "center" }}>
-          <p style={{ color: "var(--text-4)", fontSize: "13px", marginBottom: "12px" }}>
+          <p style={{ color: "var(--text-4)", fontSize: "var(--t-sm)", marginBottom: "12px" }}>
             Pas prêt à créer un compte ?
           </p>
           <button onClick={onGuest} style={{
             background: "transparent",
             border: "1px solid var(--border-2)",
             color: "var(--text-3)", borderRadius: "50px",
-            padding: "11px 26px", fontSize: "14px",
+            padding: "11px 26px", fontSize: "var(--t-sm)",
             cursor: "pointer",
           }}>
             Continuer sans compte →
@@ -194,12 +194,12 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
   );
 }
 
-const labelStyle = { fontSize: "13px", color: "var(--text)", fontWeight: "500" };
+const labelStyle = { fontSize: "var(--t-sm)", color: "var(--text)", fontWeight: "500" };
 
 const inputStyle = {
   background: "var(--input-bg)", border: "1px solid var(--input-border)",
   borderRadius: "10px", padding: "13px 14px",
-  color: "var(--text)", fontSize: "16px", outline: "none",
+  color: "var(--text)", fontSize: "var(--t-md)", outline: "none",
 };
 
 export default Login;

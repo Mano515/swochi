@@ -28,8 +28,8 @@
   --shadow-md:   0 4px 16px rgba(0,0,0,0.6);
   --shadow-lg:   0 8px 32px rgba(0,0,0,0.7);
 
-  --purple:      #1d63cd;
-  --purple-dim:  rgba(29,99,205,0.12);
+  --purple:      #3b82f6;   /* accent — vif sur fond sombre */
+  --purple-dim:  rgba(59,130,246,0.14);
   --green:       #22c55e;
   --red:         #ef4444;
   --blue:        #3b82f6;
@@ -37,6 +37,42 @@
 
   --surface-glass:   rgba(26,26,26,0.72);
   --surface2-glass:  rgba(34,34,34,0.72);
+
+  /* ── Typographie ──────────────────────────────────
+     Échelle de ratio ~1.2. Le corps de texte monte à
+     17px : l'app tournait à 13-14px, soit une lecture
+     à bout de bras difficile sur un écran dense.
+  ─────────────────────────────────────────────────── */
+  --t-xs:   13px;   /* mentions, compteurs           */
+  --t-sm:   15px;   /* texte secondaire              */
+  --t-md:   17px;   /* corps de texte, libellés      */
+  --t-lg:   20px;   /* titres de section             */
+  --t-xl:   24px;   /* titres d'écran                */
+  --t-2xl:  30px;   /* accroches                     */
+  --t-3xl:  38px;   /* affichage                     */
+
+  /* ── Espacement — grille de 4 ── */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-8:  32px;
+  --s-10: 40px;
+
+  /* ── Rayons ── */
+  --r-sm:   10px;
+  --r-md:   14px;
+  --r-lg:   20px;
+  --r-xl:   26px;
+  --r-pill: 999px;
+
+  /* ── Marge horizontale unique, tous écrans ── */
+  --gutter: 16px;
+
+  /* ── Cible tactile minimale (recommandation Android) ── */
+  --touch: 48px;
 }
 
 /* ── Thème Light ─────────────────────────────────── */
@@ -64,6 +100,7 @@
   --shadow-md:   0 4px 16px rgba(0,0,0,0.08);
   --shadow-lg:   0 8px 32px rgba(0,0,0,0.12);
 
+  --purple:      #1d63cd;   /* accent — assombri pour tenir sur blanc */
   --purple-dim:  rgba(29,99,205,0.09);
 
   --surface-glass:   rgba(255,255,255,0.72);
@@ -98,7 +135,7 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
-input, button, select, textarea { font-size: 16px; font-family: inherit; }
+input, button, select, textarea { font-size: var(--t-md); font-family: inherit; }
 
 /* ── Utilitaires ─────────────────────────────────── */
 .no-select {
@@ -138,7 +175,7 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
 .guest-connect-block { display: none; }
 
 /* ── Base ── */
-.onglet-content { width: 100%; box-sizing: border-box; padding: 12px 16px 24px; }
+.onglet-content { width: 100%; box-sizing: border-box; padding: var(--s-3) var(--gutter) var(--s-6); }
 .swipe-section { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 12px 16px 24px; position: relative; overflow: hidden; }
 .swipe-center { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; z-index: 1; }
 .card-container { position: relative; width: 300px; height: 450px; }
@@ -149,14 +186,20 @@ input, button, select, textarea { font-size: 16px; font-family: inherit; }
   .desktop-wrapper { display: contents; }
   .top-section {
     position: sticky; top: 0; background: transparent; z-index: 10;
-    padding: 8px 12px 0; transition: background-color 0.25s ease; width: 100%;
+    padding: var(--s-2) var(--gutter) 0; transition: background-color 0.25s ease; width: 100%;
   }
   .top-section .header-row { margin-bottom: 8px; }
-  .top-section .genres-row { margin-bottom: 0; padding-bottom: 8px; }
-  .swipe-section { flex: 1; justify-content: center; padding: 10px 12px 8px; }
+  /* La rangée déborde la marge pour que les puces filent jusqu'au bord :
+     coupées net dans la marge, elles avaient l'air rognées, pas défilables. */
+  .top-section .genres-row {
+    margin: 0 calc(var(--gutter) * -1);
+    padding-bottom: 8px;
+  }
+  .swipe-section { flex: 1; justify-content: center; padding: var(--s-3) var(--gutter) var(--s-2); }
   .card-container {
-    width: min(95vw, 440px);
-    height: min(calc(95vw * 1.55), 60vh);
+    width: 100%;
+    max-width: 440px;
+    height: 60vh;
   }
 
   /* Onglet Découvrir : il doit tenir dans un écran, jamais déborder.
@@ -398,16 +441,20 @@ code {
    l'action principale, elle doit se viser au pouce
    sans regarder.
 ──────────────────────────────────────────────────── */
+/* Rangée de quatre, régulièrement espacée et centrée. Annuler se lit comme
+   secondaire par son style — transparent, plus petit — et non par sa place :
+   l'ancrer à droite entrait en collision avec le bouton principal. */
 .actions-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  gap: var(--s-3);
+  width: 100%;
 }
 
 .action-btn {
-  width: 58px;
-  height: 58px;
+  width: 62px;
+  height: 62px;
   border: none;
   border-radius: 50%;
   display: flex;
@@ -429,8 +476,8 @@ code {
 }
 
 .action-btn--seen {
-  width: 48px;
-  height: 48px;
+  width: 54px;
+  height: 54px;
   font-size: 18px;
   background: var(--surface-2);
   color: #5aa2ff;
@@ -439,8 +486,8 @@ code {
 
 /* Action principale : pleine, colorée, la plus grande cible */
 .action-btn--like {
-  width: 68px;
-  height: 68px;
+  width: 74px;
+  height: 74px;
   font-size: 27px;
   background: linear-gradient(145deg, #26d366, #14a04b);
   color: #fff;
@@ -448,8 +495,8 @@ code {
 }
 
 .action-btn--undo {
-  width: 42px;
-  height: 42px;
+  width: var(--touch);
+  height: var(--touch);
   font-size: 16px;
   background: transparent;
   color: var(--amber);
@@ -461,3 +508,14 @@ code {
   cursor: default;
   transform: none;
 }
+
+/* ── Cibles tactiles ───────────────────────────────
+   Tout ce qui se tape au pouce vise 48px : en dessous,
+   on rate. Plusieurs boutons tournaient autour de 32.
+──────────────────────────────────────────────────── */
+.sidebar-nav-item,
+.genre-sidebar-item {
+  min-height: var(--touch);
+}
+
+.action-btn { font-size: var(--t-xl); }

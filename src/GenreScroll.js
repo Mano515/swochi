@@ -65,7 +65,7 @@ function GenreScroll({ genres, genreChoisi, onGenreChange }) {
         style={{
           display: "flex", gap: "6px",
           cursor: "grab",
-          padding: "4px 0",
+          padding: "4px var(--gutter)",
         }}
       >
         <button
@@ -93,9 +93,9 @@ function genreStyle(actif) {
     background: actif ? "var(--purple)" : "var(--surface-2)",
     color: actif ? "#fff" : "var(--text-2)",
     border: actif ? "1.5px solid var(--purple)" : "1.5px solid transparent",
-    borderRadius: "20px",
-    padding: "6px 16px",
-    fontSize: "13px",
+    borderRadius: "var(--r-pill)",
+    padding: "11px 18px",
+    fontSize: "var(--t-sm)",
     cursor: "pointer",
     fontWeight: actif ? "700" : "500",
     whiteSpace: "nowrap",

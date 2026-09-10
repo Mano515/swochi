@@ -88,7 +88,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
             aria-label="Fermer le menu"
             style={{
               background: "var(--surface-2)", border: "1px solid var(--border)",
-              color: "var(--text-3)", fontSize: "18px", cursor: "pointer",
+              color: "var(--text-3)", fontSize: "var(--t-lg)", cursor: "pointer",
               lineHeight: 1, padding: "6px 10px", borderRadius: "8px",
             }}
           >✕</button>
@@ -101,10 +101,10 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
             background: "var(--purple-dim)", border: "1px solid rgba(29,99,205,0.2)",
             borderRadius: "12px", padding: "12px 14px",
           }}>
-            <p style={{ margin: "0 0 4px", fontSize: "13px", color: "var(--purple)", fontWeight: "600" }}>
+            <p style={{ margin: "0 0 4px", fontSize: "var(--t-sm)", color: "var(--purple)", fontWeight: "600" }}>
               Mode invité
             </p>
-            <p style={{ margin: 0, fontSize: "12px", color: "var(--text-3)", lineHeight: "1.5" }}>
+            <p style={{ margin: 0, fontSize: "var(--t-xs)", color: "var(--text-3)", lineHeight: "1.5" }}>
               Crée un compte pour sauvegarder tes swipes et rejoindre tes amis.
             </p>
           </div>
@@ -137,7 +137,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
                   {(() => { const I = ICONES_NAV[o.key]; return I ? <I taille={21} /> : null; })()}
                 </span>
                 <span style={{
-                  fontSize: "17px",
+                  fontSize: "var(--t-lg)",
                   fontWeight: actif ? "700" : "500",
                   letterSpacing: "-0.2px",
                 }}>{o.label}</span>
@@ -168,10 +168,10 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
                 transition: "background 0.15s",
               }}
             >
-              <span style={{ fontSize: "22px", lineHeight: 1, width: "28px", textAlign: "center", flexShrink: 0 }}>
+              <span style={{ fontSize: "var(--t-xl)", lineHeight: 1, width: "28px", textAlign: "center", flexShrink: 0 }}>
                 {theme === "dark" ? <IconeSoleil taille={20} /> : <IconeLune taille={20} />}
               </span>
-              <span style={{ fontSize: "17px", fontWeight: "500" }}>
+              <span style={{ fontSize: "var(--t-lg)", fontWeight: "500" }}>
                 {theme === "dark" ? "Mode clair" : "Mode sombre"}
               </span>
             </button>
@@ -187,7 +187,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
                 width: "100%", background: "var(--purple)",
                 border: "none", color: "white",
                 borderRadius: "12px", padding: "13px",
-                fontSize: "14px", fontWeight: "600", cursor: "pointer",
+                fontSize: "var(--t-sm)", fontWeight: "600", cursor: "pointer",
                 boxShadow: "0 4px 14px rgba(29,99,205,0.3)",
               }}
             >
@@ -200,7 +200,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
                 width: "100%", background: "transparent",
                 border: "1px solid var(--border-2)", color: "var(--text-3)",
                 borderRadius: "12px", padding: "12px",
-                fontSize: "14px", cursor: "pointer",
+                fontSize: "var(--t-sm)", cursor: "pointer",
               }}
             >
               Déconnexion

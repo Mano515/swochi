@@ -522,7 +522,7 @@ function App() {
               display: "flex", alignItems: "center", gap: "8px",
               width: "100%", padding: "10px 14px", borderRadius: "12px",
               background: "var(--purple-dim)", border: "1.5px solid rgba(29,99,205,0.25)",
-              color: "var(--purple)", fontSize: "13px", fontWeight: "600",
+              color: "var(--purple)", fontSize: "var(--t-sm)", fontWeight: "600",
               cursor: "pointer", fontFamily: "inherit",
             }}
           >
@@ -535,7 +535,7 @@ function App() {
           </button>
           {!isGuest && (
             <button onClick={() => signOut(auth)} className="sidebar-nav-item" style={{ color: "var(--red)" }}>
-              <span style={{ fontSize: "15px" }}>↩</span>
+              <span style={{ fontSize: "var(--t-md)" }}>↩</span>
               Se déconnecter
             </button>
           )}
@@ -560,7 +560,7 @@ function App() {
                     flex: 1, display: "flex", alignItems: "center", gap: "8px",
                     background: "var(--surface-2)", border: "1.5px solid var(--border-2)",
                     borderRadius: "11px", padding: "7px 13px", cursor: "pointer",
-                    color: "var(--text-3)", fontSize: "13.5px", fontFamily: "inherit",
+                    color: "var(--text-3)", fontSize: "var(--t-sm)", fontFamily: "inherit",
                   }}>
                   <IconeRecherche taille={16} />
                   <span style={{ flex: 1 }}>Rechercher un film…</span>
@@ -587,12 +587,12 @@ function App() {
               margin: "8px 0 10px", padding: "8px 14px",
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
             }}>
-              <p style={{ margin: 0, fontSize: "12px", color: "var(--purple)", fontWeight: "500" }}>
-                Mode invité · swipes sauvegardés localement
+              <p style={{ margin: 0, fontSize: "var(--t-xs)", color: "var(--purple)", fontWeight: "500" }}>
+                Mode invité · sauvegarde locale
               </p>
               <button onClick={ouvrirConnexion} style={{
                 background: "none", border: "1px solid var(--purple)", color: "var(--purple)",
-                borderRadius: "20px", padding: "4px 12px", fontSize: "12px",
+                borderRadius: "20px", padding: "4px 12px", fontSize: "var(--t-xs)",
                 fontWeight: "600", cursor: "pointer", flexShrink: 0,
               }}>Se connecter</button>
             </div>
@@ -615,15 +615,15 @@ function App() {
               {/* Bloc "Se connecter" invité (desktop, coin haut-gauche) */}
               {isGuest && (
                 <div className="guest-connect-block">
-                  <span style={{ fontSize: "28px" }}>👤</span>
-                  <p style={{ margin: 0, fontSize: "14px", fontWeight: "700", color: "var(--text)" }}>Mode invité</p>
-                  <p style={{ margin: 0, fontSize: "12px", color: "var(--text)", lineHeight: 1.5, textAlign: "center", opacity: 0.85 }}>
+                  <span style={{ fontSize: "var(--t-2xl)" }}>👤</span>
+                  <p style={{ margin: 0, fontSize: "var(--t-sm)", fontWeight: "700", color: "var(--text)" }}>Mode invité</p>
+                  <p style={{ margin: 0, fontSize: "var(--t-xs)", color: "var(--text)", lineHeight: 1.5, textAlign: "center", opacity: 0.85 }}>
                     Sauvegarde tes swipes et retrouve tes amis.
                   </p>
                   <button onClick={ouvrirConnexion} style={{
                     marginTop: "4px", background: "var(--purple)", color: "#fff",
                     border: "none", borderRadius: "20px", padding: "9px 18px",
-                    fontSize: "13px", fontWeight: "700", cursor: "pointer",
+                    fontSize: "var(--t-sm)", fontWeight: "700", cursor: "pointer",
                     width: "100%", boxShadow: "0 2px 10px rgba(29,99,205,0.4)",
                   }}>Se connecter</button>
                 </div>
@@ -713,7 +713,7 @@ function App() {
             left: "50%", transform: "translateX(-50%)",
             background: toast.type === "error" ? "var(--red)" : "var(--green)",
             color: "white", borderRadius: "14px", padding: "12px 22px",
-            fontSize: "14px", fontWeight: "500", boxShadow: "var(--shadow-lg)",
+            fontSize: "var(--t-sm)", fontWeight: "500", boxShadow: "var(--shadow-lg)",
             zIndex: 1000, cursor: "pointer", maxWidth: "88vw", textAlign: "center",
             animation: "apparaitre 0.2s ease-out",
           }}
@@ -732,7 +732,7 @@ function Spinner() {
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px" }}>
       <div style={{ width: "36px", height: "36px", border: "3px solid var(--border-2)", borderTopColor: "var(--purple)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-      <p role="status" style={{ color: "var(--text-4)", fontSize: "13px", margin: 0 }}>Chargement…</p>
+      <p role="status" style={{ color: "var(--text-4)", fontSize: "var(--t-sm)", margin: 0 }}>Chargement…</p>
     </div>
   );
 }
@@ -742,14 +742,14 @@ function EcranVide({ onRelancer }) {
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px", padding: "24px", textAlign: "center" }}>
       <div style={{ fontSize: "52px" }}>🎬</div>
-      <p style={{ margin: 0, fontSize: "16px", fontWeight: "700", color: "var(--text)" }}>Tu as tout vu !</p>
-      <p style={{ margin: 0, fontSize: "13px", color: "var(--text-3)", lineHeight: 1.6 }}>
+      <p style={{ margin: 0, fontSize: "var(--t-md)", fontWeight: "700", color: "var(--text)" }}>Tu as tout vu !</p>
+      <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-3)", lineHeight: 1.6 }}>
         Impressionnant. Essaie un autre genre ou recharge pour découvrir de nouveaux films.
       </p>
       <button onClick={onRelancer} style={{
         marginTop: "4px", background: "var(--purple)", color: "white",
         border: "none", borderRadius: "50px", padding: "12px 28px",
-        fontSize: "14px", fontWeight: "700", cursor: "pointer",
+        fontSize: "var(--t-sm)", fontWeight: "700", cursor: "pointer",
         boxShadow: "0 4px 16px rgba(29,99,205,0.35)",
       }}>Recharger</button>
     </div>
@@ -768,16 +768,16 @@ function PromptInvite({ onSeConnecter, onFermer }) {
         animation: "slideUp 0.25s ease-out",
       }}>
         <span style={{ fontSize: "44px" }}>🎬</span>
-        <h2 style={{ margin: 0, fontSize: "20px", color: "var(--text)" }}>Tu kiffes Swochi ?</h2>
-        <p style={{ color: "var(--text-3)", fontSize: "14px", margin: 0, lineHeight: 1.6 }}>
+        <h2 style={{ margin: 0, fontSize: "var(--t-xl)", color: "var(--text)" }}>Tu kiffes Swochi ?</h2>
+        <p style={{ color: "var(--text-3)", fontSize: "var(--t-sm)", margin: 0, lineHeight: 1.6 }}>
           Crée un compte gratuit pour sauvegarder tes swipes, faire des listes et comparer avec tes amis.
         </p>
         <button onClick={onSeConnecter} style={{
           background: "var(--purple)", color: "white", border: "none",
-          borderRadius: "50px", padding: "14px", fontSize: "15px",
+          borderRadius: "50px", padding: "14px", fontSize: "var(--t-md)",
           fontWeight: "700", cursor: "pointer", boxShadow: "0 4px 16px rgba(29,99,205,0.35)",
         }}>Créer un compte</button>
-        <button onClick={onFermer} style={{ background: "none", border: "none", color: "var(--text-3)", fontSize: "13px", cursor: "pointer" }}>
+        <button onClick={onFermer} style={{ background: "none", border: "none", color: "var(--text-3)", fontSize: "var(--t-sm)", cursor: "pointer" }}>
           Continuer sans compte
         </button>
       </div>
@@ -790,18 +790,18 @@ function EcranPseudo({ usernameInput, setUsernameInput, usernameError, onConfirm
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "var(--text)", padding: "20px" }}>
       <img src="/logo_swochi_nom.svg" alt="Swochi" style={{ height: "36px", marginBottom: "6px" }} />
-      <p style={{ color: "var(--text-3)", marginBottom: "32px", fontSize: "14px" }}>Dernière étape ✨</p>
+      <p style={{ color: "var(--text-3)", marginBottom: "32px", fontSize: "var(--t-sm)" }}>Dernière étape ✨</p>
       <div style={{
         background: "var(--surface)", borderRadius: "20px", padding: "32px",
         width: "100%", maxWidth: "300px", display: "flex", flexDirection: "column", gap: "16px",
         boxShadow: "var(--shadow-md)", border: "1px solid var(--border)",
       }}>
-        <h2 style={{ margin: 0, fontSize: "19px", color: "var(--text)" }}>Choisis ton pseudo</h2>
-        <p style={{ margin: 0, color: "var(--text-3)", fontSize: "13px", lineHeight: 1.6 }}>
+        <h2 style={{ margin: 0, fontSize: "var(--t-lg)", color: "var(--text)" }}>Choisis ton pseudo</h2>
+        <p style={{ margin: 0, color: "var(--text-3)", fontSize: "var(--t-sm)", lineHeight: 1.6 }}>
           Tes amis l'utiliseront pour t'ajouter et comparer vos listes de films.
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <label htmlFor="username-input" style={{ fontSize: "13px", color: "var(--text-3)" }}>Ton pseudo</label>
+          <label htmlFor="username-input" style={{ fontSize: "var(--t-sm)", color: "var(--text-3)" }}>Ton pseudo</label>
           <input
             id="username-input"
             type="text"
@@ -813,11 +813,11 @@ function EcranPseudo({ usernameInput, setUsernameInput, usernameError, onConfirm
           />
         </div>
         {usernameError && (
-          <p role="alert" style={{ color: "var(--red)", fontSize: "13px", margin: 0 }}>{usernameError}</p>
+          <p role="alert" style={{ color: "var(--red)", fontSize: "var(--t-sm)", margin: 0 }}>{usernameError}</p>
         )}
         <button onClick={onConfirmer} style={{
           background: "var(--green)", color: "white", border: "none",
-          borderRadius: "50px", padding: "14px", fontSize: "16px",
+          borderRadius: "50px", padding: "14px", fontSize: "var(--t-md)",
           fontWeight: "700", cursor: "pointer", boxShadow: "0 4px 14px rgba(34,197,94,0.35)",
         }}>Confirmer</button>
       </div>
@@ -845,14 +845,14 @@ function BurgerButton({ onClick }) {
 const inputStyle = {
   background: "var(--input-bg)", border: "1px solid var(--input-border)",
   borderRadius: "10px", padding: "13px 14px",
-  color: "var(--text)", fontSize: "16px", outline: "none",
+  color: "var(--text)", fontSize: "var(--t-md)", outline: "none",
 };
 
 function btnStyle(color) {
   return {
     background: "transparent", border: `2.5px solid ${color}`,
     color, borderRadius: "50%", width: "58px", height: "58px",
-    fontSize: "22px", fontWeight: "bold", cursor: "pointer", flexShrink: 0,
+    fontSize: "var(--t-xl)", fontWeight: "bold", cursor: "pointer", flexShrink: 0,
     display: "flex", alignItems: "center", justifyContent: "center",
     transition: "transform 0.1s, background 0.15s",
   };

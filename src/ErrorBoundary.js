@@ -21,7 +21,7 @@ class ErrorBoundary extends Component {
           padding: "24px 16px", color: "var(--red)",
           background: "var(--surface)", borderRadius: "14px",
           margin: "16px", border: "1px solid var(--red)",
-          fontSize: "13px",
+          fontSize: "var(--t-sm)",
         }}>
           <strong>Erreur de rendu :</strong> {this.state.error.message}
         </div>

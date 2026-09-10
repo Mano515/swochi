@@ -102,11 +102,11 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
               borderBottom: "1px solid var(--divider)",
             }}>
               <div>
-                <p style={{ margin: 0, fontSize: "17px", fontWeight: "700", color: "var(--text)" }}>
+                <p style={{ margin: 0, fontSize: "var(--t-lg)", fontWeight: "700", color: "var(--text)" }}>
                   {film.title}
                 </p>
                 {film.release_date && (
-                  <p style={{ margin: "2px 0 0", fontSize: "13px", color: "var(--text-3)" }}>
+                  <p style={{ margin: "2px 0 0", fontSize: "var(--t-sm)", color: "var(--text-3)" }}>
                     {film.release_date.slice(0, 4)}
                   </p>
                 )}
@@ -119,7 +119,7 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
                   background: "var(--surface-3)", border: "none",
                   color: "var(--text-2)", width: "32px", height: "32px",
                   borderRadius: "50%", display: "flex", alignItems: "center",
-                  justifyContent: "center", cursor: "pointer", fontSize: "16px",
+                  justifyContent: "center", cursor: "pointer", fontSize: "var(--t-md)",
                   flexShrink: 0,
                 }}
               >✕</button>
@@ -150,7 +150,7 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
                         border: "1px solid var(--border)",
                         borderRadius: "20px",
                         padding: "5px 12px",
-                        fontSize: "13px",
+                        fontSize: "var(--t-sm)",
                         color: "var(--text-2)",
                         fontWeight: "500",
                       }}>{tag}</span>
@@ -192,7 +192,7 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
                   <div style={{ marginBottom: "20px" }}>
                     <Label>SYNOPSIS</Label>
                     <p style={{
-                      margin: 0, fontSize: "14px",
+                      margin: 0, fontSize: "var(--t-sm)",
                       lineHeight: "1.65", color: "var(--text-2)",
                     }}>{details.synopsis}</p>
                   </div>
@@ -218,7 +218,7 @@ function Label({ children }) {
   return (
     <p style={{
       margin: "0 0 5px",
-      fontSize: "11px",
+      fontSize: "var(--t-xs)",
       fontWeight: "700",
       letterSpacing: "0.8px",
       color: "var(--text-3)",
@@ -230,7 +230,7 @@ function Section({ label, value }) {
   return (
     <div style={{ marginBottom: "20px" }}>
       <Label>{label}</Label>
-      <p style={{ margin: 0, fontSize: "14px", color: "var(--text)", lineHeight: "1.5" }}>{value}</p>
+      <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text)", lineHeight: "1.5" }}>{value}</p>
     </div>
   );
 }
@@ -496,14 +496,14 @@ const MovieCard = forwardRef(function MovieCard({ film, onSwipe, isTop }, ref) {
           </p>
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "7px" }}>
             {film.release_date && (
-              <span style={{ color: "rgba(255,255,255,0.78)", fontSize: "13px", fontWeight: "600" }}>
+              <span style={{ color: "rgba(255,255,255,0.78)", fontSize: "var(--t-sm)", fontWeight: "600" }}>
                 {film.release_date.slice(0, 4)}
               </span>
             )}
             {film.vote_average > 0 && (
               <span style={{
                 display: "inline-flex", alignItems: "center", gap: "4px",
-                color: "#ffc63d", fontSize: "13px", fontWeight: "700",
+                color: "#ffc63d", fontSize: "var(--t-sm)", fontWeight: "700",
               }}>
                 ★ {film.vote_average.toFixed(1)}
               </span>
@@ -517,7 +517,7 @@ const MovieCard = forwardRef(function MovieCard({ film, onSwipe, isTop }, ref) {
           border: "1px solid rgba(255,255,255,0.3)",
           backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
           color: "white", borderRadius: "20px",
-          padding: "8px 15px", fontSize: "13px", fontWeight: "700",
+          padding: "8px 15px", fontSize: "var(--t-sm)", fontWeight: "700",
         }}>
           Infos
         </span>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { IconeRecherche } from "./Icones";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -84,14 +85,14 @@ function DetailFilm({ film, onClose }) {
           padding: "0 20px 16px", flexShrink: 0, borderBottom: "1px solid var(--divider)",
         }}>
           <div style={{ minWidth: 0, paddingRight: "12px" }}>
-            <p style={{ margin: 0, fontSize: "17px", fontWeight: "700", color: "var(--text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{film.title}</p>
-            {film.release_date && <p style={{ margin: "2px 0 0", fontSize: "13px", color: "var(--text-3)" }}>{film.release_date.slice(0, 4)}</p>}
+            <p style={{ margin: 0, fontSize: "var(--t-lg)", fontWeight: "700", color: "var(--text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{film.title}</p>
+            {film.release_date && <p style={{ margin: "2px 0 0", fontSize: "var(--t-sm)", color: "var(--text-3)" }}>{film.release_date.slice(0, 4)}</p>}
           </div>
-          <button onClick={onClose} style={{ background: "var(--surface-3)", border: "none", color: "var(--text-2)", width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "16px", flexShrink: 0 }}>✕</button>
+          <button onClick={onClose} style={{ background: "var(--surface-3)", border: "none", color: "var(--text-2)", width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "var(--t-md)", flexShrink: 0 }}>✕</button>
         </div>
 
         {/* Body */}
-        <div style={{ overflowY: "auto", padding: "20px", flex: 1, WebkitOverflowScrolling: "touch" }}>
+        <div style={{ overflowY: "auto", padding: "var(--s-5)", flex: 1, WebkitOverflowScrolling: "touch" }}>
           {loading ? (
             <div style={{ display: "flex", justifyContent: "center", padding: "40px 0" }}>
               <div style={{ width: "32px", height: "32px", border: "3px solid var(--border-2)", borderTopColor: "var(--purple)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
@@ -101,7 +102,7 @@ function DetailFilm({ film, onClose }) {
               {/* Meta pills */}
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "20px" }}>
                 {[details.annee && `📅 ${details.annee}`, details.duree && `⏱ ${details.duree}`, details.note && `⭐ ${details.note}`].filter(Boolean).map(tag => (
-                  <span key={tag} style={{ background: "var(--surface-3)", border: "1px solid var(--border)", borderRadius: "20px", padding: "5px 12px", fontSize: "13px", color: "var(--text-2)", fontWeight: "500" }}>{tag}</span>
+                  <span key={tag} style={{ background: "var(--surface-3)", border: "1px solid var(--border)", borderRadius: "20px", padding: "5px 12px", fontSize: "var(--t-sm)", color: "var(--text-2)", fontWeight: "500" }}>{tag}</span>
                 ))}
               </div>
 
@@ -118,7 +119,7 @@ function DetailFilm({ film, onClose }) {
               {details.genres    && <DetailSection label="GENRES"      value={details.genres} />}
               <div style={{ marginBottom: "20px" }}>
                 <SectionLabel>SYNOPSIS</SectionLabel>
-                <p style={{ margin: 0, fontSize: "14px", lineHeight: "1.65", color: "var(--text-2)" }}>{details.synopsis}</p>
+                <p style={{ margin: 0, fontSize: "var(--t-sm)", lineHeight: "1.65", color: "var(--text-2)" }}>{details.synopsis}</p>
               </div>
               {details.realisateur && <DetailSection label="RÉALISATEUR" value={details.realisateur} />}
               {details.acteurs     && <DetailSection label="ACTEURS"     value={details.acteurs} />}
@@ -133,10 +134,10 @@ function DetailFilm({ film, onClose }) {
 }
 
 function SectionLabel({ children }) {
-  return <p style={{ margin: "0 0 6px", fontSize: "11px", fontWeight: "700", letterSpacing: "0.8px", color: "var(--text-3)" }}>{children}</p>;
+  return <p style={{ margin: "0 0 6px", fontSize: "var(--t-xs)", fontWeight: "700", letterSpacing: "0.8px", color: "var(--text-3)" }}>{children}</p>;
 }
 function DetailSection({ label, value }) {
-  return <div style={{ marginBottom: "20px" }}><SectionLabel>{label}</SectionLabel><p style={{ margin: 0, fontSize: "14px", color: "var(--text)", lineHeight: "1.5" }}>{value}</p></div>;
+  return <div style={{ marginBottom: "20px" }}><SectionLabel>{label}</SectionLabel><p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text)", lineHeight: "1.5" }}>{value}</p></div>;
 }
 
 /* ── Badge liste ── */
@@ -149,7 +150,7 @@ function ListeBadge({ liste }) {
   if (!config) return null;
   return (
     <span style={{
-      display: "inline-block", fontSize: "11px", fontWeight: "600",
+      display: "inline-block", fontSize: "var(--t-xs)", fontWeight: "600",
       color: config.color, background: config.bg,
       borderRadius: "20px", padding: "3px 10px",
     }}>{config.label}</span>
@@ -184,16 +185,16 @@ function LigneFilm({ film, listes, onAVoir, onPasInteresse, onDejaVu }) {
         }}>
           {film.poster_path
             ? <img src={`https://image.tmdb.org/t/p/w92${film.poster_path}`} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-            : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px" }}>🎬</div>
+            : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "var(--t-xl)" }}>🎬</div>
           }
         </div>
 
         {/* Texte */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ margin: "0 0 3px", fontWeight: "600", fontSize: "15px", color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <p style={{ margin: "0 0 3px", fontWeight: "600", fontSize: "var(--t-md)", color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
             {film.title}
           </p>
-          <p style={{ margin: "0 0 6px", fontSize: "12px", color: "var(--text-3)" }}>
+          <p style={{ margin: "0 0 6px", fontSize: "var(--t-xs)", color: "var(--text-3)" }}>
             {[film.release_date?.slice(0, 4), film.vote_average > 0 && `⭐ ${film.vote_average.toFixed(1)}`].filter(Boolean).join("  ·  ")}
           </p>
           {dansList
@@ -214,7 +215,7 @@ function LigneFilm({ film, listes, onAVoir, onPasInteresse, onDejaVu }) {
         </div>
 
         {/* Flèche */}
-        <span style={{ color: "var(--text-4)", fontSize: "16px", flexShrink: 0 }}>›</span>
+        <span style={{ color: "var(--text-4)", fontSize: "var(--t-md)", flexShrink: 0 }}>›</span>
       </div>
 
       {detail && <DetailFilm film={film} onClose={() => setDetail(false)} />}
@@ -227,7 +228,7 @@ const pillBtn = {
   border: "1px solid",
   borderRadius: "20px",
   padding: "4px 12px",
-  fontSize: "12px",
+  fontSize: "var(--t-xs)",
   fontWeight: "600",
   cursor: "pointer",
   transition: "opacity 0.15s",
@@ -296,13 +297,13 @@ export default function Recherche({ onFermer, listes, onAVoir, onPasInteresse, o
     >
       {/* Barre de recherche */}
       <div style={{
-        padding: "14px 16px 10px",
+        padding: "calc(var(--s-3) + env(safe-area-inset-top)) var(--gutter) var(--s-3)",
         borderBottom: "1px solid var(--border)",
         flexShrink: 0,
         display: "flex", alignItems: "center", gap: "12px",
       }}>
         <div style={{
-          flex: 1,
+          flex: 1, minWidth: 0,
           display: "flex", alignItems: "center", gap: "10px",
           background: "var(--surface-2)",
           border: "1.5px solid var(--border-2)",
@@ -310,7 +311,7 @@ export default function Recherche({ onFermer, listes, onAVoir, onPasInteresse, o
           padding: "0 14px",
           transition: "border-color 0.2s",
         }}>
-          <span style={{ color: "var(--text-3)", fontSize: "15px", flexShrink: 0 }}>🔍</span>
+          <span style={{ color: "var(--text-3)", display: "flex", flexShrink: 0 }}><IconeRecherche taille={18} /></span>
           <input
             ref={inputRef}
             type="text"
@@ -318,29 +319,32 @@ export default function Recherche({ onFermer, listes, onAVoir, onPasInteresse, o
             value={query}
             onChange={e => setQuery(e.target.value)}
             style={{
-              flex: 1, border: "none", background: "none", outline: "none",
-              color: "var(--text)", fontSize: "16px", padding: "13px 0",
+              flex: 1, minWidth: 0, border: "none", background: "none", outline: "none",
+              color: "var(--text)", fontSize: "var(--t-md)", padding: "13px 0",
             }}
           />
           {query && (
-            <button onClick={() => setQuery("")} style={{ background: "var(--surface-3)", border: "none", color: "var(--text-3)", width: "20px", height: "20px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", flexShrink: 0 }}>✕</button>
+            <button onClick={() => setQuery("")} style={{ background: "var(--surface-3)", border: "none", color: "var(--text-3)", width: "26px", height: "26px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "var(--t-xs)", flexShrink: 0 }}>✕</button>
           )}
         </div>
         <button
           onClick={onFermer}
-          style={{ background: "none", border: "none", color: "var(--purple)", fontSize: "15px", fontWeight: "600", cursor: "pointer", padding: "8px 0", flexShrink: 0, whiteSpace: "nowrap" }}
+          style={{ background: "none", border: "none", color: "var(--purple)", fontSize: "var(--t-md)", fontWeight: "600", cursor: "pointer", padding: "8px 0", flexShrink: 0, whiteSpace: "nowrap" }}
         >Annuler</button>
       </div>
 
       {/* Corps */}
-      <div style={{ flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
+      <div style={{
+        flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch",
+        paddingBottom: "calc(var(--s-5) + env(safe-area-inset-bottom))",
+      }}>
 
         {/* État vide initial */}
         {!query && (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "80px 32px", gap: "12px", textAlign: "center" }}>
             <span style={{ fontSize: "48px" }}>🎬</span>
-            <p style={{ margin: 0, fontSize: "16px", fontWeight: "600", color: "var(--text)" }}>Cherche un film</p>
-            <p style={{ margin: 0, fontSize: "14px", color: "var(--text-3)", lineHeight: "1.6" }}>Tape un titre pour trouver n'importe quel film et l'ajouter à ta liste.</p>
+            <p style={{ margin: 0, fontSize: "var(--t-md)", fontWeight: "600", color: "var(--text)" }}>Cherche un film</p>
+            <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-3)", lineHeight: "1.6" }}>Tape un titre pour trouver n'importe quel film et l'ajouter à ta liste.</p>
           </div>
         )}
 
@@ -354,16 +358,16 @@ export default function Recherche({ onFermer, listes, onAVoir, onPasInteresse, o
         {/* Aucun résultat */}
         {!loading && hasSearched && resultats.length === 0 && (
           <div style={{ textAlign: "center", padding: "64px 32px" }}>
-            <p style={{ fontSize: "36px", margin: "0 0 12px" }}>🤷</p>
-            <p style={{ margin: "0 0 6px", fontSize: "15px", fontWeight: "600", color: "var(--text)" }}>Aucun résultat</p>
-            <p style={{ margin: 0, fontSize: "13px", color: "var(--text-3)" }}>Vérifie l'orthographe ou essaie un autre titre.</p>
+            <p style={{ fontSize: "var(--t-3xl)", margin: "0 0 12px" }}>🤷</p>
+            <p style={{ margin: "0 0 6px", fontSize: "var(--t-md)", fontWeight: "600", color: "var(--text)" }}>Aucun résultat</p>
+            <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-3)" }}>Vérifie l'orthographe ou essaie un autre titre.</p>
           </div>
         )}
 
         {/* Résultats */}
         {!loading && resultats.length > 0 && (
           <div style={{ padding: "0 16px" }}>
-            <p style={{ margin: "12px 0 4px", fontSize: "12px", color: "var(--text-3)", fontWeight: "600", letterSpacing: "0.5px" }}>
+            <p style={{ margin: "12px 0 4px", fontSize: "var(--t-xs)", color: "var(--text-3)", fontWeight: "600", letterSpacing: "0.5px" }}>
               {resultats.length} résultat{resultats.length > 1 ? "s" : ""}
             </p>
             {resultats.map(film => (
