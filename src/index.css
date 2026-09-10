@@ -105,7 +105,8 @@
      17px : l'app tournait à 13-14px, soit une lecture
      à bout de bras difficile sur un écran dense.
   ─────────────────────────────────────────────────── */
-  --t-xs:   13px;   /* mentions, compteurs           */
+  --t-2xs:  11px;   /* compteurs en pastille         */
+  --t-xs:   13px;   /* mentions                      */
   --t-sm:   15px;   /* texte secondaire              */
   --t-md:   17px;   /* corps de texte, libellés      */
   --t-lg:   20px;   /* titres de section             */
@@ -123,7 +124,13 @@
   --s-8:  32px;
   --s-10: 40px;
 
-  /* ── Rayons ── */
+  /* ── Rayons ──────────────────────────────────────
+     Six paliers, et rien entre. L'app en rendait dix
+     valeurs distinctes pour une échelle de cinq, dont
+     deux paliers jamais employés : le système existait
+     sans être appliqué.
+  ─────────────────────────────────────────────────── */
+  --r-xs:   8px;
   --r-sm:   10px;
   --r-md:   14px;
   --r-lg:   20px;
@@ -323,14 +330,14 @@ input, button, select, textarea { font-size: var(--t-md); font-family: inherit; 
     transition: background-color 0.25s ease;
   }
   .sidebar-logo {
-    font-size: 17px; font-weight: 800; letter-spacing: 3px; color: var(--text);
+    font-size: var(--t-md); font-weight: 800; letter-spacing: 3px; color: var(--text);
     padding: 4px 10px 20px; cursor: pointer; background: none; border: none;
     text-align: left; display: block; width: 100%; font-family: inherit;
   }
   .sidebar-nav-item {
     display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-    border-radius: 10px; border: none; background: none; cursor: pointer;
-    font-size: 14px; font-weight: 500; color: var(--text);
+    border-radius: var(--r-sm); border: none; background: none; cursor: pointer;
+    font-size: var(--t-sm); font-weight: 500; color: var(--text);
     transition: background 0.15s, color 0.15s; text-align: left;
     width: 100%; font-family: inherit;
   }
@@ -366,7 +373,7 @@ input, button, select, textarea { font-size: var(--t-md); font-family: inherit; 
   .guest-connect-block {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     gap: 10px; position: absolute; top: 16px; left: 16px; z-index: 10;
-    width: 190px; padding: 20px 18px; border-radius: 18px;
+    width: 190px; padding: 20px 18px; border-radius: var(--r-lg);
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.1);
     backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
@@ -405,8 +412,8 @@ input, button, select, textarea { font-size: var(--t-md); font-family: inherit; 
   .genre-sidebar-item {
     background: none; border: none;
     cursor: pointer; color: var(--text);
-    font-size: 13px; font-weight: 500;
-    padding: 8px 12px; border-radius: 10px; text-align: left;
+    font-size: var(--t-xs); font-weight: 500;
+    padding: 8px 12px; border-radius: var(--r-sm); text-align: left;
     font-family: inherit; transition: background 0.15s, color 0.15s;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     position: relative;
@@ -533,7 +540,6 @@ code {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 23px;
   font-weight: 700;
   cursor: pointer;
   flex-shrink: 0;
@@ -551,7 +557,6 @@ code {
 .action-btn--seen {
   width: 54px;
   height: 54px;
-  font-size: 18px;
   background: var(--surface-2);
   color: #5aa2ff;
   box-shadow: 0 4px 14px rgba(0,0,0,0.35), inset 0 0 0 2px rgb(var(--accent-rvb) / 0.55);
@@ -561,7 +566,6 @@ code {
 .action-btn--like {
   width: 74px;
   height: 74px;
-  font-size: 27px;
   background: linear-gradient(145deg, #26d366, #14a04b);
   color: #fff;
   box-shadow: 0 8px 24px rgba(34,197,94,0.42), 0 2px 6px rgba(0,0,0,0.35);
@@ -570,7 +574,6 @@ code {
 .action-btn--undo {
   width: var(--touch);
   height: var(--touch);
-  font-size: 16px;
   background: transparent;
   color: var(--amber-txt);
   box-shadow: inset 0 0 0 2px rgba(245,158,11,0.6);
@@ -590,8 +593,6 @@ code {
 .genre-sidebar-item {
   min-height: var(--touch);
 }
-
-.action-btn { font-size: var(--t-xl); }
 
 /* ── Réglages typographiques ───────────────────────
    Manrope a une chasse généreuse : on resserre les
@@ -637,7 +638,7 @@ h1, h2, h3 {
   border-radius: var(--r-pill);
   background: var(--amber);
   color: #1a1200;
-  font-size: 12px;
+  font-size: var(--t-2xs);
   font-weight: 800;
   line-height: 20px;
   text-align: center;
@@ -801,7 +802,7 @@ h1, h2, h3 {
   border-radius: var(--r-pill);
   background: var(--accent-doux);
   color: var(--accent-txt);
-  font-size: 12px;
+  font-size: var(--t-2xs);
   font-weight: 800;
   line-height: 20px;
   text-align: center;
@@ -872,7 +873,7 @@ h1, h2, h3 {
   padding: 2px 6px;
   border-radius: var(--r-pill);
   background: rgba(255,255,255,0.14);
-  font-size: 11px;
+  font-size: var(--t-2xs);
   font-weight: 800;
 }
 .pastille--active .pastille-nb { background: rgba(255,255,255,0.26); }
@@ -1044,4 +1045,44 @@ h1, h2, h3 {
 
 @media (prefers-reduced-motion: reduce) {
   .feuille, .feuille-fond { animation: none; }
+}
+
+/* ══════════════════════════════════════════════════
+   ACCESSIBILITÉ — règles globales
+══════════════════════════════════════════════════ */
+
+/* ── Focus clavier ─────────────────────────────────
+   L'app tourne aussi en web sur grand écran, où l'on
+   perdait la trace du curseur dès qu'on lâchait la
+   souris : mille lignes de style ne contenaient que
+   deux règles de focus. `:focus-visible` n'apparaît
+   qu'au clavier, jamais après un clic ou un appui.
+──────────────────────────────────────────────────── */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2.5px solid var(--accent-txt);
+  outline-offset: 3px;
+  border-radius: var(--r-xs);
+}
+/* Sur fond d'accent plein, le contour reprend le blanc du libellé. */
+.feuille-valider:focus-visible,
+.action-btn--like:focus-visible,
+.action-btn--filtres-actif:focus-visible {
+  outline-color: #fff;
+}
+
+/* ── Mouvement réduit ──────────────────────────────
+   Un seul bloc couvrait la feuille de filtres ;
+   l'envol des cartes, les points du splash, le fondu
+   d'onglet et les ressorts de swipe ne l'étaient pas.
+   On neutralise sans supprimer : une durée d'1ms
+   laisse les callbacks de fin d'animation se déclencher,
+   là où `animation: none` les avalerait.
+──────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
 }

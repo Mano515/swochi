@@ -19,7 +19,7 @@ class ErrorBoundary extends Component {
       return (
         <div style={{
           padding: "24px 16px", color: "var(--red-txt)",
-          background: "var(--surface)", borderRadius: "14px",
+          background: "var(--surface)", borderRadius: "var(--r-md)",
           margin: "16px", border: "1px solid var(--red)",
           fontSize: "var(--t-sm)",
         }}>

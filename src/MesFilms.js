@@ -1,10 +1,13 @@
 import { useState } from "react";
-import { IconeRecherche, IconeInfo } from "./Icones";
+import { IconeRecherche, IconeInfo, IconeCoeur, IconeOeil, IconeCroix, IconeCorbeille } from "./Icones";
 
+/* Chaque onglet porte l'icône de l'action qui y range un film : on retrouve
+   ici le geste qu'on a fait sur la carte. « Déjà vu » affichait une coche,
+   alors que le geste est l'œil. */
 const ONGLETS = [
-  { key: "aVoir",        label: "À voir",   icon: "♥" },
-  { key: "dejavu",       label: "Déjà vu",  icon: "✓" },
-  { key: "pasInteresse", label: "Ignorés",  icon: "✕" },
+  { key: "aVoir",        label: "À voir",   Icone: IconeCoeur },
+  { key: "dejavu",       label: "Déjà vu",  Icone: IconeOeil  },
+  { key: "pasInteresse", label: "Ignorés",  Icone: IconeCroix },
 ];
 
 function FilmDetail({ film, ongletActif, onDeplacer, onSupprimer, onFermer }) {
@@ -36,7 +39,7 @@ function FilmDetail({ film, ongletActif, onDeplacer, onSupprimer, onFermer }) {
           <img
             src={`https://image.tmdb.org/t/p/w185${film.poster_path}`}
             alt={`Affiche de ${film.title}`}
-            style={{ width: "90px", borderRadius: "12px", objectFit: "cover", flexShrink: 0, boxShadow: "var(--shadow-md)" }}
+            style={{ width: "90px", borderRadius: "var(--r-sm)", objectFit: "cover", flexShrink: 0, boxShadow: "var(--shadow-md)" }}
           />
           <div style={{ flex: 1, minWidth: 0 }}>
             <h2 style={{ margin: "0 0 6px", fontSize: "var(--t-lg)", fontWeight: "700", color: "var(--text)", lineHeight: 1.3 }}>
@@ -49,7 +52,7 @@ function FilmDetail({ film, ongletActif, onDeplacer, onSupprimer, onFermer }) {
             )}
             {film.vote_average > 0 && (
               <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-2)" }}>
-                ⭐ {film.vote_average.toFixed(1)} / 10
+                ★ {film.vote_average.toFixed(1)} / 10
               </p>
             )}
           </div>
@@ -73,7 +76,7 @@ function FilmDetail({ film, ongletActif, onDeplacer, onSupprimer, onFermer }) {
               style={{
                 background: "var(--surface-2)",
                 border: "1px solid var(--border)",
-                color: "var(--text)", borderRadius: "12px",
+                color: "var(--text)", borderRadius: "var(--r-sm)",
                 padding: "11px 16px", fontSize: "var(--t-sm)", fontWeight: "600",
                 cursor: "pointer", textAlign: "left",
                 display: "flex", alignItems: "center", gap: "10px",
@@ -90,12 +93,13 @@ function FilmDetail({ film, ongletActif, onDeplacer, onSupprimer, onFermer }) {
           style={{
             background: "transparent",
             border: "1px solid var(--border-2)",
-            color: "var(--text-3)", borderRadius: "12px",
+            color: "var(--text-3)", borderRadius: "var(--r-sm)",
             padding: "11px 16px", fontSize: "var(--t-sm)",
             cursor: "pointer", width: "100%",
+            display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
           }}
         >
-          🗑 Retirer de la liste
+          <IconeCorbeille taille={16} /> Retirer de la liste
         </button>
       </div>
     </div>
@@ -128,7 +132,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
       {isGuest && (
         <div style={{
           background: "var(--surface-2)", border: "1px solid var(--border)",
-          borderRadius: "12px", padding: "11px 14px",
+          borderRadius: "var(--r-sm)", padding: "11px 14px",
           display: "flex", alignItems: "center", gap: "10px",
           marginBottom: "16px", fontSize: "var(--t-sm)", color: "var(--text-3)",
         }}>
@@ -144,7 +148,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
         style={{
           display: "flex",
           background: "var(--surface-2)",
-          borderRadius: "14px",
+          borderRadius: "var(--r-md)",
           padding: "4px",
           marginBottom: "20px",
           gap: "2px",
@@ -163,7 +167,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
                 background: actif ? "var(--surface)" : "transparent",
                 color: actif ? "var(--text)" : "var(--text-2)",
                 border: "none",
-                borderRadius: "10px",
+                borderRadius: "var(--r-sm)",
                 padding: "9px 4px",
                 fontSize: "var(--t-xs)",
                 fontWeight: actif ? "700" : "500",
@@ -177,7 +181,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
                 lineHeight: 1.2,
               }}
             >
-              <span style={{ fontSize: "var(--t-sm)", opacity: actif ? 1 : 0.85 }}>{o.icon}</span>
+              <o.Icone taille={17} />
               <span>{o.label}</span>
               <span style={{ fontSize: "var(--t-xs)", opacity: 0.9, fontWeight: "400" }}>
                 {listes[o.key].length}
@@ -202,7 +206,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
         onChange={e => setRecherche(e.target.value)}
         style={{
           background: "var(--input-bg)", border: "1px solid var(--input-border)",
-          borderRadius: "10px", padding: "11px 14px 11px 38px",
+          borderRadius: "var(--r-sm)", padding: "11px 14px 11px 38px",
           color: "var(--text)", fontSize: "var(--t-md)", outline: "none",
           width: "100%", boxSizing: "border-box",
         }}
@@ -236,7 +240,7 @@ function MesFilms({ listes, onDeplacer, onSupprimer, isGuest }) {
                 alt={`Affiche de ${film.title}`}
                 style={{
                   width: "100%", aspectRatio: "2/3", objectFit: "cover",
-                  borderRadius: "10px", display: "block",
+                  borderRadius: "var(--r-sm)", display: "block",
                   boxShadow: "var(--shadow-md)",
                   transition: "transform 0.15s ease, box-shadow 0.15s ease",
                 }}

@@ -5,13 +5,19 @@ import App from './App';
 import { ThemeProvider } from './ThemeContext';
 import reportWebVitals from './reportWebVitals';
 import { masquerSplash } from './native';
+import { MotionConfig } from 'framer-motion';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
+    {/* `reducedMotion="user"` neutralise ressorts et déplacements dès que le
+        système le demande, sans toucher aux neuf transitions de la carte.
+        Les fondus d'opacité restent : ce ne sont pas des mouvements. */}
+    <MotionConfig reducedMotion="user">
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    </MotionConfig>
   </React.StrictMode>
 );
 

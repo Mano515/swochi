@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "re
 import { createPortal } from "react-dom";
 import { motion, useMotionValue, useTransform, animate, AnimatePresence, useMotionValueEvent } from "framer-motion";
 import { vibrer, vibrerSucces } from "./native";
+import { IconeCroix } from "./Icones";
 
 function formatDuree(minutes) {
   const h   = Math.floor(minutes / 60);
@@ -117,12 +118,13 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
                 aria-label="Fermer"
                 style={{
                   background: "var(--surface-3)", border: "none",
-                  color: "var(--text-2)", width: "32px", height: "32px",
-                  borderRadius: "50%", display: "flex", alignItems: "center",
-                  justifyContent: "center", cursor: "pointer", fontSize: "var(--t-md)",
+                  color: "var(--text-2)", borderRadius: "50%",
+                  display: "flex", alignItems: "center",
+                  justifyContent: "center", cursor: "pointer",
+                  minWidth: "var(--touch)", minHeight: "var(--touch)",
                   flexShrink: 0,
                 }}
-              >✕</button>
+              ><IconeCroix taille={15} /></button>
             </div>
 
             {/* Contenu scrollable */}
@@ -141,14 +143,14 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
                   {/* Pills méta */}
                   <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "20px" }}>
                     {[
-                      details.annee && `📅 ${details.annee}`,
-                      details.duree && `⏱ ${details.duree}`,
-                      details.note  && `⭐ ${details.note}`,
+                      details.annee,
+                      details.duree,
+                      details.note && `★ ${details.note}`,
                     ].filter(Boolean).map(tag => (
                       <span key={tag} style={{
                         background: "var(--surface-3)",
                         border: "1px solid var(--border)",
-                        borderRadius: "20px",
+                        borderRadius: "var(--r-lg)",
                         padding: "5px 12px",
                         fontSize: "var(--t-sm)",
                         color: "var(--text-2)",
@@ -167,7 +169,7 @@ function BottomSheet({ panneauId, film, details, loadingDetails, showDetails, cl
                       <div style={{
                         position: "relative",
                         paddingBottom: "56.25%",
-                        borderRadius: "12px",
+                        borderRadius: "var(--r-sm)",
                         overflow: "hidden",
                         background: "#000",
                       }}>
@@ -372,7 +374,7 @@ const MovieCard = forwardRef(function MovieCard({ film, onSwipe, isTop }, ref) {
         transition={{ type: "spring", damping: 26, stiffness: 220 }}
         style={{
           position: "absolute", inset: 0,
-          borderRadius: "24px", overflow: "hidden",
+          borderRadius: "var(--r-xl)", overflow: "hidden",
           boxShadow: "0 8px 30px rgba(0,0,0,0.45)",
           zIndex: 0,
         }}
@@ -395,7 +397,7 @@ const MovieCard = forwardRef(function MovieCard({ film, onSwipe, isTop }, ref) {
   const tampon = {
     position: "absolute",
     padding: "11px 20px",
-    borderRadius: "14px",
+    borderRadius: "var(--r-md)",
     border: "3px solid rgba(255,255,255,0.9)",
     color: "#fff",
     fontWeight: "900",
@@ -417,7 +419,7 @@ const MovieCard = forwardRef(function MovieCard({ film, onSwipe, isTop }, ref) {
       style={{
         x, y, rotate, opacity,
         position: "absolute", inset: 0,
-        borderRadius: "24px", overflow: "hidden",
+        borderRadius: "var(--r-xl)", overflow: "hidden",
         cursor: showDetails ? "default" : "grab",
         boxShadow: "0 24px 70px rgba(0,0,0,0.65), 0 2px 8px rgba(0,0,0,0.4)",
         zIndex: 1,
@@ -516,7 +518,7 @@ const MovieCard = forwardRef(function MovieCard({ film, onSwipe, isTop }, ref) {
           background: "rgba(255,255,255,0.16)",
           border: "1px solid rgba(255,255,255,0.3)",
           backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
-          color: "white", borderRadius: "20px",
+          color: "white", borderRadius: "var(--r-lg)",
           padding: "8px 15px", fontSize: "var(--t-sm)", fontWeight: "700",
         }}>
           Infos

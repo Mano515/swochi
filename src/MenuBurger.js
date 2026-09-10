@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { auth } from "./firebase";
 import { signOut } from "firebase/auth";
 import { useTheme } from "./ThemeContext";
-import { ICONES_NAV, IconeSoleil, IconeLune } from "./Icones";
+import { ICONES_NAV, IconeSoleil, IconeLune, IconeCroix } from "./Icones";
 
 const ONGLETS_COMPLET = [
   { key: "swipe", label: "Découvrir" },
@@ -88,10 +88,11 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
             aria-label="Fermer le menu"
             style={{
               background: "var(--surface-2)", border: "1px solid var(--border)",
-              color: "var(--text-3)", fontSize: "var(--t-lg)", cursor: "pointer",
-              lineHeight: 1, padding: "6px 10px", borderRadius: "8px",
+              color: "var(--text-2)", cursor: "pointer", lineHeight: 1,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              minWidth: "var(--touch)", minHeight: "var(--touch)", borderRadius: "var(--r-sm)",
             }}
-          >✕</button>
+          ><IconeCroix taille={16} /></button>
         </div>
 
         {/* Badge invité */}
@@ -99,7 +100,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
           <div style={{
             margin: "12px 12px 0",
             background: "var(--accent-doux)", border: "1px solid rgb(var(--accent-rvb) / 0.2)",
-            borderRadius: "12px", padding: "12px 14px",
+            borderRadius: "var(--r-sm)", padding: "12px 14px",
           }}>
             <p style={{ margin: "0 0 4px", fontSize: "var(--t-sm)", color: "var(--accent-txt)", fontWeight: "600" }}>
               Mode invité
@@ -123,7 +124,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
                   width: "100%", textAlign: "left",
                   background: actif ? "var(--accent-doux)" : "transparent",
                   color: actif ? "var(--accent-txt)" : "var(--text-2)",
-                  border: "none", borderRadius: "14px",
+                  border: "none", borderRadius: "var(--r-md)",
                   padding: "14px 18px",
                   cursor: "pointer", marginBottom: "4px",
                   display: "flex", alignItems: "center", gap: "14px",
@@ -162,7 +163,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
               style={{
                 width: "100%", textAlign: "left",
                 background: "transparent", border: "none",
-                color: "var(--text-3)", borderRadius: "14px",
+                color: "var(--text-3)", borderRadius: "var(--r-md)",
                 padding: "14px 18px", cursor: "pointer",
                 display: "flex", alignItems: "center", gap: "14px",
                 transition: "background 0.15s",
@@ -186,7 +187,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
               style={{
                 width: "100%", background: "var(--accent)",
                 border: "none", color: "white",
-                borderRadius: "12px", padding: "13px",
+                borderRadius: "var(--r-sm)", padding: "13px",
                 fontSize: "var(--t-sm)", fontWeight: "600", cursor: "pointer",
                 boxShadow: "0 4px 14px rgb(var(--accent-rvb) / 0.3)",
               }}
@@ -199,7 +200,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
               style={{
                 width: "100%", background: "transparent",
                 border: "1px solid var(--border-2)", color: "var(--text-3)",
-                borderRadius: "12px", padding: "12px",
+                borderRadius: "var(--r-sm)", padding: "12px",
                 fontSize: "var(--t-sm)", cursor: "pointer",
               }}
             >

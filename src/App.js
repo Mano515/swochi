@@ -16,7 +16,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import SplashScreen from "./SplashScreen";
 import Recherche    from "./Recherche";
 import { useBoutonRetour, vibrer } from "./native";
-import { ICONES_NAV, IconeSoleil, IconeLune, IconeCroix, IconeOeil, IconeCoeur, IconeRetour, IconeRecherche } from "./Icones";
+import { ICONES_NAV, IconeSoleil, IconeLune, IconeCroix, IconeOeil, IconeCoeur, IconeRetour, IconeRecherche, IconeFleche } from "./Icones";
 import PanneauFiltres, { BoutonFiltres } from "./PanneauFiltres";
 import {
   FILTRES_DEFAUT, aDesPrix, aucunFiltre, chargerPrimes, ecrireFiltres,
@@ -251,8 +251,16 @@ function App() {
     setLoadingFilms(true);
 
     try {
-      let nouveaux     = [];
+      const nouveaux   = [];
+      const vus        = new Set(swipes);   // déjà swipés + déjà retenus ici
       let pageCourante = pageDebut;
+
+      // Retient un film s'il n'a pas déjà été vu ou collecté dans ce chargement.
+      const retenir = film => {
+        if (vus.has(film.id)) return;
+        vus.add(film.id);
+        nouveaux.push(film);
+      };
 
       if (aDesPrix(f)) {
         // ── Palmarès ────────────────────────────────────────────────────────
@@ -262,7 +270,7 @@ function App() {
         while (nouveaux.length < 6 && !epuise && tentatives < 8) {
           const lot = await chargerPrimes(f, pageCourante, TMDB_KEY, swipes);
           if (monId !== fetchIdRef.current) return;
-          nouveaux = [...nouveaux, ...lot.films.filter(x => !nouveaux.some(n => n.id === x.id))];
+          lot.films.forEach(retenir);
           epuise   = lot.epuise;
           pageCourante += 1;
           tentatives   += 1;
@@ -277,11 +285,7 @@ function App() {
           const resultats   = await Promise.all(echantillon.map(x => fetchRecommandations(x.id)));
           if (monId !== fetchIdRef.current) return;
 
-          // Déduplication + filtre films déjà vus
-          const vus = new Set(swipes);
-          for (const film of resultats.flat()) {
-            if (!vus.has(film.id)) { vus.add(film.id); nouveaux.push(film); }
-          }
+          resultats.flat().forEach(retenir);
         }
 
         // ── Étape 2 : catalogue général pour compléter ────────────────────────
@@ -291,7 +295,7 @@ function App() {
           const pages = await Promise.all(
             [pageCourante, pageCourante + 1, pageCourante + 2].map(n => fetchPage(n, f))
           );
-          nouveaux = [...nouveaux, ...pages.flat().filter(x => !swipes.includes(x.id) && !nouveaux.some(n => n.id === x.id))];
+          pages.flat().forEach(retenir);
           pageCourante += 3;
           tentatives++;
           if (monId !== fetchIdRef.current) return;
@@ -573,7 +577,7 @@ function App() {
             aria-label="Rechercher un film"
             style={{
               display: "flex", alignItems: "center", gap: "8px",
-              width: "100%", padding: "10px 14px", borderRadius: "12px",
+              width: "100%", padding: "10px 14px", borderRadius: "var(--r-sm)",
               background: "var(--accent-doux)", border: "1.5px solid rgb(var(--accent-rvb) / 0.25)",
               color: "var(--accent-txt)", fontSize: "var(--t-sm)", fontWeight: "600",
               cursor: "pointer", fontFamily: "inherit",
@@ -588,7 +592,7 @@ function App() {
           </button>
           {!isGuest && (
             <button onClick={() => signOut(auth)} className="sidebar-nav-item" style={{ color: "var(--red-txt)" }}>
-              <span style={{ fontSize: "var(--t-md)" }}>↩</span>
+              <IconeFleche vers="gauche" taille={18} />
               Se déconnecter
             </button>
           )}
@@ -605,14 +609,17 @@ function App() {
               <>
                 {/* Logo seul à gauche + barre de recherche */}
                 <button onClick={() => setOnglet("swipe")} aria-label="Accueil"
-                  style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 0 0", flexShrink: 0 }}>
+                  style={{ background: "none", border: "none", cursor: "pointer", padding: 0, flexShrink: 0,
+                           display: "flex", alignItems: "center", justifyContent: "center",
+                           minHeight: "var(--touch)", minWidth: "var(--touch)" }}>
                   <img src="/logo_swochi.svg" alt="Swochi" style={{ height: "30px" }} />
                 </button>
                 <button onClick={() => setRechercheOuverte(true)} aria-label="Rechercher un film"
                   style={{
                     flex: 1, display: "flex", alignItems: "center", gap: "8px",
                     background: "var(--surface-2)", border: "1.5px solid var(--border-2)",
-                    borderRadius: "11px", padding: "7px 13px", cursor: "pointer",
+                    borderRadius: "var(--r-sm)", padding: "0 13px", cursor: "pointer",
+                    minHeight: "var(--touch)",
                     color: "var(--text-3)", fontSize: "var(--t-sm)", fontFamily: "inherit",
                   }}>
                   <IconeRecherche taille={16} />
@@ -623,7 +630,9 @@ function App() {
               <>
                 {/* Logo + nom centré sur l'écran */}
                 <button onClick={() => setOnglet("swipe")} aria-label="Accueil"
-                  style={{ background: "none", border: "none", cursor: "pointer", padding: 0, position: "absolute", left: "50%", transform: "translateX(-50%) translateY(4px)" }}>
+                  style={{ background: "none", border: "none", cursor: "pointer", padding: "0 8px",
+                           display: "flex", alignItems: "center", minHeight: "var(--touch)",
+                           position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}>
                   <Logo hauteur={30} />
                 </button>
                 <div style={{ flex: 1 }} />
@@ -636,7 +645,7 @@ function App() {
           {/* Bannière invité mobile */}
           {isGuest && (
             <div className="mobile-only" style={{
-              background: "var(--accent-doux)", borderRadius: "10px",
+              background: "var(--accent-doux)", borderRadius: "var(--r-sm)",
               margin: "8px 0 10px", padding: "8px 14px",
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
             }}>
@@ -645,8 +654,8 @@ function App() {
               </p>
               <button onClick={ouvrirConnexion} style={{
                 background: "none", border: "1px solid var(--accent-txt)", color: "var(--accent-txt)",
-                borderRadius: "20px", padding: "4px 12px", fontSize: "var(--t-xs)",
-                fontWeight: "600", cursor: "pointer", flexShrink: 0,
+                borderRadius: "var(--r-lg)", padding: "0 14px", fontSize: "var(--t-xs)",
+                fontWeight: "600", cursor: "pointer", flexShrink: 0, minHeight: "44px",
               }}>Se connecter</button>
             </div>
           )}
@@ -675,7 +684,7 @@ function App() {
                   </p>
                   <button onClick={ouvrirConnexion} style={{
                     marginTop: "4px", background: "var(--accent)", color: "#fff",
-                    border: "none", borderRadius: "20px", padding: "9px 18px",
+                    border: "none", borderRadius: "var(--r-lg)", padding: "9px 18px",
                     fontSize: "var(--t-sm)", fontWeight: "700", cursor: "pointer",
                     width: "100%", boxShadow: "0 2px 10px rgb(var(--accent-rvb) / 0.4)",
                   }}>Se connecter</button>
@@ -754,7 +763,7 @@ function App() {
           {onglet === "profil" && (
             <div className="onglet-content">
               <ErrorBoundary>
-                <Profil username={username} user={user} listes={listes} isGuest={isGuest} onSeConnecter={ouvrirConnexion} />
+                <Profil username={username} user={user} listes={listes} genres={genres} isGuest={isGuest} onSeConnecter={ouvrirConnexion} />
               </ErrorBoundary>
             </div>
           )}
@@ -771,7 +780,7 @@ function App() {
             position: "fixed", bottom: "calc(24px + env(safe-area-inset-bottom))",
             left: "50%", transform: "translateX(-50%)",
             background: toast.type === "error" ? "var(--red)" : "var(--green)",
-            color: "white", borderRadius: "14px", padding: "12px 22px",
+            color: "white", borderRadius: "var(--r-md)", padding: "12px 22px",
             fontSize: "var(--t-sm)", fontWeight: "500", boxShadow: "var(--shadow-lg)",
             zIndex: 1000, cursor: "pointer", maxWidth: "88vw", textAlign: "center",
             animation: "apparaitre 0.2s ease-out",
@@ -814,7 +823,7 @@ function EcranVide({ onRelancer, nbFiltres, onEffacerFiltres }) {
       </p>
       <button onClick={filtre ? onEffacerFiltres : onRelancer} style={{
         marginTop: "4px", background: "var(--accent)", color: "white",
-        border: "none", borderRadius: "50px", padding: "12px 28px",
+        border: "none", borderRadius: "var(--r-pill)", padding: "12px 28px",
         fontSize: "var(--t-sm)", fontWeight: "700", cursor: "pointer",
         boxShadow: "0 4px 16px rgb(var(--accent-rvb) / 0.35)",
       }}>{filtre ? "Effacer les filtres" : "Recharger"}</button>
@@ -827,7 +836,7 @@ function PromptInvite({ onSeConnecter, onFermer }) {
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
       <div style={{
-        background: "var(--surface)", borderRadius: "24px", padding: "36px 28px",
+        background: "var(--surface)", borderRadius: "var(--r-xl)", padding: "36px 28px",
         maxWidth: "320px", width: "100%", textAlign: "center",
         display: "flex", flexDirection: "column", gap: "16px",
         boxShadow: "var(--shadow-lg)", border: "1px solid var(--border)",
@@ -840,7 +849,7 @@ function PromptInvite({ onSeConnecter, onFermer }) {
         </p>
         <button onClick={onSeConnecter} style={{
           background: "var(--accent)", color: "white", border: "none",
-          borderRadius: "50px", padding: "14px", fontSize: "var(--t-md)",
+          borderRadius: "var(--r-pill)", padding: "14px", fontSize: "var(--t-md)",
           fontWeight: "700", cursor: "pointer", boxShadow: "0 4px 16px rgb(var(--accent-rvb) / 0.35)",
         }}>Créer un compte</button>
         <button onClick={onFermer} style={{ background: "none", border: "none", color: "var(--text-3)", fontSize: "var(--t-sm)", cursor: "pointer" }}>
@@ -858,7 +867,7 @@ function EcranPseudo({ usernameInput, setUsernameInput, usernameError, onConfirm
       <span style={{ marginBottom: "6px" }}><Logo hauteur={32} /></span>
       <p style={{ color: "var(--text-3)", marginBottom: "32px", fontSize: "var(--t-sm)" }}>Dernière étape ✨</p>
       <div style={{
-        background: "var(--surface)", borderRadius: "20px", padding: "32px",
+        background: "var(--surface)", borderRadius: "var(--r-lg)", padding: "32px",
         width: "100%", maxWidth: "300px", display: "flex", flexDirection: "column", gap: "16px",
         boxShadow: "var(--shadow-md)", border: "1px solid var(--border)",
       }}>
@@ -883,7 +892,7 @@ function EcranPseudo({ usernameInput, setUsernameInput, usernameError, onConfirm
         )}
         <button onClick={onConfirmer} style={{
           background: "var(--green)", color: "white", border: "none",
-          borderRadius: "50px", padding: "14px", fontSize: "var(--t-md)",
+          borderRadius: "var(--r-pill)", padding: "14px", fontSize: "var(--t-md)",
           fontWeight: "700", cursor: "pointer", boxShadow: "0 4px 14px rgba(34,197,94,0.35)",
         }}>Confirmer</button>
       </div>
@@ -896,8 +905,10 @@ function BurgerButton({ onClick }) {
   return (
     <button onClick={onClick} aria-label="Menu" style={{
       background: "var(--surface-2)", border: "1px solid var(--border)",
-      color: "var(--text-2)", borderRadius: "10px", padding: "9px 11px",
+      color: "var(--text-2)", borderRadius: "var(--r-sm)", padding: 0,
       cursor: "pointer", display: "flex", flexDirection: "column", gap: "5px", flexShrink: 0,
+      alignItems: "center", justifyContent: "center",
+      minWidth: "var(--touch)", minHeight: "var(--touch)",
     }}>
       {[0, 1, 2].map(i => (
         <span key={i} style={{ display: "block", width: "18px", height: "2px", background: "var(--text-2)", borderRadius: "2px" }} />
@@ -910,18 +921,8 @@ function BurgerButton({ onClick }) {
 
 const inputStyle = {
   background: "var(--input-bg)", border: "1px solid var(--input-border)",
-  borderRadius: "10px", padding: "13px 14px",
+  borderRadius: "var(--r-sm)", padding: "13px 14px",
   color: "var(--text)", fontSize: "var(--t-md)", outline: "none",
 };
-
-function btnStyle(color) {
-  return {
-    background: "transparent", border: `2.5px solid ${color}`,
-    color, borderRadius: "50%", width: "58px", height: "58px",
-    fontSize: "var(--t-xl)", fontWeight: "bold", cursor: "pointer", flexShrink: 0,
-    display: "flex", alignItems: "center", justifyContent: "center",
-    transition: "transform 0.1s, background 0.15s",
-  };
-}
 
 export default App;

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { IconeRecherche } from "./Icones";
+import { IconeCroix, IconeCoeur, IconeRecherche } from "./Icones";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -88,7 +88,7 @@ function DetailFilm({ film, onClose }) {
             <p style={{ margin: 0, fontSize: "var(--t-lg)", fontWeight: "700", color: "var(--text)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{film.title}</p>
             {film.release_date && <p style={{ margin: "2px 0 0", fontSize: "var(--t-sm)", color: "var(--text-3)" }}>{film.release_date.slice(0, 4)}</p>}
           </div>
-          <button onClick={onClose} style={{ background: "var(--surface-3)", border: "none", color: "var(--text-2)", width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: "var(--t-md)", flexShrink: 0 }}>✕</button>
+          <button onClick={onClose} style={{ background: "var(--surface-3)", border: "none", color: "var(--text-2)", width: "32px", height: "32px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }} aria-label="Fermer"><IconeCroix taille={15} /></button>
         </div>
 
         {/* Body */}
@@ -101,8 +101,8 @@ function DetailFilm({ film, onClose }) {
             <>
               {/* Meta pills */}
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "20px" }}>
-                {[details.annee && `📅 ${details.annee}`, details.duree && `⏱ ${details.duree}`, details.note && `⭐ ${details.note}`].filter(Boolean).map(tag => (
-                  <span key={tag} style={{ background: "var(--surface-3)", border: "1px solid var(--border)", borderRadius: "20px", padding: "5px 12px", fontSize: "var(--t-sm)", color: "var(--text-2)", fontWeight: "500" }}>{tag}</span>
+                {[details.annee, details.duree, details.note && `★ ${details.note}`].filter(Boolean).map(tag => (
+                  <span key={tag} style={{ background: "var(--surface-3)", border: "1px solid var(--border)", borderRadius: "var(--r-lg)", padding: "5px 12px", fontSize: "var(--t-sm)", color: "var(--text-2)", fontWeight: "500" }}>{tag}</span>
                 ))}
               </div>
 
@@ -110,7 +110,7 @@ function DetailFilm({ film, onClose }) {
               {details.trailerKey && (
                 <div style={{ marginBottom: "20px" }}>
                   <SectionLabel>BANDE-ANNONCE</SectionLabel>
-                  <div style={{ position: "relative", paddingBottom: "56.25%", borderRadius: "12px", overflow: "hidden", background: "#000" }}>
+                  <div style={{ position: "relative", paddingBottom: "56.25%", borderRadius: "var(--r-sm)", overflow: "hidden", background: "#000" }}>
                     <iframe src={`https://www.youtube.com/embed/${details.trailerKey}?rel=0&modestbranding=1`} title="Bande-annonce" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} />
                   </div>
                 </div>
@@ -152,7 +152,7 @@ function ListeBadge({ liste }) {
     <span style={{
       display: "inline-block", fontSize: "var(--t-xs)", fontWeight: "600",
       color: config.color, background: config.bg,
-      borderRadius: "20px", padding: "3px 10px",
+      borderRadius: "var(--r-lg)", padding: "3px 10px",
     }}>{config.label}</span>
   );
 }
@@ -179,7 +179,7 @@ function LigneFilm({ film, listes, onAVoir, onPasInteresse, onDejaVu }) {
         {/* Affiche */}
         <div style={{
           width: "52px", height: "78px", flexShrink: 0,
-          borderRadius: "8px", overflow: "hidden",
+          borderRadius: "var(--r-xs)", overflow: "hidden",
           background: "var(--surface-3)",
           boxShadow: "0 2px 8px rgba(0,0,0,0.35)",
         }}>
@@ -204,11 +204,11 @@ function LigneFilm({ film, listes, onAVoir, onPasInteresse, onDejaVu }) {
                 <button
                   onClick={() => onPasInteresse(film)}
                   style={{ ...pillBtn, color: "var(--text-3)", borderColor: "var(--border-2)" }}
-                >✕ Passer</button>
+                ><IconeCroix taille={14} /> Passer</button>
                 <button
                   onClick={() => onAVoir(film)}
                   style={{ ...pillBtn, color: "var(--green-txt)", borderColor: "var(--green)", background: "rgba(34,197,94,0.08)" }}
-                >♥ À voir</button>
+                ><IconeCoeur taille={14} /> À voir</button>
               </div>
             )
           }
@@ -226,7 +226,7 @@ function LigneFilm({ film, listes, onAVoir, onPasInteresse, onDejaVu }) {
 const pillBtn = {
   background: "transparent",
   border: "1px solid",
-  borderRadius: "20px",
+  borderRadius: "var(--r-lg)",
   padding: "4px 12px",
   fontSize: "var(--t-xs)",
   fontWeight: "600",
@@ -307,7 +307,7 @@ export default function Recherche({ onFermer, listes, onAVoir, onPasInteresse, o
           display: "flex", alignItems: "center", gap: "10px",
           background: "var(--surface-2)",
           border: "1.5px solid var(--border-2)",
-          borderRadius: "14px",
+          borderRadius: "var(--r-md)",
           padding: "0 14px",
           transition: "border-color 0.2s",
         }}>
@@ -324,12 +324,12 @@ export default function Recherche({ onFermer, listes, onAVoir, onPasInteresse, o
             }}
           />
           {query && (
-            <button onClick={() => setQuery("")} style={{ background: "var(--surface-3)", border: "none", color: "var(--text-3)", width: "26px", height: "26px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "var(--t-xs)", flexShrink: 0 }}>✕</button>
+            <button onClick={() => setQuery("")} style={{ background: "var(--surface-3)", border: "none", color: "var(--text-3)", width: "26px", height: "26px", borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }} aria-label="Effacer la recherche"><IconeCroix taille={12} /></button>
           )}
         </div>
         <button
           onClick={onFermer}
-          style={{ background: "none", border: "none", color: "var(--accent-txt)", fontSize: "var(--t-md)", fontWeight: "600", cursor: "pointer", padding: "8px 0", flexShrink: 0, whiteSpace: "nowrap" }}
+          style={{ background: "none", border: "none", color: "var(--accent-txt)", fontSize: "var(--t-md)", fontWeight: "600", cursor: "pointer", padding: "0 4px", minHeight: "var(--touch)", flexShrink: 0, whiteSpace: "nowrap" }}
         >Annuler</button>
       </div>
 

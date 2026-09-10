@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IconeCoeur, IconeCroix, IconeOeil } from "./Icones";
 
 const ETAPES = [
   {
@@ -12,9 +13,11 @@ const ETAPES = [
     titre: "Swipe les affiches",
     description: "Glisse la carte ou utilise les boutons pour trier chaque film.",
     hint: [
-      { icone: "→", label: "À voir",   couleur: "#22c55e" },
-      { icone: "←", label: "Skip",     couleur: "#ef4444" },
-      { icone: "↑", label: "Déjà vu", couleur: "#3b82f6" },
+      /* Les mêmes icônes que les boutons d'action : l'onboarding doit montrer
+         ce qu'on va réellement voir sous la carte, pas des flèches abstraites. */
+      { Icone: IconeCoeur, label: "À voir",  couleur: "var(--green)" },
+      { Icone: IconeCroix, label: "Skip",    couleur: "var(--red)"   },
+      { Icone: IconeOeil,  label: "Déjà vu", couleur: "var(--blue)"  },
     ],
   },
   {
@@ -94,12 +97,12 @@ function Onboarding({ onTerminer }) {
             {e.hint.map(h => (
               <div key={h.label} style={{
                 display: "flex", flexDirection: "column", alignItems: "center", gap: "6px",
-                background: "rgba(255,255,255,0.06)", borderRadius: "14px",
+                background: "rgba(255,255,255,0.06)", borderRadius: "var(--r-md)",
                 padding: "14px 12px",
-                border: `1px solid ${h.couleur}40`,
+                border: "1px solid rgba(255,255,255,0.16)",
                 flex: 1,
               }}>
-                <span style={{ fontSize: "var(--t-xl)", color: h.couleur, fontWeight: "bold" }}>{h.icone}</span>
+                <span style={{ color: h.couleur, display: "flex" }}><h.Icone taille={24} /></span>
                 <span style={{ fontSize: "var(--t-xs)", color: "rgba(255,255,255,0.92)" }}>{h.label}</span>
               </div>
             ))}
@@ -114,7 +117,7 @@ function Onboarding({ onTerminer }) {
                 background: i === 0 ? "white" : "transparent",
                 color: i === 0 ? "var(--bg)" : "rgba(255,255,255,0.75)",
                 border: `1px solid ${i === 0 ? "white" : "rgba(255,255,255,0.15)"}`,
-                borderRadius: "20px", padding: "6px 16px",
+                borderRadius: "var(--r-lg)", padding: "6px 16px",
                 fontSize: "var(--t-sm)", fontWeight: i === 0 ? "700" : "normal",
               }}>{g}</span>
             ))}
@@ -127,7 +130,7 @@ function Onboarding({ onTerminer }) {
             <button onClick={passer} style={{
               flex: 1,
               background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)",
-              color: "rgba(255,255,255,0.92)", borderRadius: "50px",
+              color: "rgba(255,255,255,0.92)", borderRadius: "var(--r-pill)",
               padding: "14px", fontSize: "var(--t-md)",
               cursor: "pointer",
             }}>
@@ -137,7 +140,7 @@ function Onboarding({ onTerminer }) {
           <button onClick={suivant} style={{
             flex: 2,
             background: "#1d63cd", border: "none",
-            color: "white", borderRadius: "50px",
+            color: "white", borderRadius: "var(--r-pill)",
             padding: "14px", fontSize: "var(--t-md)",
             fontWeight: "700", cursor: "pointer",
             boxShadow: "0 4px 16px rgb(var(--accent-rvb) / 0.4)",

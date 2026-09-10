@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { IconeAmis, IconeBoite, IconeCadenas, IconeCoche, IconeCopier, IconeCroix, IconeDe, IconeFleche, IconePartage } from "./Icones";
 import { db } from "./firebase";
 import {
   collection, query, where, getDocs,
@@ -35,7 +36,7 @@ function Avatar({ username, size = 36 }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: "50%",
-      background: "linear-gradient(135deg, #1d63cd, #3b82f6)",
+      background: "linear-gradient(135deg, var(--accent), var(--accent-txt))",
       display: "flex", alignItems: "center", justifyContent: "center",
       fontSize: size * 0.4, fontWeight: "bold", color: "white",
       flexShrink: 0,
@@ -53,7 +54,7 @@ function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRef
 
       <button onClick={onAjouter} style={{
         background: "var(--accent)", color: "white",
-        border: "none", borderRadius: "14px",
+        border: "none", borderRadius: "var(--r-md)",
         padding: "14px", fontSize: "var(--t-md)",
         fontWeight: "700", cursor: "pointer",
         display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
@@ -65,14 +66,14 @@ function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRef
       {/* Demandes reçues */}
       {demandesRecues.length > 0 && (
         <section>
-          <p style={titreSectionStyle}>📬 Demandes reçues ({demandesRecues.length})</p>
+          <p style={titreSectionStyle}><IconeBoite taille={15} /> Demandes reçues ({demandesRecues.length})</p>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {demandesRecues.map(d => (
               <div key={d.id} style={carteStyle}>
                 <Avatar username={d.username} />
                 <span style={pseudoStyle}>@{d.username}</span>
                 <button onClick={() => onAccepter(d)} style={btnVertStyle}>Accepter</button>
-                <button onClick={() => onRefuser(d)} style={btnGrisStyle}>✕</button>
+                <button onClick={() => onRefuser(d)} style={btnGrisStyle} aria-label="Refuser la demande"><IconeCroix taille={15} /></button>
               </div>
             ))}
           </div>
@@ -82,11 +83,11 @@ function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRef
       {/* Mes amis */}
       <section>
         <p style={titreSectionStyle}>
-          👥 Mes amis {amis.length > 0 ? `(${amis.length})` : ""}
+          <IconeAmis taille={15} /> Mes amis {amis.length > 0 ? `(${amis.length})` : ""}
         </p>
         {amis.length === 0 ? (
           <div style={{
-            background: "var(--surface)", borderRadius: "14px",
+            background: "var(--surface)", borderRadius: "var(--r-md)",
             padding: "28px", textAlign: "center",
             border: "1px solid var(--border)",
           }}>
@@ -101,13 +102,14 @@ function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRef
                 <Avatar username={a.username} />
                 <span style={pseudoStyle}>@{a.username}</span>
                 <button onClick={() => onComparer(a)} style={{
+                  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "7px", 
                   background: "var(--accent-doux)", color: "var(--accent-txt)",
                   border: "1px solid rgb(var(--accent-rvb) / 0.25)",
-                  borderRadius: "20px", padding: "7px 16px",
+                  borderRadius: "var(--r-lg)", padding: "0 16px", minHeight: "var(--touch)",
                   fontSize: "var(--t-sm)", fontWeight: "600",
                   cursor: "pointer", flexShrink: 0,
                 }}>
-                  Comparer →
+                  Comparer <IconeFleche taille={15} />
                 </button>
               </div>
             ))}
@@ -121,13 +123,13 @@ function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRef
           <p style={titreSectionStyle}>Mon pseudo</p>
           <div style={{
             background: "var(--surface)", border: "1px solid var(--border)",
-            borderRadius: "14px", padding: "16px",
+            borderRadius: "var(--r-md)", padding: "16px",
             boxShadow: "var(--shadow-sm)",
             display: "flex", flexDirection: "column", gap: "12px",
           }}>
             {/* Pseudo sélectionnable en grand */}
             <div style={{
-              background: "var(--surface-2)", borderRadius: "10px",
+              background: "var(--surface-2)", borderRadius: "var(--r-sm)",
               padding: "12px 14px",
               display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
@@ -146,13 +148,13 @@ function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRef
                 style={{
                   background: copied === "pseudo" ? "var(--green)" : "var(--surface-3)",
                   color: copied === "pseudo" ? "white" : "var(--text-2)",
-                  border: "none", borderRadius: "8px",
-                  padding: "7px 12px", fontSize: "var(--t-sm)",
-                  fontWeight: "600", cursor: "pointer", flexShrink: 0,
+                  border: "none", borderRadius: "var(--r-xs)",
+                  padding: "0 12px", minHeight: "var(--touch)", fontSize: "var(--t-sm)",
+                  fontWeight: "600", cursor: "pointer", flexShrink: 0, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "7px", 
                   transition: "background 0.2s, color 0.2s",
                 }}
               >
-                {copied === "pseudo" ? "✓ Copié" : "📋 Copier"}
+                {copied === "pseudo" ? <><IconeCoche taille={15} /> Copié</> : <><IconeCopier taille={15} /> Copier</>}
               </button>
             </div>
 
@@ -163,14 +165,14 @@ function VueAmis({ amis, demandesRecues, username, onComparer, onAccepter, onRef
               style={{
                 background: copied === "partage" ? "var(--green)" : "var(--accent)",
                 color: "white", border: "none",
-                borderRadius: "10px", padding: "12px",
+                borderRadius: "var(--r-sm)", padding: "12px",
                 fontSize: "var(--t-sm)", fontWeight: "600",
-                cursor: "pointer", width: "100%",
+                cursor: "pointer", width: "100%", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "7px", 
                 transition: "background 0.2s",
                 boxShadow: copied === "partage" ? "0 4px 14px rgba(34,197,94,0.3)" : "0 4px 14px rgb(var(--accent-rvb) / 0.25)",
               }}
             >
-              {copied === "partage" ? "✓ Lien copié !" : "↗ Partager mon pseudo"}
+              {copied === "partage" ? <><IconeCoche taille={16} /> Lien copié&nbsp;!</> : <><IconePartage taille={16} /> Partager mon pseudo</>}
             </button>
           </div>
         </section>
@@ -250,7 +252,7 @@ function VueAjouter({ myUid, myUsername, onRetour }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
-      <button onClick={onRetour} style={btnRetourStyle}>← Retour</button>
+      <button onClick={onRetour} style={btnRetourStyle}><IconeFleche vers="gauche" taille={15} /> Retour</button>
 
       <div>
         <h3 style={{ margin: "0 0 4px", fontSize: "var(--t-lg)", color: "var(--text)" }}>Ajouter un ami</h3>
@@ -264,7 +266,7 @@ function VueAjouter({ myUid, myUsername, onRetour }) {
         <div style={{
           flex: 1, display: "flex", alignItems: "center",
           background: "var(--input-bg)", border: "1px solid var(--input-border)",
-          borderRadius: "10px", overflow: "hidden",
+          borderRadius: "var(--r-sm)", overflow: "hidden",
         }}>
           <span style={{
             padding: "0 0 0 14px",
@@ -287,7 +289,7 @@ function VueAjouter({ myUid, myUsername, onRetour }) {
         </div>
         <button onClick={chercher} disabled={loading} style={{
           background: "var(--accent)", color: "white",
-          border: "none", borderRadius: "10px",
+          border: "none", borderRadius: "var(--r-sm)",
           padding: "0 18px", fontSize: "var(--t-sm)",
           fontWeight: "700", cursor: "pointer",
           opacity: loading ? 0.7 : 1, flexShrink: 0,
@@ -298,7 +300,7 @@ function VueAjouter({ myUid, myUsername, onRetour }) {
 
       {resultat && (
         <div style={{
-          background: "var(--surface)", borderRadius: "14px",
+          background: "var(--surface)", borderRadius: "var(--r-md)",
           padding: "16px", border: "1px solid var(--border)",
           animation: "slideUp 0.2s ease-out",
         }}>
@@ -327,7 +329,7 @@ function VueAjouter({ myUid, myUsername, onRetour }) {
               <Avatar username={resultat.username} />
               <div>
                 <p style={{ margin: "0 0 2px", fontWeight: "700", color: "var(--text)" }}>@{resultat.username}</p>
-                <p style={{ margin: 0, color: "var(--green-txt)", fontSize: "var(--t-sm)" }}>✓ Vous êtes déjà amis</p>
+                <p style={{ ...ligneIcone, color: "var(--green-txt)", fontSize: "var(--t-sm)" }}><IconeCoche taille={15} /> Vous êtes déjà amis</p>
               </div>
             </div>
           )}
@@ -337,7 +339,7 @@ function VueAjouter({ myUid, myUsername, onRetour }) {
               <div>
                 <p style={{ margin: "0 0 2px", fontWeight: "700", color: "var(--text)" }}>@{resultat.username}</p>
                 <p style={{ margin: 0, color: "var(--amber-txt)", fontSize: "var(--t-sm)" }}>
-                  {succès ? "✓ Demande envoyée !" : "Demande déjà envoyée"}
+                  {succès ? <><IconeCoche taille={15} /> Demande envoyée&nbsp;!</> : "Demande déjà envoyée"}
                 </p>
               </div>
             </div>
@@ -364,7 +366,7 @@ function VueAjouter({ myUid, myUsername, onRetour }) {
                 disabled={loadingAction}
                 style={{
                   background: "var(--accent)", color: "white",
-                  border: "none", borderRadius: "20px",
+                  border: "none", borderRadius: "var(--r-lg)",
                   padding: "8px 16px", fontSize: "var(--t-sm)",
                   fontWeight: "700", cursor: "pointer",
                   opacity: loadingAction ? 0.7 : 1, flexShrink: 0,
@@ -430,7 +432,7 @@ function VueComparer({ ami, listesUser, onRetour }) {
         ))}
       </div>
 
-      <button onClick={onRetour} style={btnRetourStyle}>← Retour</button>
+      <button onClick={onRetour} style={btnRetourStyle}><IconeFleche vers="gauche" taille={15} /> Retour</button>
 
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <Avatar username={ami.username} size={42} />
@@ -446,7 +448,7 @@ function VueComparer({ ami, listesUser, onRetour }) {
         <div aria-live="polite">
           {matches === null || matches.length === 0 ? (
             <div style={{
-              background: "var(--surface)", borderRadius: "14px",
+              background: "var(--surface)", borderRadius: "var(--r-md)",
               padding: "28px", textAlign: "center",
               border: "1px solid var(--border)",
             }}>
@@ -459,7 +461,7 @@ function VueComparer({ ami, listesUser, onRetour }) {
             <>
               <div style={{
                 background: "rgba(34,197,94,0.08)", border: "1px solid rgba(34,197,94,0.2)",
-                borderRadius: "14px", padding: "16px",
+                borderRadius: "var(--r-md)", padding: "16px",
                 textAlign: "center", marginBottom: "12px",
               }}>
                 <p style={{ fontSize: "var(--t-2xl)", margin: "0 0 4px" }}>🎉</p>
@@ -470,26 +472,26 @@ function VueComparer({ ami, listesUser, onRetour }) {
 
               <button onClick={tirerAuSort} style={{
                 background: "var(--amber)", color: "var(--bg)",
-                border: "none", borderRadius: "14px",
+                border: "none", borderRadius: "var(--r-md)",
                 padding: "14px", fontSize: "var(--t-md)",
                 fontWeight: "700", cursor: "pointer",
-                width: "100%", marginBottom: "12px",
+                width: "100%", marginBottom: "12px", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "7px", 
                 boxShadow: "0 4px 14px rgba(245,158,11,0.3)",
               }}>
-                🎲 {filmTire ? "Retirer au sort" : "Choisir au sort"}
+                <IconeDe taille={18} /> {filmTire ? "Retirer au sort" : "Choisir au sort"}
               </button>
 
               {filmTire && (
                 <div style={{
                   display: "flex", gap: "14px", alignItems: "center",
                   background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)",
-                  borderRadius: "14px", padding: "14px", marginBottom: "12px",
+                  borderRadius: "var(--r-md)", padding: "14px", marginBottom: "12px",
                   animation: "slideUp 0.25s ease-out",
                 }}>
                   <img
                     src={`https://image.tmdb.org/t/p/w92${filmTire.poster_path}`}
                     alt={`Affiche de ${filmTire.title}`}
-                    style={{ borderRadius: "8px", width: "54px", flexShrink: 0 }}
+                    style={{ borderRadius: "var(--r-xs)", width: "54px", flexShrink: 0 }}
                   />
                   <div>
                     <p style={{ margin: "0 0 4px", fontSize: "var(--t-xs)", color: "var(--amber-txt)", fontWeight: "700", letterSpacing: "0.8px", textTransform: "uppercase" }}>
@@ -506,13 +508,13 @@ function VueComparer({ ami, listesUser, onRetour }) {
                     display: "flex", gap: "12px", alignItems: "center",
                     background: filmTire?.id === film.id ? "rgba(245,158,11,0.08)" : "var(--surface)",
                     border: `1px solid ${filmTire?.id === film.id ? "rgba(245,158,11,0.25)" : "var(--border)"}`,
-                    borderRadius: "12px", padding: "10px",
+                    borderRadius: "var(--r-sm)", padding: "10px",
                     transition: "all 0.2s",
                   }}>
                     <img
                       src={`https://image.tmdb.org/t/p/w92${film.poster_path}`}
                       alt={`Affiche de ${film.title}`}
-                      style={{ borderRadius: "6px", width: "44px", flexShrink: 0 }}
+                      style={{ borderRadius: "var(--r-xs)", width: "44px", flexShrink: 0 }}
                     />
                     <span style={{ fontSize: "var(--t-sm)", color: "var(--text)", fontWeight: "500" }}>{film.title}</span>
                   </div>
@@ -631,10 +633,10 @@ function Match({ user, username, listesUser, isGuest, onSeConnecter }) {
         {/* Bannière info */}
         <div style={{
           background: "var(--accent-doux)", border: "1px solid rgb(var(--accent-rvb) / 0.2)",
-          borderRadius: "14px", padding: "16px 18px", marginBottom: "20px",
+          borderRadius: "var(--r-md)", padding: "16px 18px", marginBottom: "20px",
           display: "flex", gap: "12px", alignItems: "flex-start",
         }}>
-          <span style={{ fontSize: "var(--t-xl)", lineHeight: 1, flexShrink: 0 }}>🔒</span>
+          <span style={{ color: "var(--accent-txt)", lineHeight: 1, flexShrink: 0, marginTop: "1px" }}><IconeCadenas taille={20} /></span>
           <div>
             <p style={{ margin: "0 0 6px", fontSize: "var(--t-sm)", fontWeight: "600", color: "var(--accent-txt)" }}>
               Les amis nécessitent un compte
@@ -644,18 +646,18 @@ function Match({ user, username, listesUser, isGuest, onSeConnecter }) {
             </p>
             <button onClick={onSeConnecter} style={{
               background: "var(--accent)", color: "white", border: "none",
-              borderRadius: "20px", padding: "8px 18px",
-              fontSize: "var(--t-sm)", fontWeight: "600", cursor: "pointer",
+              borderRadius: "var(--r-lg)", padding: "0 18px", minHeight: "var(--touch)",
+              fontSize: "var(--t-sm)", fontWeight: "600", cursor: "pointer", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "7px", 
             }}>
-              Créer un compte →
+              Créer un compte <IconeFleche taille={15} />
             </button>
           </div>
         </div>
 
         {/* Aperçu désactivé */}
         <div style={{ opacity: 0.35, pointerEvents: "none", userSelect: "none" }}>
-          <div style={{ background: "var(--surface)", borderRadius: "14px", padding: "14px", marginBottom: "8px", border: "1px solid var(--border)" }}>
-            <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-3)", fontWeight: "700", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "12px" }}>👥 Mes amis</p>
+          <div style={{ background: "var(--surface)", borderRadius: "var(--r-md)", padding: "14px", marginBottom: "8px", border: "1px solid var(--border)" }}>
+            <p style={{ margin: 0, fontSize: "var(--t-sm)", color: "var(--text-3)", fontWeight: "700", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "12px", display: "flex", alignItems: "center", gap: "7px" }}><IconeAmis taille={14} /> Mes amis</p>
             {[1,2].map(i => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", padding: "8px 0", borderBottom: i === 1 ? "1px solid var(--divider)" : "none" }}>
                 <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--surface-3)" }} />
@@ -696,14 +698,17 @@ function Match({ user, username, listesUser, isGuest, onSeConnecter }) {
 // ─── Styles partagés ──────────────────────────────────────────────────────────
 
 const conteneurStyle    = { width: "100%", color: "var(--text)" };
-const carteStyle        = { background: "var(--surface)", borderRadius: "14px", padding: "12px 14px", display: "flex", alignItems: "center", gap: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)", overflow: "hidden" };
+const carteStyle        = { background: "var(--surface)", borderRadius: "var(--r-md)", padding: "12px 14px", display: "flex", alignItems: "center", gap: "12px", border: "1px solid var(--border)", boxShadow: "var(--shadow-sm)", overflow: "hidden" };
 /* Un élément flex refuse par défaut de se réduire sous la largeur de son
    contenu : sans minWidth, un pseudo long chassait le bouton hors de l'écran
    au lieu de se tronquer. */
 const pseudoStyle       = { flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "var(--t-md)", fontWeight: "500" };
-const titreSectionStyle = { margin: "0 0 10px", fontSize: "var(--t-xs)", fontWeight: "700", color: "var(--text-3)", letterSpacing: "1.2px", textTransform: "uppercase" };
-const btnVertStyle      = { background: "var(--green)", color: "white", border: "none", borderRadius: "20px", padding: "6px 14px", fontSize: "var(--t-sm)", fontWeight: "700", cursor: "pointer", flexShrink: 0 };
-const btnGrisStyle      = { background: "transparent", color: "var(--text-3)", border: "1px solid var(--border-2)", borderRadius: "20px", padding: "6px 12px", fontSize: "var(--t-sm)", cursor: "pointer", flexShrink: 0 };
-const btnRetourStyle    = { background: "transparent", border: "none", color: "var(--text-3)", fontSize: "var(--t-sm)", cursor: "pointer", padding: 0, textAlign: "left" };
+const titreSectionStyle = { margin: "0 0 10px", fontSize: "var(--t-xs)", fontWeight: "700", color: "var(--text-3)", letterSpacing: "1.2px", textTransform: "uppercase", display: "flex", alignItems: "center", gap: "7px" };
+/* Icône et texte sur la même ligne optique : un SVG est une boîte, pas un
+   glyphe, il ne s'aligne pas seul sur la ligne de base. */
+const ligneIcone        = { margin: 0, display: "flex", alignItems: "center", gap: "6px" };
+const btnVertStyle      = { background: "var(--green)", color: "white", border: "none", borderRadius: "var(--r-lg)", padding: "0 14px", minHeight: "var(--touch)", fontSize: "var(--t-sm)", fontWeight: "700", cursor: "pointer", flexShrink: 0 };
+const btnGrisStyle      = { display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "7px", background: "transparent", color: "var(--text-3)", border: "1px solid var(--border-2)", borderRadius: "var(--r-lg)", padding: "0 12px", minWidth: "var(--touch)", minHeight: "var(--touch)", fontSize: "var(--t-sm)", cursor: "pointer", flexShrink: 0 };
+const btnRetourStyle    = { display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "7px", background: "transparent", border: "none", color: "var(--text-3)", fontSize: "var(--t-sm)", cursor: "pointer", padding: "0 4px", minHeight: "var(--touch)" };
 
 export default Match;

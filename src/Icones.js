@@ -123,6 +123,90 @@ export const IconeInfo = (p) => (
   </Svg>
 );
 
+// Coche — validation
+export const IconeCoche = (p) => (
+  <Svg {...p}>
+    <path d="M4.5 12.5l5 5 10-11" />
+  </Svg>
+);
+
+// Copier — deux feuillets
+export const IconeCopier = (p) => (
+  <Svg {...p}>
+    <rect x="9" y="9" width="11" height="11" rx="2.4" />
+    <path d="M15 5.5A2.5 2.5 0 0012.5 3H6.5A2.5 2.5 0 004 5.5v6A2.5 2.5 0 006.5 14" />
+  </Svg>
+);
+
+// Corbeille — suppression
+export const IconeCorbeille = (p) => (
+  <Svg {...p}>
+    <path d="M4 6.5h16M9.5 6.5V4.6a1.4 1.4 0 011.4-1.4h2.2a1.4 1.4 0 011.4 1.4v1.9" />
+    <path d="M6.4 6.5l.8 12.1a2 2 0 002 1.9h5.6a2 2 0 002-1.9l.8-12.1" />
+    <path d="M10.4 10.5v6M13.6 10.5v6" />
+  </Svg>
+);
+
+// Cadenas — contenu réservé aux comptes
+export const IconeCadenas = (p) => (
+  <Svg {...p}>
+    <rect x="4.5" y="10.5" width="15" height="10" rx="2.4" />
+    <path d="M8 10.5V7.8a4 4 0 118 0v2.7" />
+  </Svg>
+);
+
+// Dé — tirage au sort
+export const IconeDe = (p) => (
+  <Svg {...p}>
+    <rect x="3.5" y="3.5" width="17" height="17" rx="3.4" />
+    <path d="M8.4 8.4h.01M15.6 8.4h.01M12 12h.01M8.4 15.6h.01M15.6 15.6h.01" strokeWidth="2.6" />
+  </Svg>
+);
+
+// Boîte de réception — demandes reçues
+export const IconeBoite = (p) => (
+  <Svg {...p}>
+    <path d="M3.5 13h4l1.5 2.6h6L16.5 13h4" />
+    <path d="M5.4 5.2A2 2 0 017.3 3.8h9.4a2 2 0 011.9 1.4l2 6.6v5.4a2.4 2.4 0 01-2.4 2.4H5.8a2.4 2.4 0 01-2.4-2.4v-5.4z" />
+  </Svg>
+);
+
+// Calendrier — année de sortie
+export const IconeCalendrier = (p) => (
+  <Svg {...p}>
+    <rect x="3.6" y="5.2" width="16.8" height="15.2" rx="2.4" />
+    <path d="M3.6 10h16.8M8.4 3.4v3.6M15.6 3.4v3.6" />
+  </Svg>
+);
+
+// Partager — flèche sortante
+export const IconePartage = (p) => (
+  <Svg {...p}>
+    <path d="M11 5.5H6.4A2.4 2.4 0 004 7.9v9.7A2.4 2.4 0 006.4 20h9.7a2.4 2.4 0 002.4-2.4V13" />
+    <path d="M14.2 3.6H20.4v6.2M20.4 3.6L11.4 12.6" />
+  </Svg>
+);
+
+// Plus — ajouter
+export const IconePlus = (p) => (
+  <Svg {...p}>
+    <path d="M12 5.2v13.6M5.2 12h13.6" />
+  </Svg>
+);
+
+/* Flèche directionnelle. Une seule icône pivotée plutôt que quatre glyphes :
+   trois flèches distinctes servaient jusqu'ici le même rôle. */
+export const IconeFleche = ({ vers = "droite", taille = 20, ...reste }) => {
+  const angles = { droite: 0, bas: 90, gauche: 180, haut: 270 };
+  return (
+    <span style={{ display: "inline-flex", transform: `rotate(${angles[vers] ?? 0}deg)`, lineHeight: 0 }}>
+      <Svg taille={taille} {...reste}>
+        <path d="M4.5 12h14M12.8 6.2l5.8 5.8-5.8 5.8" />
+      </Svg>
+    </span>
+  );
+};
+
 // Table de correspondance utilisée par les deux menus
 export const ICONES_NAV = {
   swipe:    IconeDecouvrir,

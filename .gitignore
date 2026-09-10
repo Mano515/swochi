@@ -38,3 +38,6 @@ android/app/google-services.json
 
 # Outillage Claude Code (worktrees, réglages locaux)
 .claude/
+
+# Point de terminaison devtools de la WebView, régénéré à chaque session
+.wsurl

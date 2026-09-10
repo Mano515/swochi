@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IconeCroix } from "./Icones";
 import { auth } from "./firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithCredential } from "firebase/auth";
 import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
@@ -77,7 +78,7 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
 
       {/* Carte formulaire */}
       <div style={{
-        background: "var(--surface)", borderRadius: "22px",
+        background: "var(--surface)", borderRadius: "var(--r-lg)",
         padding: "32px 28px", width: "100%", maxWidth: "340px",
         display: "flex", flexDirection: "column", gap: "16px",
         boxShadow: "var(--shadow-lg)", border: "1px solid var(--border)",
@@ -91,7 +92,7 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
             width: "30px", height: "30px", cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: "var(--t-sm)",
-          }}>✕</button>
+          }} aria-label="Fermer"><IconeCroix taille={16} /></button>
         )}
         <h2 style={{ margin: "0 0 4px", fontSize: "var(--t-xl)", fontWeight: "700", color: "var(--text)" }}>
           {isRegister ? "Créer un compte" : "Se connecter"}
@@ -133,7 +134,7 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
 
         <button onClick={handleSubmit} style={{
           background: "var(--accent)", color: "white",
-          border: "none", borderRadius: "50px",
+          border: "none", borderRadius: "var(--r-pill)",
           padding: "15px", fontSize: "var(--t-md)",
           fontWeight: "700", cursor: "pointer",
           boxShadow: "0 4px 14px rgb(var(--accent-rvb) / 0.35)",
@@ -150,7 +151,7 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
 
         <button onClick={handleGoogle} style={{
           background: "#ffffff", color: "#1a1a1a",
-          border: "1px solid rgba(0,0,0,0.12)", borderRadius: "50px",
+          border: "1px solid rgba(0,0,0,0.12)", borderRadius: "var(--r-pill)",
           padding: "13px", fontSize: "var(--t-md)",
           fontWeight: "600", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center", gap: "10px",
@@ -164,7 +165,7 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
           onClick={() => setIsRegister(r => !r)}
           style={{
             background: "none", border: "1px solid var(--border-2)",
-            color: "var(--text-2)", fontSize: "var(--t-sm)", borderRadius: "50px",
+            color: "var(--text-2)", fontSize: "var(--t-sm)", borderRadius: "var(--r-pill)",
             textAlign: "center", cursor: "pointer",
             padding: "10px 0", fontWeight: "500",
           }}
@@ -182,7 +183,7 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
           <button onClick={onGuest} style={{
             background: "transparent",
             border: "1px solid var(--border-2)",
-            color: "var(--text-3)", borderRadius: "50px",
+            color: "var(--text-3)", borderRadius: "var(--r-pill)",
             padding: "11px 26px", fontSize: "var(--t-sm)",
             cursor: "pointer",
           }}>
@@ -198,7 +199,7 @@ const labelStyle = { fontSize: "var(--t-sm)", color: "var(--text)", fontWeight: 
 
 const inputStyle = {
   background: "var(--input-bg)", border: "1px solid var(--input-border)",
-  borderRadius: "10px", padding: "13px 14px",
+  borderRadius: "var(--r-sm)", padding: "13px 14px",
   color: "var(--text)", fontSize: "var(--t-md)", outline: "none",
 };
 

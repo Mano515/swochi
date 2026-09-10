@@ -1,6 +1,6 @@
 const WS = require('ws');
 const fs = require('fs');
-const url = fs.readFileSync('./.wsurl','utf8').trim();
+const url = fs.readFileSync(require('path').join(__dirname,'..','.wsurl'),'utf8').trim();
 const expr = fs.readFileSync(process.argv[2],'utf8');
 const ws = new WS(url);
 ws.on('open', () => ws.send(JSON.stringify({id:1, method:'Runtime.evaluate',
