@@ -132,11 +132,11 @@ function Login({ onLogin, onGuest, onFermer, asPage }) {
         )}
 
         <button onClick={handleSubmit} style={{
-          background: "var(--purple)", color: "white",
+          background: "var(--accent)", color: "white",
           border: "none", borderRadius: "50px",
           padding: "15px", fontSize: "var(--t-md)",
           fontWeight: "700", cursor: "pointer",
-          boxShadow: "0 4px 14px rgba(29,99,205,0.35)",
+          boxShadow: "0 4px 14px rgb(var(--accent-rvb) / 0.35)",
           marginTop: "2px",
         }}>
           {isRegister ? "Créer le compte" : "Se connecter"}

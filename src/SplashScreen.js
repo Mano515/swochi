@@ -20,7 +20,7 @@ function SplashScreen() {
             style={{
               width: "8px", height: "8px",
               borderRadius: "50%",
-              background: "var(--purple)",
+              background: "var(--accent)",
               animation: `pulse 1.2s ease-in-out ${i * 0.2}s infinite`,
             }}
           />

@@ -574,8 +574,8 @@ function App() {
             style={{
               display: "flex", alignItems: "center", gap: "8px",
               width: "100%", padding: "10px 14px", borderRadius: "12px",
-              background: "var(--purple-dim)", border: "1.5px solid rgba(29,99,205,0.25)",
-              color: "var(--purple)", fontSize: "var(--t-sm)", fontWeight: "600",
+              background: "var(--accent-doux)", border: "1.5px solid rgb(var(--accent-rvb) / 0.25)",
+              color: "var(--accent-txt)", fontSize: "var(--t-sm)", fontWeight: "600",
               cursor: "pointer", fontFamily: "inherit",
             }}
           >
@@ -587,7 +587,7 @@ function App() {
             {theme === "dark" ? "Mode clair" : "Mode sombre"}
           </button>
           {!isGuest && (
-            <button onClick={() => signOut(auth)} className="sidebar-nav-item" style={{ color: "var(--red)" }}>
+            <button onClick={() => signOut(auth)} className="sidebar-nav-item" style={{ color: "var(--red-txt)" }}>
               <span style={{ fontSize: "var(--t-md)" }}>↩</span>
               Se déconnecter
             </button>
@@ -636,15 +636,15 @@ function App() {
           {/* Bannière invité mobile */}
           {isGuest && (
             <div className="mobile-only" style={{
-              background: "var(--purple-dim)", borderRadius: "10px",
+              background: "var(--accent-doux)", borderRadius: "10px",
               margin: "8px 0 10px", padding: "8px 14px",
               display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
             }}>
-              <p style={{ margin: 0, fontSize: "var(--t-xs)", color: "var(--purple)", fontWeight: "500", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              <p style={{ margin: 0, fontSize: "var(--t-xs)", color: "var(--accent-txt)", fontWeight: "500", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                 Invité · sauvegarde locale
               </p>
               <button onClick={ouvrirConnexion} style={{
-                background: "none", border: "1px solid var(--purple)", color: "var(--purple)",
+                background: "none", border: "1px solid var(--accent-txt)", color: "var(--accent-txt)",
                 borderRadius: "20px", padding: "4px 12px", fontSize: "var(--t-xs)",
                 fontWeight: "600", cursor: "pointer", flexShrink: 0,
               }}>Se connecter</button>
@@ -674,10 +674,10 @@ function App() {
                     Sauvegarde tes swipes et retrouve tes amis.
                   </p>
                   <button onClick={ouvrirConnexion} style={{
-                    marginTop: "4px", background: "var(--purple)", color: "#fff",
+                    marginTop: "4px", background: "var(--accent)", color: "#fff",
                     border: "none", borderRadius: "20px", padding: "9px 18px",
                     fontSize: "var(--t-sm)", fontWeight: "700", cursor: "pointer",
-                    width: "100%", boxShadow: "0 2px 10px rgba(29,99,205,0.4)",
+                    width: "100%", boxShadow: "0 2px 10px rgb(var(--accent-rvb) / 0.4)",
                   }}>Se connecter</button>
                 </div>
               )}
@@ -790,7 +790,7 @@ function App() {
 function Spinner() {
   return (
     <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "14px" }}>
-      <div style={{ width: "36px", height: "36px", border: "3px solid var(--border-2)", borderTopColor: "var(--purple)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div style={{ width: "36px", height: "36px", border: "3px solid var(--border-2)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
       <p role="status" style={{ color: "var(--text-4)", fontSize: "var(--t-sm)", margin: 0 }}>Chargement…</p>
     </div>
   );
@@ -813,10 +813,10 @@ function EcranVide({ onRelancer, nbFiltres, onEffacerFiltres }) {
           : "Impressionnant. Essaie un autre genre ou recharge pour découvrir de nouveaux films."}
       </p>
       <button onClick={filtre ? onEffacerFiltres : onRelancer} style={{
-        marginTop: "4px", background: "var(--purple)", color: "white",
+        marginTop: "4px", background: "var(--accent)", color: "white",
         border: "none", borderRadius: "50px", padding: "12px 28px",
         fontSize: "var(--t-sm)", fontWeight: "700", cursor: "pointer",
-        boxShadow: "0 4px 16px rgba(29,99,205,0.35)",
+        boxShadow: "0 4px 16px rgb(var(--accent-rvb) / 0.35)",
       }}>{filtre ? "Effacer les filtres" : "Recharger"}</button>
     </div>
   );
@@ -839,9 +839,9 @@ function PromptInvite({ onSeConnecter, onFermer }) {
           Crée un compte gratuit pour sauvegarder tes swipes, faire des listes et comparer avec tes amis.
         </p>
         <button onClick={onSeConnecter} style={{
-          background: "var(--purple)", color: "white", border: "none",
+          background: "var(--accent)", color: "white", border: "none",
           borderRadius: "50px", padding: "14px", fontSize: "var(--t-md)",
-          fontWeight: "700", cursor: "pointer", boxShadow: "0 4px 16px rgba(29,99,205,0.35)",
+          fontWeight: "700", cursor: "pointer", boxShadow: "0 4px 16px rgb(var(--accent-rvb) / 0.35)",
         }}>Créer un compte</button>
         <button onClick={onFermer} style={{ background: "none", border: "none", color: "var(--text-3)", fontSize: "var(--t-sm)", cursor: "pointer" }}>
           Continuer sans compte
@@ -879,7 +879,7 @@ function EcranPseudo({ usernameInput, setUsernameInput, usernameError, onConfirm
           />
         </div>
         {usernameError && (
-          <p role="alert" style={{ color: "var(--red)", fontSize: "var(--t-sm)", margin: 0 }}>{usernameError}</p>
+          <p role="alert" style={{ color: "var(--red-txt)", fontSize: "var(--t-sm)", margin: 0 }}>{usernameError}</p>
         )}
         <button onClick={onConfirmer} style={{
           background: "var(--green)", color: "white", border: "none",

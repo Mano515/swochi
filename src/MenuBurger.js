@@ -98,10 +98,10 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
         {isGuest && (
           <div style={{
             margin: "12px 12px 0",
-            background: "var(--purple-dim)", border: "1px solid rgba(29,99,205,0.2)",
+            background: "var(--accent-doux)", border: "1px solid rgb(var(--accent-rvb) / 0.2)",
             borderRadius: "12px", padding: "12px 14px",
           }}>
-            <p style={{ margin: "0 0 4px", fontSize: "var(--t-sm)", color: "var(--purple)", fontWeight: "600" }}>
+            <p style={{ margin: "0 0 4px", fontSize: "var(--t-sm)", color: "var(--accent-txt)", fontWeight: "600" }}>
               Mode invité
             </p>
             <p style={{ margin: 0, fontSize: "var(--t-xs)", color: "var(--text-3)", lineHeight: "1.5" }}>
@@ -121,8 +121,8 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
                 aria-current={actif ? "page" : undefined}
                 style={{
                   width: "100%", textAlign: "left",
-                  background: actif ? "var(--purple-dim)" : "transparent",
-                  color: actif ? "var(--purple)" : "var(--text-2)",
+                  background: actif ? "var(--accent-doux)" : "transparent",
+                  color: actif ? "var(--accent-txt)" : "var(--text-2)",
                   border: "none", borderRadius: "14px",
                   padding: "14px 18px",
                   cursor: "pointer", marginBottom: "4px",
@@ -146,7 +146,7 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
                     marginLeft: "auto",
                     width: "6px", height: "6px",
                     borderRadius: "50%",
-                    background: "var(--purple)",
+                    background: "var(--accent)",
                     flexShrink: 0,
                   }} />
                 )}
@@ -184,11 +184,11 @@ function MenuBurger({ ouvert, onFermer, onglet, onOnglet, isGuest, onSeConnecter
             <button
               onClick={onSeConnecter}
               style={{
-                width: "100%", background: "var(--purple)",
+                width: "100%", background: "var(--accent)",
                 border: "none", color: "white",
                 borderRadius: "12px", padding: "13px",
                 fontSize: "var(--t-sm)", fontWeight: "600", cursor: "pointer",
-                boxShadow: "0 4px 14px rgba(29,99,205,0.3)",
+                boxShadow: "0 4px 14px rgb(var(--accent-rvb) / 0.3)",
               }}
             >
               Se connecter / S'inscrire

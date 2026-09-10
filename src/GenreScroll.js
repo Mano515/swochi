@@ -96,9 +96,9 @@ function GenreScroll({ genres, genresChoisis, onBasculer }) {
 
 function genreStyle(actif) {
   return {
-    background: actif ? "var(--purple)" : "var(--surface-2)",
+    background: actif ? "var(--accent)" : "var(--surface-2)",
     color: actif ? "#fff" : "var(--text-2)",
-    border: actif ? "1.5px solid var(--purple)" : "1.5px solid transparent",
+    border: actif ? "1.5px solid var(--accent)" : "1.5px solid transparent",
     borderRadius: "var(--r-pill)",
     padding: "11px 18px",
     fontSize: "var(--t-sm)",
@@ -106,7 +106,7 @@ function genreStyle(actif) {
     fontWeight: actif ? "700" : "500",
     whiteSpace: "nowrap",
     letterSpacing: actif ? "0.01em" : "0",
-    boxShadow: actif ? "0 2px 10px rgba(29,99,205,0.35)" : "none",
+    boxShadow: actif ? "0 2px 10px rgb(var(--accent-rvb) / 0.35)" : "none",
     transition: "all 0.18s cubic-bezier(0.4,0,0.2,1)",
   };
 }

@@ -95,7 +95,7 @@ function DetailFilm({ film, onClose }) {
         <div style={{ overflowY: "auto", padding: "var(--s-5)", flex: 1, WebkitOverflowScrolling: "touch" }}>
           {loading ? (
             <div style={{ display: "flex", justifyContent: "center", padding: "40px 0" }}>
-              <div style={{ width: "32px", height: "32px", border: "3px solid var(--border-2)", borderTopColor: "var(--purple)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+              <div style={{ width: "32px", height: "32px", border: "3px solid var(--border-2)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
             </div>
           ) : details && (
             <>
@@ -143,9 +143,9 @@ function DetailSection({ label, value }) {
 /* ── Badge liste ── */
 function ListeBadge({ liste }) {
   const config = {
-    aVoir:        { label: "À voir",    color: "var(--green)",  bg: "rgba(34,197,94,0.1)"   },
+    aVoir:        { label: "À voir",    color: "var(--green-txt)",  bg: "rgba(34,197,94,0.1)"   },
     pasInteresse: { label: "Pas intéressé", color: "var(--text-3)", bg: "var(--surface-3)"   },
-    dejavu:       { label: "Déjà vu",   color: "var(--blue)",   bg: "rgba(59,130,246,0.1)"  },
+    dejavu:       { label: "Déjà vu",   color: "var(--blue-txt)",   bg: "rgb(var(--accent-rvb) / 0.1)"  },
   }[liste];
   if (!config) return null;
   return (
@@ -207,7 +207,7 @@ function LigneFilm({ film, listes, onAVoir, onPasInteresse, onDejaVu }) {
                 >✕ Passer</button>
                 <button
                   onClick={() => onAVoir(film)}
-                  style={{ ...pillBtn, color: "var(--green)", borderColor: "var(--green)", background: "rgba(34,197,94,0.08)" }}
+                  style={{ ...pillBtn, color: "var(--green-txt)", borderColor: "var(--green)", background: "rgba(34,197,94,0.08)" }}
                 >♥ À voir</button>
               </div>
             )
@@ -329,7 +329,7 @@ export default function Recherche({ onFermer, listes, onAVoir, onPasInteresse, o
         </div>
         <button
           onClick={onFermer}
-          style={{ background: "none", border: "none", color: "var(--purple)", fontSize: "var(--t-md)", fontWeight: "600", cursor: "pointer", padding: "8px 0", flexShrink: 0, whiteSpace: "nowrap" }}
+          style={{ background: "none", border: "none", color: "var(--accent-txt)", fontSize: "var(--t-md)", fontWeight: "600", cursor: "pointer", padding: "8px 0", flexShrink: 0, whiteSpace: "nowrap" }}
         >Annuler</button>
       </div>
 
@@ -351,7 +351,7 @@ export default function Recherche({ onFermer, listes, onAVoir, onPasInteresse, o
         {/* Chargement */}
         {loading && (
           <div style={{ display: "flex", justifyContent: "center", padding: "48px 0" }}>
-            <div style={{ width: "28px", height: "28px", border: "3px solid var(--border-2)", borderTopColor: "var(--purple)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+            <div style={{ width: "28px", height: "28px", border: "3px solid var(--border-2)", borderTopColor: "var(--accent)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
           </div>
         )}
 

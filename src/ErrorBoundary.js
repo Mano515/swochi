@@ -18,7 +18,7 @@ class ErrorBoundary extends Component {
     if (this.state.error) {
       return (
         <div style={{
-          padding: "24px 16px", color: "var(--red)",
+          padding: "24px 16px", color: "var(--red-txt)",
           background: "var(--surface)", borderRadius: "14px",
           margin: "16px", border: "1px solid var(--red)",
           fontSize: "var(--t-sm)",

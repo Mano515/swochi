@@ -42,7 +42,7 @@ function Logo({ hauteur = 32, avecNom = true }) {
             fontWeight: 800,
             letterSpacing: "0.005em",
             lineHeight: 1,
-            color: "var(--purple)",
+            color: "var(--accent-txt)",
             whiteSpace: "nowrap",
           }}
         >

@@ -462,7 +462,7 @@ const MovieCard = forwardRef(function MovieCard({ film, onSwipe, isTop }, ref) {
         ...tampon, bottom: "24%", left: "50%", x: "-50%", rotate: -4,
         opacity: labelOpacityUp, scale: labelScaleUp,
         background: "#2f7ff0",
-        boxShadow: "0 8px 30px rgba(59,130,246,0.6), 0 0 0 1px rgba(0,0,0,0.15)",
+        boxShadow: "0 8px 30px rgb(var(--accent-rvb) / 0.6), 0 0 0 1px rgba(0,0,0,0.15)",
       }}>Déjà vu</motion.div>
 
       {/* Bandeau bas — titre et méta posés sur l'affiche plutôt qu'en légende

@@ -112,7 +112,7 @@ function Onboarding({ onTerminer }) {
             {e.genres.map((g, i) => (
               <span key={g} style={{
                 background: i === 0 ? "white" : "transparent",
-                color: i === 0 ? "#0d0d0d" : "rgba(255,255,255,0.4)",
+                color: i === 0 ? "var(--bg)" : "rgba(255,255,255,0.75)",
                 border: `1px solid ${i === 0 ? "white" : "rgba(255,255,255,0.15)"}`,
                 borderRadius: "20px", padding: "6px 16px",
                 fontSize: "var(--t-sm)", fontWeight: i === 0 ? "700" : "normal",
@@ -140,7 +140,7 @@ function Onboarding({ onTerminer }) {
             color: "white", borderRadius: "50px",
             padding: "14px", fontSize: "var(--t-md)",
             fontWeight: "700", cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(29,99,205,0.4)",
+            boxShadow: "0 4px 16px rgb(var(--accent-rvb) / 0.4)",
           }}>
             {derniere ? "C'est parti ! 🚀" : "Suivant →"}
           </button>

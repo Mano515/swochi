@@ -24,7 +24,7 @@ function Profil({ username, user, listes: listesBrut, isGuest, onSeConnecter }) 
         <StatsCard label="Cette session" totalSwipes={totalSwipes} listes={listes} />
 
         <div style={{
-          background: "var(--purple-dim)", border: "1px solid rgba(29,99,205,0.2)",
+          background: "var(--accent-doux)", border: "1px solid rgb(var(--accent-rvb) / 0.2)",
           borderRadius: "18px", padding: "24px 20px", textAlign: "center",
           display: "flex", flexDirection: "column", gap: "12px",
         }}>
@@ -33,10 +33,10 @@ function Profil({ username, user, listes: listesBrut, isGuest, onSeConnecter }) 
             Crée un compte gratuit pour ne plus jamais perdre ta liste et comparer avec tes amis.
           </p>
           <button onClick={onSeConnecter} style={{
-            background: "var(--purple)", color: "white", border: "none",
+            background: "var(--accent)", color: "white", border: "none",
             borderRadius: "50px", padding: "13px 28px",
             fontSize: "var(--t-md)", fontWeight: "700", cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(29,99,205,0.35)",
+            boxShadow: "0 4px 16px rgb(var(--accent-rvb) / 0.35)",
           }}>Créer un compte →</button>
         </div>
       </div>
@@ -53,7 +53,7 @@ function Profil({ username, user, listes: listesBrut, isGuest, onSeConnecter }) 
           background: "linear-gradient(135deg, #1d63cd, #3b82f6)",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: "var(--t-2xl)", fontWeight: "700", color: "white",
-          boxShadow: "0 6px 20px rgba(29,99,205,0.35)",
+          boxShadow: "0 6px 20px rgb(var(--accent-rvb) / 0.35)",
         }}>{initiale}</div>
         <div style={{ textAlign: "center" }}>
           <p style={{ margin: "0 0 5px", fontSize: "var(--t-xl)", fontWeight: "700", color: "var(--text)" }}>@{username}</p>
@@ -93,9 +93,9 @@ function StatsCard({ label, totalSwipes, listes }) {
       </p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", textAlign: "center", gap: "8px" }}>
         <StatItem valeur={totalSwipes}                label="Swipés" />
-        <StatItem valeur={listes.aVoir.length}        label="À voir"   couleur="var(--green)" />
-        <StatItem valeur={listes.dejavu.length}       label="Déjà vu"  couleur="var(--blue)" />
-        <StatItem valeur={listes.pasInteresse.length} label="Skippés"  couleur="var(--red)" />
+        <StatItem valeur={listes.aVoir.length}        label="À voir"   couleur="var(--green-txt)" />
+        <StatItem valeur={listes.dejavu.length}       label="Déjà vu"  couleur="var(--blue-txt)" />
+        <StatItem valeur={listes.pasInteresse.length} label="Skippés"  couleur="var(--red-txt)" />
       </div>
     </div>
   );
