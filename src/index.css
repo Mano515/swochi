@@ -258,7 +258,12 @@ input, button, select, textarea { font-size: var(--t-md); font-family: inherit; 
 
 /* ── Base ── */
 .onglet-content { width: 100%; box-sizing: border-box; padding: var(--s-3) var(--gutter) var(--s-6); }
-.swipe-section { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 12px 16px 24px; position: relative; overflow: hidden; }
+/* `overflow-x: clip` et non `hidden` : le débordement horizontal de la carte
+   pendant le swipe est déjà retenu par .app-shell, et le vertical par
+   .app-shell--swipe. `hidden` ici ne faisait que trancher net l'ombre portée
+   de la carte, 34 px au-dessus d'elle. `clip` est la seule valeur qui laisse
+   l'autre axe en `visible` au lieu de le forcer en `auto`. */
+.swipe-section { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; padding: 12px 16px 24px; position: relative; overflow-x: clip; }
 .swipe-center { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; z-index: 1; }
 .card-container { position: relative; width: 300px; height: 450px; }
 .genres-sidebar { display: none; }
@@ -269,11 +274,26 @@ input, button, select, textarea { font-size: var(--t-md); font-family: inherit; 
   .top-section {
     position: sticky; top: 0; z-index: 10; width: 100%;
     padding: var(--s-2) var(--gutter) 0;
+    background: transparent;
+  }
+  /* Le fond de l'en-tête vit sur un pseudo-élément, pas sur la boîte :
+     un masque appliqué directement effacerait aussi le logo et la recherche.
+     Son bord inférieur se fond au lieu de se terminer net — sinon l'en-tête
+     tranchait l'ombre haute de la carte, un saut de 17 niveaux mesuré pile
+     à sa limite. Il déborde de 20 px pour avoir de quoi fondre. */
+  .top-section::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 -20px 0;
+    z-index: -1;
+    pointer-events: none;
     background: rgb(var(--bg-rvb) / 0.86);
     backdrop-filter: blur(16px) saturate(1.5);
     -webkit-backdrop-filter: blur(16px) saturate(1.5);
-    transition: background-color 0.25s ease;
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 34px), transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 34px), transparent 100%);
   }
+
   .top-section .header-row { margin-bottom: 8px; }
   /* La rangée déborde la marge pour que les puces filent jusqu'au bord :
      coupées net dans la marge, elles avaient l'air rognées, pas défilables. */

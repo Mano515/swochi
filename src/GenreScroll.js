@@ -68,7 +68,13 @@ function GenreScroll({ genres, genresChoisis, onBasculer }) {
         style={{
           display: "flex", gap: "6px",
           cursor: "grab",
-          padding: "4px var(--gutter)",
+          /* Un conteneur qui défile en X rogne aussi en Y — CSS force l'autre
+             axe en `auto`. La lueur de la pastille active (0 2px 10px) était
+             donc tranchée en haut et en bas. On lui ménage la place à
+             l'intérieur du cadre de défilement, et on la reprend en marge
+             négative pour que la rangée n'enfle pas. */
+          padding: "12px var(--gutter) 14px",
+          margin: "-8px 0 -10px",
         }}
       >
         <button
