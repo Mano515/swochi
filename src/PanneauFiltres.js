@@ -12,7 +12,7 @@ import { IconeCroix } from "./Icones";
 import { vibrer } from "./native";
 import {
   ANNEE_MIN, ANNEE_MAX, DUREE_MAX, NOTE_MAX,
-  FILTRES_DEFAUT, PAYS, PRIX, TRIS,
+  FILTRES_DEFAUT, PAYS, PLATEFORMES, PRIX, TRIS,
   aDesPrix, compterResultats, memesFiltres, nbFiltresActifs,
 } from "./filtres";
 
@@ -203,6 +203,33 @@ function PanneauFiltres({ filtres, genres, onAppliquer, onFermer }) {
               libelle="Durée"
               format={formaterDuree}
             />
+          </Section>
+
+          <Section
+            titre="Plateformes"
+            aide="Uniquement les films inclus dans l'abonnement — pas la location ni l'achat à l'acte."
+            compte={brouillon.plateformes.length}
+          >
+            <div className="pastilles">
+              {PLATEFORMES.map(pf => (
+                <Pastille
+                  key={pf.id}
+                  actif={brouillon.plateformes.includes(String(pf.id))}
+                  onClick={() => basculer("plateformes", String(pf.id))}
+                >
+                  {/* Pas de `loading="lazy"` : huit vignettes de quelques Ko chacune,
+                      et le chargement différé s'est avéré peu fiable dans une feuille
+                      qui s'anime — le navigateur ne relance pas toujours l'observation
+                      d'intersection une fois l'animation d'entrée terminée. */}
+                  <img
+                    src={`https://image.tmdb.org/t/p/w45${pf.logo}`}
+                    alt="" aria-hidden="true"
+                    className="pastille-logo"
+                  />
+                  {pf.nom}
+                </Pastille>
+              ))}
+            </div>
           </Section>
 
           <Section titre="Pays d'origine" compte={brouillon.pays.length}>

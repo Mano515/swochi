@@ -35,6 +35,32 @@ export const PRIX = [
   { valeur: "cannes", label: "Palme d'or",             court: "Palme d'or", nb: palmares.cannes.length },
 ];
 
+/* ── Plateformes de streaming ───────────────────────
+   TMDB recense 96 prestataires pour la France, l'immense
+   majorité inconnus (chaînes documentaires, revendeurs
+   régionaux). Sélection des services d'abonnement grand
+   public réellement identifiables par leur logo — vérifiés
+   un par un pour donner un catalogue non vide en France :
+   Netflix 6918, Prime Video 6570, Disney+ 2498, Canal+ 823,
+   HBO Max 898, Paramount+ 698, Apple TV+ 103, Crunchyroll 85.
+   Les identifiants sont ceux de TMDB, stables dans le temps.
+──────────────────────────────────────────────────── */
+export const PLATEFORMES = [
+  { id: 8,   nom: "Netflix",             logo: "/rK1KljqmbvO9HQa1PBFLILWah72.png" },
+  { id: 119, nom: "Prime Video",         logo: "/gMZdpavHmxFNnLpMHwVxfqeux2g.png" },
+  { id: 337, nom: "Disney+",             logo: "/5eZ872CghnHFLB1j8grszbrx0dx.png" },
+  { id: 381, nom: "Canal+",              logo: "/gliWKhLJVdm7QwL1braBCRko5dx.png" },
+  { id: 1899, nom: "HBO Max",            logo: "/skypuy7SXuugIQeYg0IglmzoKaS.png" },
+  { id: 531, nom: "Paramount+",          logo: "/pkx3klJlwW5JdtaulvDx6hDNtch.png" },
+  { id: 350, nom: "Apple TV+",           logo: "/9icYBfYFcwgCbky5VdGUIKJ4C5i.png" },
+  { id: 283, nom: "Crunchyroll",         logo: "/uFL3c4Cq8M6WoLymlC5Y8bmGytV.png" },
+];
+
+/* Région de visionnage : l'app est francophone, le catalogue
+   affiché doit refléter ce qui est disponible en France plutôt
+   que la région par défaut de TMDB (États-Unis). */
+const REGION_VISIONNAGE = "FR";
+
 /* ── Pays ─────────────────────────────────────────
    Sélection de pays réellement représentés dans le
    catalogue. La liste complète de TMDB (250 entrées)
@@ -94,20 +120,21 @@ export const PAYS = [
 ];
 
 export const FILTRES_DEFAUT = {
-  genres:  [],                       // identifiants TMDB, en chaîne
-  prix:    [],                       // "oscars" | "cannes"
-  annees:  [ANNEE_MIN, ANNEE_MAX],
-  noteMin: 0,
-  duree:   [0, DUREE_MAX],
-  pays:    [],                       // ISO 3166-1
-  tri:     "popularity.desc",
+  genres:      [],                   // identifiants TMDB, en chaîne
+  prix:        [],                   // "oscars" | "cannes"
+  annees:      [ANNEE_MIN, ANNEE_MAX],
+  noteMin:     0,
+  duree:       [0, DUREE_MAX],
+  pays:        [],                   // ISO 3166-1
+  plateformes: [],                   // identifiants TMDB, en chaîne
+  tri:         "popularity.desc",
 };
 
 // ─── Lecture de l'état ────────────────────────────────────────────────────────
 
 /** Nombre de critères réellement posés — alimente le badge du bouton. */
 export function nbFiltresActifs(f) {
-  let n = f.genres.length + f.prix.length + f.pays.length;
+  let n = f.genres.length + f.prix.length + f.pays.length + f.plateformes.length;
   if (f.annees[0] > ANNEE_MIN || f.annees[1] < ANNEE_MAX) n += 1;
   if (f.noteMin > 0) n += 1;
   if (f.duree[0] > 0 || f.duree[1] < DUREE_MAX) n += 1;
@@ -134,9 +161,10 @@ export function lireFiltres() {
       ...brut,
       annees: Array.isArray(brut.annees) ? brut.annees : FILTRES_DEFAUT.annees,
       duree:  Array.isArray(brut.duree)  ? brut.duree  : FILTRES_DEFAUT.duree,
-      genres: Array.isArray(brut.genres) ? brut.genres.map(String) : [],
-      pays:   Array.isArray(brut.pays)   ? brut.pays : [],
-      prix:   Array.isArray(brut.prix)   ? brut.prix : [],
+      genres:      Array.isArray(brut.genres)      ? brut.genres.map(String)      : [],
+      pays:        Array.isArray(brut.pays)         ? brut.pays                     : [],
+      prix:        Array.isArray(brut.prix)         ? brut.prix                     : [],
+      plateformes: Array.isArray(brut.plateformes)  ? brut.plateformes.map(String)  : [],
     };
   } catch {
     return FILTRES_DEFAUT;
@@ -170,6 +198,17 @@ export function paramsDiscover(f, page, cle) {
   if (f.genres.length) p.set("with_genres", f.genres.join("|"));
   if (f.pays.length)   p.set("with_origin_country", f.pays.join("|"));
   if (f.noteMin > 0)   p.set("vote_average.gte", String(f.noteMin));
+
+  /* Abonnement (flatrate) uniquement : « j'ai Netflix » veut dire inclus
+     dans l'abonnement, pas la location ou l'achat à l'acte, qui restent
+     possibles sur pratiquement n'importe quel film. watch_region est
+     obligatoire dès qu'on filtre par prestataire, sans quoi TMDB retombe
+     sur les États-Unis par défaut. */
+  if (f.plateformes.length) {
+    p.set("with_watch_providers", f.plateformes.join("|"));
+    p.set("with_watch_monetization_types", "flatrate");
+    p.set("watch_region", REGION_VISIONNAGE);
+  }
 
   if (f.annees[0] > ANNEE_MIN) p.set("primary_release_date.gte", `${f.annees[0]}-01-01`);
   /* Borne haute toujours posée : sans elle, le catalogue remonte des films
@@ -231,13 +270,17 @@ function normaliser(d) {
     genre_ids: (d.genres || []).map(g => g.id),
     runtime: d.runtime,
     origin_country: d.origin_country || [],
+    /* `append_to_response=watch/providers` sur /movie/{id} ramène cette
+       donnée dans le même appel : aucun coût réseau supplémentaire pour
+       filtrer aussi le palmarès par plateforme. */
+    plateformes: (d["watch/providers"]?.results?.[REGION_VISIONNAGE]?.flatrate || []).map(p => p.provider_id),
   };
 }
 
 async function fiche(id, cle) {
   if (cacheFiches.has(id)) return cacheFiches.get(id);
   try {
-    const d = await fetch(`${TMDB}/movie/${id}?api_key=${cle}&language=fr-FR`).then(r => r.json());
+    const d = await fetch(`${TMDB}/movie/${id}?api_key=${cle}&language=fr-FR&append_to_response=watch/providers`).then(r => r.json());
     if (!d || d.success === false) return null;
     const film = normaliser(d);
     cacheFiches.set(id, film);
@@ -257,6 +300,7 @@ export function correspond(film, f) {
   if (f.duree[1] < DUREE_MAX && film.runtime > f.duree[1]) return false;
   if (f.genres.length && !(film.genre_ids || []).some(g => f.genres.includes(String(g)))) return false;
   if (f.pays.length   && !(film.origin_country || []).some(c => f.pays.includes(c))) return false;
+  if (f.plateformes.length && !(film.plateformes || []).some(p => f.plateformes.includes(String(p)))) return false;
   return true;
 }
 
